@@ -40,6 +40,12 @@ module Bitcache
       inject(0) { |sum, blob| sum + blob.size }
     end
 
+    def keys
+      keys = []
+      each_key { |key| keys << key }
+      keys
+    end
+
     def each(&block)
       each_key { |id| block.call(self[id]) }
     end
