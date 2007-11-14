@@ -72,11 +72,11 @@ module Bitcache::Adapters
               open(:write) { |sftp| sftp.put_file(data.to_s, file_path(id)) }
             when data.respond_to?(:read)
               open(:write) do |sftp|
-                sftp.open_handle(file_path(id), 'wb') { |handle| sftp.write(handle, data.read) } # FIXME
+                sftp.open_handle(file_path(id), 'w') { |handle| sftp.write(handle, data.read) } # FIXME
               end
             when data.respond_to?(:to_str)
               open(:write) do |sftp|
-                sftp.open_handle(file_path(id), 'wb') { |handle| sftp.write(handle, data.to_str) }
+                sftp.open_handle(file_path(id), 'w') { |handle| sftp.write(handle, data.to_str) }
               end
             else
               raise ArgumentError, data

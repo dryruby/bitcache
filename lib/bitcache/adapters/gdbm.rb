@@ -12,13 +12,13 @@ module Bitcache::Adapters
       end
 
       def path() config[:dbfile] end
-      def uri() "file://#{File.expand_path(path)}" end
+      def uri() "gdbm://#{::File.expand_path(path)}" end
       def size() ::File.size(path) end
     end
 
     module BlobMethods #:nodoc:
       def path() [config[:dbfile], id].join('#') end
-      def uri() "file://#{File.expand_path(path)}" end
+      def uri() "gdbm://#{::File.expand_path(path)}" end
     end
 
   end
