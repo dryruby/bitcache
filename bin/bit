@@ -1,0 +1,93 @@
+#!/usr/bin/env ruby
+$:.unshift(File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib')))
+require 'rubygems'
+require 'bitcache'
+require 'bitcache/client/cli'
+
+module Bitcache::Commands
+  class Bit < Bitcache::CLI::Base
+    include Bitcache
+
+    banner "Usage: #{File.basename($0)} [options] command ..."
+
+    option '-d', '--debug', 'Enable debug output for troubleshooting.', lambda { $DEBUG = $VERBOSE = true }
+    option '-v', '--verbose', 'Enable verbose output. May be given more than once.', lambda { $OPTIONS[:verbose] = true }
+    option '-V', '--version', 'Display the Bitcache version, and exit.', lambda { abort "Bitcache #{Bitcache::VERSION::STRING}" }
+    option '-?', '--help', 'Display this help message.', lambda { ARGV = ['help'] }
+
+    help :sources, "Display repository list."
+
+    def sources
+      @repos.each do |name, repo|
+        name = (repo == default) ? "#{name}*" : name
+        puts "#{name.to_s.ljust(40)} #{repo.size.to_s.rjust(12)} #{repo.uri}".rstrip
+      end
+    end
+
+    help :list, "List blobs."
+
+    def list(repo_name = nil)
+      @repos.each do |name, repo|
+        list_blobs(repo)
+      end
+    end
+
+    help :identify, "Identify a file."
+
+    def identify(file)
+      puts hash_file(file)
+    end
+
+    help :put, "Import files."
+
+    def put(*files)
+      if repo = default
+        files.each do |file|
+          if repo << Pathname.new(file)
+            puts file if $OPTIONS[:verbose]
+          end
+        end
+      else
+        raise "No default repository specified."
+      end
+    end
+
+    help :get, "Export a blob."
+
+    def get(id)
+      puts default[id].read
+    end
+
+    help :delete, "Delete a blob."
+
+    def delete(id)
+      default.delete!(id)
+    end
+
+    protected
+
+      def run
+        @repos = Config.load_repos
+        super
+      end
+
+    private
+
+      def list_blobs(repo)
+        repo.each { |blob| puts "#{blob.id.to_s.ljust(40)} #{blob.size.to_s.rjust(12)} #{blob.uri}".rstrip }
+      end
+
+      def hash_file(file)
+        Blob.hash(file)
+      end
+
+      def default
+        @default ||=
+          @repos[:default] ||
+          @repos.values.find { |repo| repo.config[:default] } ||
+          @repos.values.find { |repo| repo.config[:adapter] == 'file' } ||
+          @repos[@repos.keys.first]
+      end
+
+  end
+end

@@ -1,0 +1,134 @@
+##### Transient memory storage
+
+# Memory
+memory:
+  adapter: memory
+  enabled: no
+
+# Memcached
+memcache:
+  adapter: memcache
+  host: localhost
+  port: 11211
+  namespace:
+  ttl: no
+  enabled: no
+
+
+##### Persistent file systems
+
+# File system
+file:
+  adapter: file
+  path: /var/db/bitcache
+  xattr: no
+  enabled: no
+
+
+##### File transfer protocols
+
+# SFTP (Secure File Transfer Protocol)
+sftp:
+  adapter: sftp
+  host: localhost
+  port: 22
+  path:
+  username:
+  password:
+  compression: none
+  enabled: no
+
+# FTP (File Transfer Protocol)
+ftp:
+  adapter: ftp
+  host: localhost
+  port: 21
+  path: /
+  username: anonymous
+  password:
+  passive: true
+  enabled: no
+
+# TFTP (Trivial File Transfer Protocol)
+tftp:
+  adapter: tftp
+  host: localhost
+  port: 69
+  blksize: 512
+  enabled: no
+
+
+##### Web protocols and transports
+
+# HTTP
+http:
+  adapter: http
+  host: localhost
+  port: 80
+  path: /
+  username:
+  password:
+  enabled: no
+
+# HTTPS
+https:
+  adapter: https
+  host: localhost
+  port: 443
+  path: /
+  username:
+  password:
+  enabled: no
+
+
+##### Web protocols and services
+
+# Amazon S3 (Simple Storage Service)
+aws-s3:
+  adapter: aws-s3
+  bucket:
+  access:
+  secret:
+  enabled: no
+
+
+##### Database management systems
+
+# SDBM
+sdbm:
+  adapter: sdbm
+  dbfile: /var/db/bitcache.db
+  enabled: no
+
+# GDBM
+gdbm:
+  adapter: gdbm
+  dbfile: /var/db/bitcache.db
+  enabled: no
+
+# SQLite 3.x
+sqlite:
+  adapter: sqlite
+  dbfile: /var/db/bitcache.sqlite
+  enabled: no
+
+# MySQL 4.x+
+mysql:
+  adapter: mysql
+  host: localhost
+  port: 3306
+  socket:
+  database:
+  username:
+  password:
+  enabled: no
+
+# PostgreSQL 8.x+
+pgsql:
+  adapter: pgsql
+  host: localhost
+  port: 5432
+  database:
+  username:
+  password:
+  enabled: no
