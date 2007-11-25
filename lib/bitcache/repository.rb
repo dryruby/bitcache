@@ -37,7 +37,7 @@ module Bitcache
     end
 
     def size
-      inject(0) { |sum, blob| sum + blob.size }
+      inject(0) { |sum, stream| sum + stream.size }
     end
 
     def keys
@@ -67,9 +67,9 @@ module Bitcache
     end
 
     def [](id)
-      blob = Blob.new(self, id)
-      blob.extend(adapter.class.const_get(:BlobMethods))
-      blob
+      stream = Stream.new(self, id)
+      stream.extend(adapter.class.const_get(:StreamMethods))
+      stream
     end
 
     def get(id, &block)
@@ -87,7 +87,7 @@ module Bitcache
         data = io.string
       end
 
-      id = Blob.hash(data)
+      id = Stream.hash(data)
       include?(id) ? false : put!(id, data)
     end
 
@@ -99,7 +99,7 @@ module Bitcache
         end
       else
         case
-          when data.respond_to?(:read)   # Blob, IO, Pathname
+          when data.respond_to?(:read)   # Stream, IO, Pathname
             open(:write) { |db| db[id] = data.read }
           when data.respond_to?(:to_str) # String
             open(:write) { |db| db[id] = data.to_str }

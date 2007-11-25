@@ -99,7 +99,7 @@ module Bitcache::Adapters
 
     end
 
-    module BlobMethods #:nodoc:
+    module StreamMethods #:nodoc:
       def path() [repo.path, id].join('/') end
       def uri()  [repo.uri, id].join('/') end
       def size() @size ||= repo.send(:file_size, id) end

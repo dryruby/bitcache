@@ -10,7 +10,7 @@ module Bitcache::Adapters
       def transient?() true end
     end
 
-    module BlobMethods end #:nodoc:
+    module StreamMethods end #:nodoc:
 
   end
 end

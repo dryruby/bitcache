@@ -1,6 +1,6 @@
 module Bitcache
 
-  class Blob
+  class Stream
 
     def self.hash(file)
       Digest::SHA1.file(file).hexdigest
@@ -19,7 +19,7 @@ module Bitcache
 
     def readable?() true end
 
-    # Returns +false+, as blobs are immutable after creation.
+    # Returns +false+, as bitstreams are immutable after creation.
     def writable?() false end
 
     def path
@@ -34,7 +34,7 @@ module Bitcache
       repo.get(id).size
     end
 
-    # Returns +true+ if this is a zero-length blob; +false+ otherwise.
+    # Returns +true+ if this is a zero-length bitstream; +false+ otherwise.
     def zero?
       size == 0
     end

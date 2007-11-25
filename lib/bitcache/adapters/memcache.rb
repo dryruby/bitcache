@@ -70,7 +70,7 @@ module Bitcache::Adapters
 
     end
 
-    module BlobMethods #:nodoc:
+    module StreamMethods #:nodoc:
       def uri() [repo.uri, config[:namespace] ? "#{config[:namespace]}:#{id}" : id].join('/') end
     end
 

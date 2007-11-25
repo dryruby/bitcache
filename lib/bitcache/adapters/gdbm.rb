@@ -16,7 +16,7 @@ module Bitcache::Adapters
       def size() ::File.size(path) end
     end
 
-    module BlobMethods #:nodoc:
+    module StreamMethods #:nodoc:
       def path() [config[:dbfile], id].join('#') end
       def uri() "gdbm://#{::File.expand_path(path)}" end
     end

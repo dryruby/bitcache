@@ -52,7 +52,7 @@ module Bitcache::Adapters
           case
             when data.is_a?(Pathname)      # Pathname
               FileUtils.cp(data.to_s, file_path)
-            when data.respond_to?(:read)   # Blob, IO
+            when data.respond_to?(:read)   # Stream, IO
               ::File.open(file_path, 'wb') { |file| FileUtils.copy_stream(data, file) }
             when data.respond_to?(:to_str) # String
               ::File.open(file_path, 'wb') { |file| file.write(data.to_str) }
@@ -69,7 +69,7 @@ module Bitcache::Adapters
 
     end
 
-    module BlobMethods #:nodoc:
+    module StreamMethods #:nodoc:
       def path() ::File.join(config[:path], self.id) end
       def uri()  "file://#{::File.expand_path(path)}" end
       def size() ::File.size(path) end
