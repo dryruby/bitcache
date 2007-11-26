@@ -80,9 +80,9 @@ module Bitcache
     end
 
     def post!(data = nil, &block)
-      raise "Attempt to write to a read-only repository" unless adapter.supports?(:write)
+      ensure_writable
 
-      if data.nil?
+      unless data
         block.call(io = StringIO.new)
         data = io.string
       end
@@ -92,30 +92,29 @@ module Bitcache
     end
 
     def put!(id, data = nil, &block)
+      ensure_writable
+
       if block_given?
         open(:write) do |db|
           block.call(io = StringIO.new)
           db[id] = io.string
         end
       else
-        case
-          when data.respond_to?(:read)   # Stream, IO, Pathname
-            open(:write) { |db| db[id] = data.read }
-          when data.respond_to?(:to_str) # String
-            open(:write) { |db| db[id] = data.to_str }
-          else
-            raise ArgumentError, data
-        end
+        open(:write) { |db| db[id] = slurp(data) }
       end
       true
     end
 
     def delete!(id)
+      ensure_writable
+
       open(:write) { |db| db.delete(id) }
     end
 
     # Use with extreme caution.
     def clear!
+      ensure_writable
+
       each_key { |id| delete!(id) }
     end
 
@@ -123,6 +122,26 @@ module Bitcache
     alias put put!
     alias delete delete!
     alias clear clear!
+
+    protected
+
+      def slurp(data)
+        case
+          when data.is_a?(Proc)           # data producer block
+            data.call(io = StringIO.new)
+            io.string
+          when data.respond_to?(:read)    # Stream, IO, Pathname
+            data.read
+          when data.respond_to?(:to_str)  # String
+            data.to_str
+          else
+            raise ArgumentError, data
+        end
+      end
+
+      def ensure_writable
+        raise "Attempt to write to a read-only repository" unless adapter.supports?(:write)
+      end
 
   end
 end
