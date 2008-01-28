@@ -15,6 +15,8 @@ module Bitcache::Commands
     option '-V', '--version', 'Display the Bitcache version, and exit.', lambda { abort "Bitcache #{Bitcache::VERSION::STRING}" }
     option '-?', '--help', 'Display this help message.', lambda { ARGV = ['help'] }
 
+    ## sources | src
+
     help :sources, "Display repository list."
 
     def sources
@@ -24,6 +26,10 @@ module Bitcache::Commands
       end
     end
 
+    alias src sources
+
+    ## list | ls
+
     help :list, "List blobs."
 
     def list(repo_name = nil)
@@ -32,11 +38,19 @@ module Bitcache::Commands
       end
     end
 
+    alias ls list
+
+    ## identity | id
+
     help :identify, "Identify a file."
 
     def identify(file)
       puts hash_file(file)
     end
+
+    alias id identify
+
+    ## put | up
 
     help :put, "Import files."
 
@@ -52,11 +66,19 @@ module Bitcache::Commands
       end
     end
 
+    alias up put
+
+    ## get | cat
+
     help :get, "Export a blob."
 
     def get(id)
       puts default[id].read
     end
+
+    alias cat get
+
+    ## delete | del | rm
 
     help :delete, "Delete a blob."
 
@@ -64,6 +86,7 @@ module Bitcache::Commands
       default.delete!(id)
     end
 
+    alias del delete
     alias rm delete
 
     protected
