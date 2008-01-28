@@ -43,8 +43,8 @@ module Bitcache::Commands
     def put(*files)
       if repo = default
         files.each do |file|
-          if repo << Pathname.new(file)
-            puts file if $OPTIONS[:verbose]
+          if id = repo << Pathname.new(file)
+            puts $OPTIONS[:verbose] ? "#{id}: #{file}" : id
           end
         end
       else
@@ -63,6 +63,8 @@ module Bitcache::Commands
     def delete(id)
       default.delete!(id)
     end
+
+    alias rm delete
 
     protected
 
