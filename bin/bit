@@ -13,7 +13,7 @@ module Bitcache::Commands
     option '-d', '--debug', 'Enable debug output for troubleshooting.', lambda { $DEBUG = $VERBOSE = true }
     option '-v', '--verbose', 'Enable verbose output. May be given more than once.', lambda { $OPTIONS[:verbose] = true }
     option '-V', '--version', 'Display the Bitcache version, and exit.', lambda { abort "Bitcache #{Bitcache::VERSION::STRING}" }
-    option '-?', '--help', 'Display this help message.', lambda { ARGV = ['help'] }
+    option '-?', '--help', 'Display this help message.', lambda { @@cmd = :help }
 
     ###
     ## sources | src

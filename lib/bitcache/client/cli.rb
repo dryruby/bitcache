@@ -2,6 +2,7 @@ require 'optparse'
 
 module Bitcache::CLI
   class Base
+    @@cmd = nil
 
     def self.inherited(child) #:nodoc:
       at_exit { child.new(ARGV).send(:run) }
@@ -35,6 +36,11 @@ module Bitcache::CLI
       end
     end
 
+    def hint
+      puts "Please specify a command to execute."
+      help
+    end
+
     protected
 
       def initialize(argv)
@@ -50,7 +56,8 @@ module Bitcache::CLI
       end
 
       def run
-        send(@argv.empty? ? :help : @argv.shift.to_sym, *@argv)
+        cmd = !@@cmd.nil? ? @@cmd.to_sym : (!@argv.empty? ? @argv.shift.to_sym : :hint)
+        send(cmd, *@argv)
       end
 
   end
