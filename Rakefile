@@ -1,5 +1,5 @@
 # Rakefile for Bitcache    -*- ruby -*-
-# Copyright (c) 2006-2007 Arto Bendiken <http://bendiken.net/>
+# Copyright (c) 2006-2008 Arto Bendiken <http://bendiken.net/>
 
 require 'rake'
 require 'rake/testtask'
