@@ -28,12 +28,13 @@ module Bitcache::CLI
 
     def help(command = nil)
       puts @@opts.to_s
-      puts
+      puts "\nCommands:" unless !command.nil? || @@help.empty?
       @@help.each do |cmd, text|
         if command.nil? || command == cmd.to_s
           puts "    #{cmd.to_s.ljust(32)} #{text}"
         end
       end
+      puts
     end
 
     def hint
