@@ -1,3 +1,4 @@
+require 'yaml'
 require 'erb'
 
 module Bitcache
@@ -22,7 +23,7 @@ module Bitcache
       raise "Configuration file #{file} doesn't exist." unless File.exists?(file)
       raise "Configuration file #{file} isn't readable." unless File.readable?(file)
 
-      hash = self.symbolify_keys!(YAML::load(ERB.new(IO.read(file)).result))
+      hash = self.symbolify_keys!(::YAML::load(ERB.new(IO.read(file)).result))
     end
 
     protected
