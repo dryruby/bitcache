@@ -35,6 +35,13 @@ module Bitcache::Commands
     end
 
     ###
+    ## Command: has | exists | known
+
+    command([:has, :exists, :known], :id, :help => "Check whether a given bitstream is known.") do |id|
+      puts default.include?(id) ? 'yes' : 'no'
+    end
+
+    ###
     ## Command: identify | id
 
     command([:identify, :id], :file, :help => "Identify a file.") do |file|
