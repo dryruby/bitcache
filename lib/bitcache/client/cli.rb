@@ -24,6 +24,17 @@ module Bitcache::CLI
       @@help[command] = text
     end
 
+    def self.command(names, args = [], options = {}, &block)
+      return if options[:enabled] == false
+
+      names = [names].flatten
+      help names.first, options[:help]
+      define_method names.first, block
+      names[1..-1].each do |name|
+        alias_method name, names.first
+      end
+    end
+
     help :help, "Display a list of all supported commands."
 
     def help(command = nil)

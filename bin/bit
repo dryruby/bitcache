@@ -10,55 +10,41 @@ module Bitcache::Commands
 
     banner "Usage: #{File.basename($0)} [options] command ..."
 
-    option '-d', '--debug', 'Enable debug output for troubleshooting.', lambda { $DEBUG = $VERBOSE = true }
+    option '-d', '--debug', 'Enable debug output for troubleshooting.', lambda { $DEBUG = $VERBOSE = $OPTIONS[:verbose] = true }
     option '-v', '--verbose', 'Enable verbose output. May be given more than once.', lambda { $OPTIONS[:verbose] = true }
     option '-V', '--version', 'Display the Bitcache version, and exit.', lambda { abort "Bitcache #{Bitcache::VERSION::STRING}" }
     option '-?', '--help', 'Display this help message.', lambda { @@cmd = :help }
 
     ###
-    ## sources | src
+    ## Command: sources | src
 
-    help :sources, "Display repository list."
-
-    def sources
+    command([:sources, :src], nil, :help => "Display repository list.") do
       @repos.each do |name, repo|
         name = (repo == default) ? "#{name}*" : name
         puts "#{name.to_s.ljust(40)} #{repo.size.to_s.rjust(12)} #{repo.uri}".rstrip
       end
     end
 
-    alias src sources
-
     ###
-    ## list | ls
+    ## Command: list | ls
 
-    help :list, "List blobs."
-
-    def list(repo_name = nil)
+    command([:list, :ls], :repo, :help => "List bitstreams.") do |repo_name, *args|
       @repos.each do |name, repo|
-        list_blobs(repo)
+        repo.each { |blob| puts "#{blob.id.to_s.ljust(40)} #{blob.size.to_s.rjust(12)} #{blob.uri}".rstrip }
       end
     end
 
-    alias ls list
-
     ###
-    ## identify | id
+    ## Command: identify | id
 
-    help :identify, "Identify a file."
-
-    def identify(file)
-      puts hash_file(file)
+    command([:identify, :id], :file, :help => "Identify a file.") do |file|
+      puts Stream.hash(file)
     end
 
-    alias id identify
-
     ###
-    ## put | upload | up
+    ## Command: put | upload | up
 
-    help :put, "Import files."
-
-    def put(*files)
+    command([:put, :upload, :up], [:file, true], :help => "Import files.") do |*files|
       if repo = default
         files.each do |file|
           if id = repo << Pathname.new(file)
@@ -70,32 +56,35 @@ module Bitcache::Commands
       end
     end
 
-    alias upload put
-    alias up put
-
     ###
-    ## get | download | cat
+    ## Command: get | download | cat
 
-    help :get, "Export a blob."
-
-    def get(id)
+    command([:get, :download, :cat], :id, :help => "Export a bitstream.") do |id|
       puts default[id].read
     end
 
-    alias download get
-    alias cat get
+    option nil,  '--base64', 'Base64 encode output.', lambda {}
 
     ###
-    ## delete | del | rm
+    ## Command: delete | del | rm
 
-    help :delete, "Delete a blob."
-
-    def delete(id)
+    command([:delete, :del, :rm], :id, :help => "Delete a bitstream.") do |id|
       default.delete!(id)
     end
 
-    alias del delete
-    alias rm delete
+    ###
+    ## Command: export | archive
+
+    command([:export, :archive], :file, :help => "...", :enabled => false) do |file|
+      # TODO
+    end
+
+    ###
+    ## Command: import | unarchive
+
+    command([:import, :unarchive], :file, :help => "...", :enabled => false) do |file|
+      # TODO
+    end
 
     protected
 
@@ -105,14 +94,6 @@ module Bitcache::Commands
       end
 
     private
-
-      def list_blobs(repo)
-        repo.each { |blob| puts "#{blob.id.to_s.ljust(40)} #{blob.size.to_s.rjust(12)} #{blob.uri}".rstrip }
-      end
-
-      def hash_file(file)
-        Blob.hash(file)
-      end
 
       def default
         @default ||=

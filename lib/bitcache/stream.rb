@@ -42,7 +42,7 @@ module Bitcache
     alias content_length size
 
     def content_type
-      'application/octet-stream'
+      'application/octet-stream' # TODO
     end
 
     def read(length = nil, buffer = nil)
