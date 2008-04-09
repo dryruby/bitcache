@@ -57,21 +57,17 @@ module Bitcache::Adapters
         end
       end
 
-      def post!(data = nil, &block)
-        open(:write) do |bucket|
-          # TODO
-        end
-      end
-
       def put!(id, data = nil, &block)
+        data = data.respond_to?(:read) ? data : slurp(data || block) # support streaming
         open(:write) do |bucket|
-          # TODO
+          options = {:content_type => 'application/octet-stream'}
+          AWS::S3::S3Object.store(encode_key(id), data, bucket.name, options).success?
         end
       end
 
       def delete!(id)
         open(:write) do |bucket|
-          # TODO
+          !!AWS::S3::S3Object.delete(encode_key(id), bucket.name)
         end
       end
     end

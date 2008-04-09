@@ -92,7 +92,7 @@ module Bitcache
       end
 
       id = Stream.hash(data)
-      include?(id) ? false : put!(id, data)
+      include?(id) || put!(id, data) ? id : false
     end
 
     def put!(id, data = nil, &block)
