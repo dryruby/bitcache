@@ -1,6 +1,7 @@
 module Bitcache
 
   class Stream
+    ID_FORMAT = /([a-f0-9]{40})$/
 
     def self.hash(file)
       Digest::SHA1.file(file).hexdigest

@@ -23,7 +23,7 @@ module Bitcache::Commands
     command([:sources, :src], nil, :help => "Display repository list.") do
       @repos.each do |name, repo|
         name = (repo == default) ? "#{name}*" : name
-        puts "#{name.to_s.ljust(40)} #{repo.size.to_s.rjust(12)} #{repo.uri}".rstrip
+        puts [name.to_s.ljust(40), repo.size.to_s.rjust(12), repo.uri].join(' ').rstrip
       end
     end
 
@@ -45,6 +45,7 @@ module Bitcache::Commands
     ## Command: has | exists | known
 
     command([:has, :exists, :known], :id, :help => "Check whether a given bitstream is known.") do |id|
+      ensure_valid_id!(id = id.downcase)
       puts default.include?(id) ? 'yes' : 'no'
     end
 
@@ -52,6 +53,7 @@ module Bitcache::Commands
     ## Command: identify | id
 
     command([:identify, :id], :file, :help => "Identify a file.") do |file|
+      ensure_files_exist!(file)
       puts Stream.hash(file)
     end
 
@@ -59,6 +61,7 @@ module Bitcache::Commands
     ## Command: put | upload | up
 
     command([:put, :upload, :up], [:file, true], :help => "Import files.") do |*files|
+      ensure_files_exist!(*files)
       if repo = default
         files.each do |file|
           if id = repo << Pathname.new(file)
@@ -66,7 +69,7 @@ module Bitcache::Commands
           end
         end
       else
-        raise "No default repository specified."
+        abort "bit: no default repository specified."
       end
     end
 
@@ -74,11 +77,11 @@ module Bitcache::Commands
     ## Command: get | download | cat
 
     command([:get, :download, :cat], :id, :help => "Export a bitstream.") do |id|
+      ensure_valid_id!(id = id.downcase)
       if data = default[id].read
         puts data
       else
-        warn "bit: #{id}: no such bitstream found."
-        exit 1
+        abort "bit: #{id}: no such bitstream found."
       end
     end
 
@@ -86,7 +89,8 @@ module Bitcache::Commands
     ## Command: delete | del | rm
 
     command([:delete, :del, :rm], :id, :help => "Delete a bitstream.") do |id|
-      default.delete!(id)
+      ensure_valid_id!(id = id.downcase)
+      exit default.delete!(id) ? 0 : 1
     end
 
     ###
@@ -120,5 +124,17 @@ module Bitcache::Commands
           @repos[@repos.keys.first]
       end
 
+      def ensure_files_exist!(*files)
+        files.each do |file|
+          path = Pathname.new(file)
+          abort "bit: #{file}: no such file." unless path.exist?
+          abort "bit: #{file}: not a file." unless path.file? || path.symlink?
+          abort "bit: #{file}: permission denied." unless path.readable?
+        end
+      end
+
+      def ensure_valid_id!(id)
+        abort "bit: #{id}: invalid bitstream identifier." unless id =~ Stream::ID_FORMAT || $DEBUG
+      end
   end
 end
