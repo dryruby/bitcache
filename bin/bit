@@ -11,6 +11,8 @@ module Bitcache::Commands
     banner "Usage: #{File.basename($0)} [options] command ..."
 
     option '-d', '--debug', 'Enable debug output for troubleshooting.', lambda { $DEBUG = $VERBOSE = $OPTIONS[:verbose] = true }
+    option '-e', '--encoding ENC', 'Decode input or encode output with [base64, gzip, bzip2].', lambda { |enc| $OPTIONS[:encoding] = enc.to_sym }
+    option '-s', '--source SRC', 'Limit all operations to a specific repository.', lambda { |src| $OPTIONS[:source] = src.to_s }
     option '-v', '--verbose', 'Enable verbose output. May be given more than once.', lambda { $OPTIONS[:verbose] = true }
     option '-V', '--version', 'Display the Bitcache version, and exit.', lambda { abort "Bitcache #{Bitcache::VERSION::STRING}" }
     option '-?', '--help', 'Display this help message.', lambda { @@cmd = :help }
@@ -28,9 +30,13 @@ module Bitcache::Commands
     ###
     ## Command: list | ls
 
-    command([:list, :ls], :repo, :help => "List bitstreams.") do |repo_name, *args|
+    command([:list, :ls], :repo, :help => "List bitstreams.") do |*filters|
+      filter = filters.first
       @repos.each do |name, repo|
-        repo.each { |blob| puts "#{blob.id.to_s.ljust(40)} #{blob.size.to_s.rjust(12)} #{blob.uri}".rstrip }
+        repo.each(filter) do |stream|
+          next if filter && stream.id.index(filter) != 0
+          puts [stream.id.to_s.ljust(40), stream.size.to_s.rjust(12), stream.uri].join(' ').rstrip
+        end
       end
     end
 
@@ -67,10 +73,13 @@ module Bitcache::Commands
     ## Command: get | download | cat
 
     command([:get, :download, :cat], :id, :help => "Export a bitstream.") do |id|
-      puts default[id].read
+      if data = default[id].read
+        puts data
+      else
+        puts "bit: #{id}: no such bitstream found."
+        exit 1
+      end
     end
-
-    option nil,  '--base64', 'Base64 encode output.', lambda {}
 
     ###
     ## Command: delete | del | rm
