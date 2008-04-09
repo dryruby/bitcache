@@ -11,17 +11,18 @@ module Bitcache::Commands
     banner "Usage: #{File.basename($0)} [options] command ..."
 
     option '-d', '--debug', 'Enable debug output for troubleshooting.', lambda { $DEBUG = $VERBOSE = $OPTIONS[:verbose] = true }
-    option '-e', '--encoding ENC', 'Decode input or encode output with [base64, gzip, bzip2].', lambda { |enc| $OPTIONS[:encoding] = enc.to_sym }
-    option '-s', '--source SRC', 'Limit all operations to a specific repository.', lambda { |src| $OPTIONS[:source] = src.to_s }
     option '-v', '--verbose', 'Enable verbose output. May be given more than once.', lambda { $OPTIONS[:verbose] = true }
     option '-V', '--version', 'Display the Bitcache version, and exit.', lambda { abort "Bitcache #{Bitcache::VERSION::STRING}" }
     option '-?', '--help', 'Display this help message.', lambda { @@cmd = :help }
+    option '-1', '--id-only', 'Display nothing but bitstream identifiers in listings.', lambda { $OPTIONS[:id_only] = true }
+    option '-e', '--encoding ENC', 'Decode input or encode output with [base64, gzip, bzip2].', lambda { |enc| $OPTIONS[:encoding] = enc.to_sym }
+    option '-s', '--source SRC', 'Limit all operations to a specific repository.', lambda { |src| $OPTIONS[:source] = src.to_s }
 
     ###
     ## Command: sources | src
 
     command([:sources, :src], nil, :help => "Display repository list.") do
-      @repos.each do |name, repo|
+      repos.each do |name, repo|
         name = (repo == default) ? "#{name}*" : name
         puts [name.to_s.ljust(40), repo.size.to_s.rjust(12), repo.uri].join(' ').rstrip
       end
@@ -32,11 +33,12 @@ module Bitcache::Commands
 
     command([:list, :ls], :repo, :help => "List bitstreams.") do |*filters|
       filter = filters.first
-      @repos.each do |name, repo|
+      repos.each do |name, repo|
         next unless repo.allowed?(:list)
         repo.each(filter) do |stream|
           next if filter && stream.id.index(filter) != 0
-          puts [stream.id.to_s.ljust(40), stream.size.to_s.rjust(12), stream.uri].join(' ').rstrip
+          puts $OPTIONS[:id_only] ? stream.id.to_s :
+            [stream.id.to_s.ljust(40), stream.size.to_s.rjust(12), stream.uri].join(' ').rstrip
         end
       end
     end
@@ -88,9 +90,10 @@ module Bitcache::Commands
     ###
     ## Command: delete | del | rm
 
-    command([:delete, :del, :rm], :id, :help => "Delete a bitstream.") do |id|
-      ensure_valid_id!(id = id.downcase)
-      exit default.delete!(id) ? 0 : 1
+    command([:delete, :del, :rm], :id, :help => "Delete a bitstream.") do |*ids|
+      ids.map! { |id| id.downcase }
+      ids.each { |id| ensure_valid_id!(id) }
+      exit ids.all? { |id| default.delete!(id) } ? 0 : 1
     end
 
     ###
@@ -115,6 +118,10 @@ module Bitcache::Commands
       end
 
     private
+
+      def repos
+        @repos # TODO: filter by $OPTIONS[:source]
+      end
 
       def default
         @default ||=

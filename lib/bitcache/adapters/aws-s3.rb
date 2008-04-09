@@ -33,10 +33,11 @@ module Bitcache::Adapters
 
       def each_key(filter = nil, &block)
         open(:read) do |bucket|
-          bucket.each do |object|
+          options = {}
+          options[:prefix] = filter if filter && !encoder
+          bucket.objects(options).each do |object|
             if id = decode_key(object.key.to_s)
-              next if should_ignore?(id, filter)
-              block.call(id)
+              block.call(id) unless should_ignore?(id, filter)
             end
           end
         end
