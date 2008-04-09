@@ -19,9 +19,11 @@ module Bitcache::Adapters
       def each(&block)
         open(:read) do |bucket|
           bucket.each do |object|
-            stream = self[object.key.to_s]
-            stream.instance_variable_set(:@size, object.size.to_i)
-            block.call(stream)
+            if id = decode_key(object.key.to_s)
+              stream = self[id]
+              stream.instance_variable_set(:@size, object.size.to_i)
+              block.call(stream)
+            end
           end
         end
       end
@@ -29,20 +31,22 @@ module Bitcache::Adapters
       def each_key(&block)
         open(:read) do |bucket|
           bucket.each do |object|
-            block.call(object.key.to_s)
+            if id = decode_key(object.key.to_s)
+              block.call(id)
+            end
           end
         end
       end
 
       def include?(id)
         open(:read) do |bucket|
-          AWS::S3::S3Object.exists?(id, bucket.name)
+          AWS::S3::S3Object.exists?(encode_key(id), bucket.name)
         end
       end
 
       def get(id, &block)
         open(:read) do |bucket|
-          if body = AWS::S3::S3Object.value(id, bucket.name) rescue nil
+          if body = AWS::S3::S3Object.value(encode_key(id), bucket.name) rescue nil
             io = StringIO.new(body)
             block_given? ? block.call(io) : io # TODO: S3Object streaming support?
           end
@@ -69,8 +73,8 @@ module Bitcache::Adapters
     end
 
     module StreamMethods #:nodoc:
-      def uri()  URI.join(repo.uri, self.id) end
-      #def uri()  AWS::S3::S3Object.url_for(self.id, repo.config[:bucket]) end
+      def uri()  URI.join(repo.uri, encode_key(self.id)) end
+      #def uri()  AWS::S3::S3Object.url_for(encode_key(self.id), config[:bucket]) end
       def size() @size || -1 end
     end
   end

@@ -46,11 +46,11 @@ module Bitcache
       keys
     end
 
-    def each(&block)
-      each_key { |id| block.call(self[id]) }
+    def each(filter = nil, &block)
+      each_key(filter) { |id| block.call(self[id]) }
     end
 
-    def each_key(&block)
+    def each_key(filter = nil, &block)
       open(:read) { |db| db.keys.each(&block) }
     end
 
@@ -124,6 +124,18 @@ module Bitcache
     alias clear clear!
 
     protected
+
+      def encoder
+        @encoder ||= Encoders[config[:"encode-keys"]]
+      end
+
+      def encode_key(key)
+        encoder ? encoder.encode(Encoders::Base16.decode(key)) : key
+      end
+
+      def decode_key(key)
+        encoder ? Encoders::Base16.encode(encoder.decode(key)).rjust(40, "0") : key # FIXME
+      end
 
       def slurp(data)
         case

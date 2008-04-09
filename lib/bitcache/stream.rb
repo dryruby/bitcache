@@ -46,7 +46,9 @@ module Bitcache
     end
 
     def read(length = nil, buffer = nil)
-      repo.get(id).read
+      if io = repo.get(id)
+        io.read
+      end
     end
 
     def to_s
@@ -60,6 +62,8 @@ module Bitcache
     protected
 
       def config() @repo.config end
+      def encode_key(key) @repo.send(:encode_key, key) end
+      def decode_key(key) @repo.send(:decode_key, key) end
 
   end
 end
