@@ -22,7 +22,7 @@ module Bitcache::Adapters
           options[:prefix] = filter if filter && !encoder
           bucket.objects(options).each do |object|
             if id = decode_key(object.key.to_s)
-              next if filter && id.index(filter) != 0
+              next if should_ignore?(id, filter)
               stream = self[id]
               stream.instance_variable_set(:@size, object.size.to_i)
               block.call(stream)
@@ -35,7 +35,7 @@ module Bitcache::Adapters
         open(:read) do |bucket|
           bucket.each do |object|
             if id = decode_key(object.key.to_s)
-              next if filter && id.index(filter) != 0
+              next if should_ignore?(id, filter)
               block.call(id)
             end
           end

@@ -1,6 +1,7 @@
 module Bitcache
   module Encoders
     def self.[](name)
+      return nil unless name
       case name.to_sym
         when :base16 then Base16
         when :base62 then Base62

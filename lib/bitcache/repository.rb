@@ -145,6 +145,10 @@ module Bitcache
         encoder ? Encoders::Base16.encode(encoder.decode(key)).rjust(40, "0") : key # FIXME
       end
 
+      def should_ignore?(id, filter)
+        id !~ Stream::ID_FORMAT || (filter && id.index(filter) != 0)
+      end
+
       def slurp(data)
         case
           when data.is_a?(Proc)           # data producer block
