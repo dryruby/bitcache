@@ -77,7 +77,7 @@ module Bitcache::Commands
       if data = default[id].read
         puts data
       else
-        puts "bit: #{id}: no such bitstream found."
+        warn "bit: #{id}: no such bitstream found."
         exit 1
       end
     end
