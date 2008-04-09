@@ -69,7 +69,7 @@ module Bitcache::Commands
           end
         end
       else
-        abort "bit: no default repository specified."
+        abort "#{basename}: no default repository specified."
       end
     end
 
@@ -81,7 +81,7 @@ module Bitcache::Commands
       if data = default[id].read
         puts data
       else
-        abort "bit: #{id}: no such bitstream found."
+        abort "#{basename}: #{id}: no such bitstream found."
       end
     end
 
@@ -127,14 +127,14 @@ module Bitcache::Commands
       def ensure_files_exist!(*files)
         files.each do |file|
           path = Pathname.new(file)
-          abort "bit: #{file}: no such file." unless path.exist?
-          abort "bit: #{file}: not a file." unless path.file? || path.symlink?
-          abort "bit: #{file}: permission denied." unless path.readable?
+          abort "#{basename}: #{file}: no such file." unless path.exist?
+          abort "#{basename}: #{file}: not a file." unless path.file? || path.symlink?
+          abort "#{basename}: #{file}: permission denied." unless path.readable?
         end
       end
 
       def ensure_valid_id!(id)
-        abort "bit: #{id}: invalid bitstream identifier." unless id =~ Stream::ID_FORMAT || $DEBUG
+        abort "#{basename}: #{id}: invalid bitstream identifier." unless id =~ Stream::ID_FORMAT || $DEBUG
       end
   end
 end

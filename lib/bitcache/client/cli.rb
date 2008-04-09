@@ -64,15 +64,21 @@ module Bitcache::CLI
         begin
           @@options.parse!(@argv)
         rescue OptionParser::ParseError => e
-          warn "#{File.basename($0)}: #{e.message}"
+          warn "#{basename}: #{e.message}"
           abort @@options.to_s
         end
       end
 
       def run
         cmd = !@@cmd.nil? ? @@cmd.to_sym : (!@argv.empty? ? @argv.shift.to_sym : :hint)
-        abort "#{File.basename($0)}: unknown command '#{cmd}'." unless respond_to?(cmd)
+        abort "#{basename}: unknown command '#{cmd}'." unless respond_to?(cmd)
         send(cmd, *@argv)
+      end
+
+    private
+
+      def basename
+        File.basename($0)
       end
 
   end
