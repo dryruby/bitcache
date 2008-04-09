@@ -16,10 +16,13 @@ module Bitcache::Adapters
 
       def uri() "http://#{AWS::S3::DEFAULT_HOST}/#{config[:bucket]}/" end
 
-      def each(&block)
+      def each(filter = nil, &block)
         open(:read) do |bucket|
-          bucket.each do |object|
+          options = {}
+          options[:prefix] = filter if filter && !encoder
+          bucket.objects(options).each do |object|
             if id = decode_key(object.key.to_s)
+              next if filter && id.index(filter) != 0
               stream = self[id]
               stream.instance_variable_set(:@size, object.size.to_i)
               block.call(stream)
@@ -28,10 +31,11 @@ module Bitcache::Adapters
         end
       end
 
-      def each_key(&block)
+      def each_key(filter = nil, &block)
         open(:read) do |bucket|
           bucket.each do |object|
             if id = decode_key(object.key.to_s)
+              next if filter && id.index(filter) != 0
               block.call(id)
             end
           end
