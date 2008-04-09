@@ -9,14 +9,14 @@ module Bitcache::CLI
     end
 
     def self.banner(text)
-      @@opts ||= OptionParser.new
-      @@opts.banner = text
+      @@options ||= OptionParser.new
+      @@options.banner = text
     end
 
     def self.option(*args)
-      @@opts ||= OptionParser.new
+      @@options ||= OptionParser.new
       block = args.pop
-      @@opts.on(*args, &block)
+      @@options.on(*args, &block)
     end
 
     def self.help(command, text)
@@ -27,18 +27,20 @@ module Bitcache::CLI
     def self.command(names, args = [], options = {}, &block)
       return if options[:enabled] == false
 
-      names = [names].flatten
-      help names.first, options[:help]
+      names = [names].flatten.map { |name| name.to_sym }
+      @@aliases ||= {}
+      @@aliases[names.first] = names
+
+      help names.first, options[:help] if options[:help]
+
       define_method names.first, block
-      names[1..-1].each do |name|
-        alias_method name, names.first
-      end
+      names[1..-1].each { |name| alias_method name, names.first }
     end
 
     help :help, "Display a list of all supported commands."
 
     def help(command = nil)
-      puts @@opts.to_s
+      puts @@options.to_s
       puts "\nCommands:" unless !command.nil? || @@help.empty?
       @@help.each do |cmd, text|
         if command.nil? || command == cmd.to_s
@@ -60,10 +62,10 @@ module Bitcache::CLI
         @argv = argv
 
         begin
-          @@opts.parse!(@argv)
+          @@options.parse!(@argv)
         rescue OptionParser::ParseError => e
           warn "#{File.basename($0)}: #{e.message}"
-          abort @@opts.to_s
+          abort @@options.to_s
         end
       end
 

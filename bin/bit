@@ -33,6 +33,7 @@ module Bitcache::Commands
     command([:list, :ls], :repo, :help => "List bitstreams.") do |*filters|
       filter = filters.first
       @repos.each do |name, repo|
+        next unless repo.allowed?(:list)
         repo.each(filter) do |stream|
           next if filter && stream.id.index(filter) != 0
           puts [stream.id.to_s.ljust(40), stream.size.to_s.rjust(12), stream.uri].join(' ').rstrip

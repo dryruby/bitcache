@@ -20,6 +20,10 @@ module Bitcache
       true
     end
 
+    def allowed?(operation)
+      !disallowed_ops.include?(operation.to_sym)
+    end
+
     def create!
       open(:write) { |db| }
     end
@@ -124,6 +128,10 @@ module Bitcache
     alias clear clear!
 
     protected
+
+      def disallowed_ops
+        config[:disallow].to_s.split(',').map { |op| op.strip.to_sym }
+      end
 
       def encoder
         @encoder ||= Encoders[config[:"encode-keys"]]
