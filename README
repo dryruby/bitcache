@@ -1,5 +1,7 @@
 = Bitcache
 
+  http://bitcache.org/
+
 
 == Dependencies
 
@@ -19,6 +21,8 @@
   * Does not support listing keys (this being a limitation of memcached).
 * SFTP
   * Requires the net-sftp library by Jamis Buck.
+* HTTP
+  * Implemented as a simple RESTful API.
 * Amazon S3
   * Requires the aws-s3 library by Marcel Molina Jr.
 
