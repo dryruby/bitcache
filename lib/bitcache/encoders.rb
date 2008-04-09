@@ -1,5 +1,13 @@
 module Bitcache
-  module Encodings
+  module Encoders
+    def self.[](name)
+      case name.to_sym
+        when :base16 then Base16
+        when :base62 then Base62
+        when :base94 then Base94
+      end
+    end
+
     class Base
       def self.base()   digits.size end
       def self.digits() const_get(:DIGITS) end
