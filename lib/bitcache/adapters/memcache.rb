@@ -19,7 +19,7 @@ module Bitcache::Adapters
       def size()   sum_stats(:bytes) end
       def count()  sum_stats(:curr_items) end
 
-      def each_key(&block)
+      def each_key(filter = nil, &block)
         nil # memcached doesn't provide any way of enumerating the stored keys
       end
 

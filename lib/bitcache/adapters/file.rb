@@ -25,7 +25,7 @@ module Bitcache::Adapters
         end
       end
 
-      def each_key(&block)
+      def each_key(filter = nil, &block)
         Dir.glob("#{path}/[a-f0-9]*") do |file|
           block.call($1) if file =~ /\/([a-f0-9]{40})$/ # FIXME
         end

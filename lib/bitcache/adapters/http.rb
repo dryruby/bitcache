@@ -13,7 +13,7 @@ module Bitcache::Adapters
 
       def uri() config[:url] end
 
-      def each(&block)
+      def each(filter = nil, &block)
         open(:read) do |http|
           response = http.get(@url.path, { 'Accept' => 'text/plain' })
           response.body.split("\n").each do |line|
@@ -27,7 +27,7 @@ module Bitcache::Adapters
         end
       end
 
-      def each_key(&block)
+      def each_key(filter = nil, &block)
         open(:read) do |http|
           response = http.get(@url.path, { 'Accept' => 'text/plain' })
           response.body.split("\n").each do |line|

@@ -40,7 +40,7 @@ module Bitcache::Adapters
 
       def size() super end
 
-      def each_key(&block)
+      def each_key(filter = nil, &block)
         open(:read) do |sftp|
           handle = sftp.opendir(path)
           sftp.readdir(handle).each do |item|
