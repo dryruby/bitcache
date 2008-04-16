@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 $:.unshift(File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib')))
 require 'rubygems'
+require 'open-uri'
 require 'bitcache'
 require 'bitcache/client/cli'
 
@@ -8,7 +9,9 @@ module Bitcache::Commands
   class Bit < Bitcache::CLI::Base
     include Bitcache
 
-    banner "Usage: #{File.basename($0)} [options] command ..."
+    URL_PATTERN = /^[\w\d-]+:\/\//
+
+    banner "Usage: #{basename} [options] command ..."
 
     option '-d', '--debug', 'Enable debug output for troubleshooting.', lambda { $DEBUG = $VERBOSE = $OPTIONS[:verbose] = true }
     option '-v', '--verbose', 'Enable verbose output. May be given more than once.', lambda { $OPTIONS[:verbose] = true }
@@ -66,7 +69,7 @@ module Bitcache::Commands
       ensure_files_exist!(*files)
       if repo = default
         files.each do |file|
-          if id = repo << Pathname.new(file)
+          if id = repo << (file =~ URL_PATTERN ? URI.parse(file) : Pathname.new(file))
             puts $OPTIONS[:verbose] ? "#{id}: #{file}" : id
           end
         end
@@ -133,10 +136,12 @@ module Bitcache::Commands
 
       def ensure_files_exist!(*files)
         files.each do |file|
-          path = Pathname.new(file)
-          abort "#{basename}: #{file}: no such file." unless path.exist?
-          abort "#{basename}: #{file}: not a file." unless path.file? || path.symlink?
-          abort "#{basename}: #{file}: permission denied." unless path.readable?
+          if file !~ URL_PATTERN # skip over any URLs, at this stage
+            path = Pathname.new(file)
+            abort "#{basename}: #{file}: no such file." unless path.exist?
+            abort "#{basename}: #{file}: not a file." unless path.file? || path.symlink?
+            abort "#{basename}: #{file}: permission denied." unless path.readable?
+          end
         end
       end
 
