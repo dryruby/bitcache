@@ -70,6 +70,8 @@ module Bitcache::CLI
       end
 
       def run
+        Bitcache.load_config!
+
         cmd = !@@cmd.nil? ? @@cmd.to_sym : (!@argv.empty? ? @argv.shift.to_sym : :hint)
         abort "#{basename}: unknown command '#{cmd}'." unless respond_to?(cmd)
         send(cmd, *@argv)
@@ -77,9 +79,8 @@ module Bitcache::CLI
 
     private
 
-      def basename
-        File.basename($0)
-      end
+      def self.basename() File.basename($0) end
+      def basename() File.basename($0) end
 
   end
 end
