@@ -5,6 +5,8 @@ module Bitcache::Adapters
   class AWS_S3 < Bitcache::Adapter
 
     module RepositoryMethods #:nodoc:
+      def create!() end # for faster startup
+
       def open(mode = :read, &block)
         @conn ||= AWS::S3::Base.establish_connection!(
           :access_key_id     => config[:access] || ENV['AMAZON_ACCESS_KEY_ID'],
