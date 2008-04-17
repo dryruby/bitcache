@@ -79,8 +79,9 @@ module Bitcache::CLI
 
     private
 
-      def self.basename() File.basename($0) end
+      #def self.basename() File.basename($0) end
       def basename() File.basename($0) end
+      module_function :basename
 
   end
 end
