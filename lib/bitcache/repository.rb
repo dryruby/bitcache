@@ -16,6 +16,14 @@ module Bitcache
       block.call(self) if block_given?
     end
 
+    def encrypted?
+      config.has_key?(:passphrase)
+    end
+
+    def compressed?
+      encrypted? # for the time being, one and the same
+    end
+
     def available?
       true
     end
