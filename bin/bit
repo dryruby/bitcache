@@ -17,9 +17,14 @@ module Bitcache::Commands
     option '-v', '--verbose', 'Enable verbose output. May be given more than once.', lambda { $OPTIONS[:verbose] = true }
     option '-V', '--version', 'Display the Bitcache version, and exit.', lambda { abort "Bitcache #{Bitcache::VERSION::STRING}" }
     option '-?', '--help', 'Display this help message.', lambda { @@cmd = :help }
+    option '-c', '--config FILE', 'Specify configuration file (default: ~/.bitrc).', lambda { |arg| $OPTIONS[:config] = arg.to_s }
     option '-1', '--id-only', 'Display nothing but bitstream identifiers in listings.', lambda { $OPTIONS[:id_only] = true }
     option '-e', '--encoding ENC', 'Decode input or encode output with [base64, gzip, bzip2].', lambda { |enc| $OPTIONS[:encoding] = enc.to_sym }
     option '-s', '--source SRC', 'Limit all operations to a specific repository.', lambda { |src| $OPTIONS[:source] = src.to_s }
+    option '-i', '--include ID', 'Limit all operations to specific bitstreams.', lambda { |arg| ($OPTIONS[:include] ||= []) << arg.to_s }
+    option '-x', '--exclude ID', 'Limit all operations to specific bitstreams.', lambda { |arg| ($OPTIONS[:exclude] ||= []) << arg.to_s }
+    option '-u', '--username USER', 'Specify a user name for repository authentication.', lambda { |arg| $OPTIONS[:username] = arg.to_s }
+    option '-p', '--password PASS', 'Specify a password for repository authentication', lambda { |arg| $OPTIONS[:password] = arg.to_s }
 
     ###
     ## Command: sources | src
@@ -113,17 +118,48 @@ module Bitcache::Commands
       # TODO
     end
 
+    ###
+    ## Command: sync
+
+    command([:sync], [:repo1, :repo2, true], :help => "Synchronize repositories.") do |*sync_repos|
+      abort "Usage: #{basename} sync [options] repo1 repo2 ..." unless sync_repos.size >= 2
+
+      sync_repos = sync_repos.map { |name| @repos[name.to_sym] }
+      sync_keys = sync_repos.map_concurrently { |repo| repo.keys }
+
+      sync_repos.zip(sync_keys) do |repo1, keys1|
+        sync_repos.clone.zip(sync_keys).delete_if { |r, k| r == repo1 }.each do |repo2, keys2|
+          diff = (keys1 - keys2).delete_if { |key| repo2.include?(key) }
+          unless diff.empty?
+            puts "Synchronizing #{repo1.uri} => #{repo2.uri} (#{diff.size} items)..."
+
+            diff.each do |key|
+              next if $OPTIONS[:exclude] && $OPTIONS[:exclude].include?(key)
+              next if $OPTIONS[:include] && !$OPTIONS[:include].include?(key)
+              print "#{key}: "
+              puts repo2.put!(key, repo1.get(key)) ? 'done.' : 'FAILED.'
+            end
+          end
+        end
+      end
+    end
+
+    ###
+    ## Command: debug (hidden)
+
+    command([:debug], nil) { puts $OPTIONS.inspect }
+
     protected
 
       def run
-        @repos = Config.load_repos
+        @repos = Config.load_repos($OPTIONS)
         super
       end
 
     private
 
       def repos
-        @repos # TODO: filter by $OPTIONS[:source]
+        @repos
       end
 
       def default

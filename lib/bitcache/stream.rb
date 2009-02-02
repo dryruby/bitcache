@@ -3,8 +3,8 @@ module Bitcache
   class Stream
     ID_FORMAT = /([a-f0-9]{40})$/
 
-    def self.hash(file)
-      Digest::SHA1.file(file).hexdigest
+    def self.hash(input)
+      (input.respond_to?(:to_str) ? (Digest::SHA1.new << input) : Digest::SHA1.file(input)).hexdigest
     end
 
     attr_reader :id

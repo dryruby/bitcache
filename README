@@ -29,9 +29,13 @@
 
 == Download
 
-The latest version of Bitcache can be found at:
+The latest released version of Bitcache can be found at:
 
 * http://rubyforge.org/frs/?group_id=4859
+
+The latest development version can be found at:
+
+* http://github.com/bendiken/bitcache
 
 API documentation can be found at:
 
@@ -40,9 +44,20 @@ API documentation can be found at:
 
 == Installation
 
-The recommended installation method is via RubyGems:
+The recommended installation method is via RubyGems. To install the latest
+official release from RubyForge, do:
 
   % [sudo] gem install bitcache
+
+To use the latest bleeding-edge development version, install the gem
+directly from GitHub as follows:
+
+  % [sudo] gem install bendiken-bitcache --source http://gems.github.com
+
+
+== See also
+
+* http://drupal.org/project/bitcache
 
 
 == License

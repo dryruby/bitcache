@@ -1,5 +1,5 @@
 # Rakefile for Bitcache    -*- ruby -*-
-# Copyright (c) 2006-2008 Arto Bendiken <http://bendiken.net/>
+# Copyright (c) 2006-2009 Arto Bendiken <http://bendiken.net/>
 
 require 'rake'
 require 'rake/testtask'
@@ -23,7 +23,7 @@ PKG_FILES = FileList[
 
 PKG_AUTHOR    = "Arto Bendiken"
 PKG_EMAIL     = "arto.bendiken@gmail.com"
-PKG_HOMEPAGE  = "http://bendiken.net/"
+PKG_HOMEPAGE  = "http://bitcache.org/"
 
 ##############################################################################
 

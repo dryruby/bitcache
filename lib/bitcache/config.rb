@@ -7,17 +7,17 @@ module Bitcache
 
     DEFAULT_PATH = '~/.bitrc'
 
-    def self.load_repos
+    def self.load_repos(options = {})
       repos = {}
-      self.load.each do |name, config|
+      self.load(options[:config] || DEFAULT_PATH).each do |name, config|
         if config[:enabled] != false
-          repos[name.to_sym] = Repository.new(Adapter.new(config), config)
+          repos[name.to_sym] = Repository.new(Adapter.new(options.merge(config)), config)
         end
       end
       repos
     end
 
-    def self.load(file = DEFAULT_PATH)
+    def self.load(file)
       file = File.expand_path(file)
 
       raise "Configuration file #{file} doesn't exist." unless File.exists?(file)
