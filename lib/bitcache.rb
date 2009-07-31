@@ -1,9 +1,12 @@
 require 'digest/sha1'
-require 'bitcache/version'
-require 'bitcache/config'
-require 'bitcache/stream'
-require 'bitcache/repository'
-require 'bitcache/adapter'
 require 'bitcache/utils'
-require 'bitcache/encoders'
 require 'bitcache/api'
+
+module Bitcache
+  autoload :Adapter,    'bitcache/adapter'
+  autoload :Config,     'bitcache/config'
+  autoload :Encoders,   'bitcache/encoders' # FIXME
+  autoload :Repository, 'bitcache/repository'
+  autoload :Stream,     'bitcache/stream'
+  autoload :Version,    'bitcache/version'
+end
