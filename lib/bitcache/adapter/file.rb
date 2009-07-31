@@ -1,8 +1,8 @@
 require 'fileutils'
 
-module Bitcache::Adapters
+class Bitcache::Adapter
 
-  class File < Bitcache::Adapter
+  class File < Adapter
 
     module RepositoryMethods #:nodoc:
       def create!

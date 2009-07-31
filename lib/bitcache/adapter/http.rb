@@ -1,9 +1,9 @@
 require 'net/http'
 require 'uri'
 
-module Bitcache::Adapters
+class Bitcache::Adapter
 
-  class HTTP < Bitcache::Adapter
+  class HTTP < Adapter
 
     module RepositoryMethods #:nodoc:
       def open(mode = :read, &block)

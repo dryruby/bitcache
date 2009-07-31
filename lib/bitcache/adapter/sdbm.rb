@@ -1,8 +1,8 @@
 require 'sdbm'
 
-module Bitcache::Adapters
+class Bitcache::Adapter
 
-  class SDBM < Bitcache::Adapter
+  class SDBM < Adapter
 
     module RepositoryMethods #:nodoc:
       def open(mode = :read, &block)

@@ -1,9 +1,9 @@
 require 'net/ssh'
 require 'net/sftp'
 
-module Bitcache::Adapters
+class Bitcache::Adapter
 
-  class SFTP < Bitcache::Adapter
+  class SFTP < Adapter
 
     module RepositoryMethods #:nodoc:
       def available?

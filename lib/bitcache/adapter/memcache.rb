@@ -1,8 +1,8 @@
 require 'memcache'
 
-module Bitcache::Adapters
+class Bitcache::Adapter
 
-  class Memcache < Bitcache::Adapter
+  class Memcache < Adapter
 
     module RepositoryMethods #:nodoc:
       def available?

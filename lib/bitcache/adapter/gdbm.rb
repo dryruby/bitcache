@@ -1,14 +1,14 @@
 require 'gdbm'
 
-module Bitcache::Adapters
+class Bitcache::Adapter
 
-  class GDBM < Bitcache::Adapter
+  class GDBM < Adapter
 
     MODES = { :read => ::GDBM::READER, :write => ::GDBM::WRCREAT | ::GDBM::SYNC }
 
     module RepositoryMethods #:nodoc:
       def open(mode = :read, &block)
-        ::GDBM.open(path, 0644, ::Bitcache::Adapters::GDBM::MODES[mode], &block)
+        ::GDBM.open(path, 0644, ::Bitcache::Adapter::GDBM::MODES[mode], &block)
       end
 
       def path() config[:dbfile] end

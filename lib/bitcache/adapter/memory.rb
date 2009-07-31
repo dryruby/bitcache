@@ -1,6 +1,6 @@
-module Bitcache::Adapters
+class Bitcache::Adapter
 
-  class Memory < Bitcache::Adapter
+  class Memory < Adapter
 
     module RepositoryMethods #:nodoc:
       def open(mode = :read, &block)
