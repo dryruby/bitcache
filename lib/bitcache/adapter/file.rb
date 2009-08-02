@@ -1,6 +1,6 @@
 require 'fileutils'
 
-class Bitcache::Adapter
+module Bitcache class Adapter
 
   class File < Adapter
 
@@ -78,4 +78,4 @@ class Bitcache::Adapter
     end
 
   end
-end
+end end

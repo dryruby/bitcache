@@ -1,6 +1,6 @@
 require 'memcache'
 
-class Bitcache::Adapter
+module Bitcache class Adapter
 
   class Memcache < Adapter
 
@@ -75,4 +75,4 @@ class Bitcache::Adapter
     end
 
   end
-end
+end end

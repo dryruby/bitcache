@@ -1,7 +1,7 @@
 require 'net/ssh'
 require 'net/sftp'
 
-class Bitcache::Adapter
+module Bitcache class Adapter
 
   class SFTP < Adapter
 
@@ -106,4 +106,4 @@ class Bitcache::Adapter
     end
 
   end
-end
+end end

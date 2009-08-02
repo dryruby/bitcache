@@ -1,4 +1,4 @@
-class Bitcache::Adapter
+module Bitcache class Adapter
 
   class Memory < Adapter
 
@@ -13,4 +13,4 @@ class Bitcache::Adapter
     module StreamMethods end #:nodoc:
 
   end
-end
+end end

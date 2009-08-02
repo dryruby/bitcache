@@ -1,7 +1,7 @@
 require 'net/http'
 require 'uri'
 
-class Bitcache::Adapter
+module Bitcache class Adapter
 
   class HTTP < Adapter
 
@@ -87,4 +87,4 @@ class Bitcache::Adapter
     end
 
   end
-end
+end end

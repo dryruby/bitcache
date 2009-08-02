@@ -1,6 +1,6 @@
 require 'gdbm'
 
-class Bitcache::Adapter
+module Bitcache class Adapter
 
   class GDBM < Adapter
 
@@ -22,4 +22,4 @@ class Bitcache::Adapter
     end
 
   end
-end
+end end

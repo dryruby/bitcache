@@ -1,6 +1,6 @@
 require 'sdbm'
 
-class Bitcache::Adapter
+module Bitcache class Adapter
 
   class SDBM < Adapter
 
@@ -20,4 +20,4 @@ class Bitcache::Adapter
     end
 
   end
-end
+end end

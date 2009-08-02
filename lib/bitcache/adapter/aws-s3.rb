@@ -1,6 +1,6 @@
 require 'aws/s3'
 
-class Bitcache::Adapter
+module Bitcache class Adapter
 
   class AWS_S3 < Adapter
 
@@ -82,4 +82,4 @@ class Bitcache::Adapter
     end
   end
 
-end
+end end
