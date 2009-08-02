@@ -1,0 +1,65 @@
+= Bitcache
+
+  http://bitcache.org/
+
+
+== Dependencies
+
+* Ruby 1.8+
+
+
+== Adapters
+
+* Memory
+  * Non-persistent and hence primarily only useful for testing.
+* File
+* GDBM
+* SDBM
+* Memcache
+  * Requires the memcache-client library by Eric Hodel.
+  * Supports specifying a TTL (time to live) value for blobs.
+  * Does not support listing keys (this being a limitation of memcached).
+* SFTP
+  * Requires the net-sftp library by Jamis Buck.
+* HTTP
+  * Implemented as a simple RESTful API.
+* Amazon S3
+  * Requires the aws-s3 library by Marcel Molina Jr.
+
+
+== Download
+
+The latest released version of Bitcache can be found at:
+
+* http://rubyforge.org/frs/?group_id=4859
+
+The latest development version can be found at:
+
+* http://github.com/bendiken/bitcache
+
+API documentation can be found at:
+
+* http://bitcache.rubyforge.org/
+
+
+== Installation
+
+The recommended installation method is via RubyGems. To install the latest
+official release from RubyForge, do:
+
+  % [sudo] gem install bitcache
+
+To use the very latest bleeding-edge development version, install the gem
+directly from GitHub as follows:
+
+  % [sudo] gem install bendiken-bitcache --source http://gems.github.com
+
+
+== See also
+
+* http://drupal.org/project/bitcache
+
+
+== License
+
+Bitcache is released under the MIT license.
