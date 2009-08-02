@@ -3,7 +3,7 @@ module Bitcache class Adapter
   class GDBM < Adapter
 
     def initialize(config = {}, &block)
-      require 'gdbm'
+      require 'gdbm' unless defined?(::GDBM)
       super
     end
 

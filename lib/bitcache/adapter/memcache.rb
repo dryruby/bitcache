@@ -3,7 +3,7 @@ module Bitcache class Adapter
   class Memcache < Adapter
 
     def initialize(config = {}, &block)
-      require 'memcache'
+      require 'memcache' unless defined?(::MemCache)
       super
     end
 

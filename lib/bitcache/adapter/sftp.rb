@@ -3,8 +3,8 @@ module Bitcache class Adapter
   class SFTP < Adapter
 
     def initialize(config = {}, &block)
-      require 'net/ssh'
-      require 'net/sftp'
+      require 'net/ssh'  unless defined?(Net::SSH)
+      require 'net/sftp' unless defined?(Net::SFTP)
       super
     end
 

@@ -3,7 +3,7 @@ module Bitcache class Adapter
   class File < Adapter
 
     def initialize(config = {}, &block)
-      require 'fileutils'
+      require 'fileutils' unless defined?(FileUtils)
       super
     end
 
