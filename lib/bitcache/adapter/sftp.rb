@@ -1,9 +1,12 @@
-require 'net/ssh'
-require 'net/sftp'
-
 module Bitcache class Adapter
 
   class SFTP < Adapter
+
+    def initialize(config = {}, &block)
+      require 'net/ssh'
+      require 'net/sftp'
+      super
+    end
 
     module RepositoryMethods #:nodoc:
       def available?

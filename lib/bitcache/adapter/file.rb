@@ -1,8 +1,11 @@
-require 'fileutils'
-
 module Bitcache class Adapter
 
   class File < Adapter
+
+    def initialize(config = {}, &block)
+      require 'fileutils'
+      super
+    end
 
     module RepositoryMethods #:nodoc:
       def create!

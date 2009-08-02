@@ -1,8 +1,11 @@
-require 'memcache'
-
 module Bitcache class Adapter
 
   class Memcache < Adapter
+
+    def initialize(config = {}, &block)
+      require 'memcache'
+      super
+    end
 
     module RepositoryMethods #:nodoc:
       def available?

@@ -1,8 +1,11 @@
-require 'aws/s3'
-
 module Bitcache class Adapter
 
   class AWS_S3 < Adapter
+
+    def initialize(config = {}, &block)
+      require 'aws/s3'
+      super
+    end
 
     module RepositoryMethods #:nodoc:
       def create!() end # for faster startup

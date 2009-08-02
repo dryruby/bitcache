@@ -1,8 +1,11 @@
-require 'gdbm'
-
 module Bitcache class Adapter
 
   class GDBM < Adapter
+
+    def initialize(config = {}, &block)
+      require 'gdbm'
+      super
+    end
 
     MODES = { :read => ::GDBM::READER, :write => ::GDBM::WRCREAT | ::GDBM::SYNC }
 
