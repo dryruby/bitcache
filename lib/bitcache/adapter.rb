@@ -53,6 +53,9 @@ module Bitcache
       true
     end
 
+    module RepositoryMethods end #:nodoc:
+    module StreamMethods end #:nodoc:
+
     protected
 
       @@registry = {}
