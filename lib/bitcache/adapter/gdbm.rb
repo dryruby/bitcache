@@ -7,11 +7,10 @@ module Bitcache class Adapter
       super
     end
 
-    MODES = { :read => ::GDBM::READER, :write => ::GDBM::WRCREAT | ::GDBM::SYNC }
-
     module RepositoryMethods #:nodoc:
       def open(mode = :read, &block)
-        ::GDBM.open(path, 0644, ::Bitcache::Adapter::GDBM::MODES[mode], &block)
+        modes = { :read => ::GDBM::READER, :write => ::GDBM::WRCREAT | ::GDBM::SYNC }
+        ::GDBM.open(path, 0644, modes[mode], &block)
       end
 
       def path() config[:dbfile] end
