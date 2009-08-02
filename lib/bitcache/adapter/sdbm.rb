@@ -3,7 +3,7 @@ module Bitcache class Adapter
   class SDBM < Adapter
 
     def initialize(config = {}, &block)
-      require 'sdbm' unless defined(::SDBM)
+      require 'sdbm' unless defined?(::SDBM)
       super
     end
 

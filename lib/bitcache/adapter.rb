@@ -14,7 +14,7 @@ module Bitcache
 
     def self.each(&block)
       self.constants.each do |const|
-        if (adapter = self.const_get(const)).superclass == Adapter
+        if (adapter = self.const_get(const)).is_a?(Class) && adapter.superclass == Adapter
           block.call(adapter)
         end
       end
