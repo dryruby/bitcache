@@ -7,6 +7,8 @@ module Bitcache class Adapter
       super
     end
 
+    def transient?() false end
+
     module RepositoryMethods #:nodoc:
       def create!
         FileUtils.mkdir_p(path, :mode => (config[:chmod] || '0755').to_i(8))

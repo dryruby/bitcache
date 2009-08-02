@@ -30,36 +30,74 @@ describe Bitcache::Adapter do
       Bitcache::Adapter.for(:sftp).should     == Bitcache::Adapter::SFTP
     end
   end
+
+  context "instantiating with defaults" do
+    it "should yield an in-memory adapter" do
+      Bitcache::Adapter.new.should be_a(Bitcache::Adapter::Memory)
+    end
+  end
 end
 
 describe Bitcache::Adapter::AWS_S3 do
-  # TODO
+  before(:each) { @adapter = Bitcache::Adapter::AWS_S3.new }
+
+  it "should not be transient" do
+    @adapter.should_not be_transient
+  end
 end
 
 describe Bitcache::Adapter::File do
-  # TODO
+  before(:each) { @adapter = Bitcache::Adapter::File.new }
+
+  it "should not be transient" do
+    @adapter.should_not be_transient
+  end
 end
 
 describe Bitcache::Adapter::GDBM do
-  # TODO
+  before(:each) { @adapter = Bitcache::Adapter::GDBM.new }
+
+  it "should not be transient" do
+    @adapter.should_not be_transient
+  end
 end
 
 describe Bitcache::Adapter::HTTP do
-  # TODO
+  before(:each) { @adapter = Bitcache::Adapter::HTTP.new }
+
+  it "should not be transient" do
+    @adapter.should_not be_transient
+  end
 end
 
 describe Bitcache::Adapter::Memcache do
-  # TODO
+  before(:each) { @adapter = Bitcache::Adapter::Memcache.new }
+
+  it "should not be transient" do
+    @adapter.should_not be_transient
+  end
 end
 
 describe Bitcache::Adapter::Memory do
-  # TODO
+  before(:each) { @adapter = Bitcache::Adapter::Memory.new }
+
+  it "should be transient" do
+    @adapter.should be_transient
+  end
 end
 
 describe Bitcache::Adapter::SDBM do
-  # TODO
+  before(:each) { @adapter = Bitcache::Adapter::SDBM.new }
+
+  it "should not be transient" do
+    @adapter.should_not be_transient
+  end
 end
 
 describe Bitcache::Adapter::SFTP do
-  # TODO
+  before(:each) { @adapter = Bitcache::Adapter::SFTP.new }
+
+  it "should not be transient" do
+    @adapter.should_not be_transient
+  end
 end

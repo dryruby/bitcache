@@ -7,6 +7,8 @@ module Bitcache class Adapter
       super
     end
 
+    def transient?() false end
+
     module RepositoryMethods #:nodoc:
       def open(mode = :read, &block)
         modes = { :read => ::GDBM::READER, :write => ::GDBM::WRCREAT | ::GDBM::SYNC }

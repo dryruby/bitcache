@@ -8,6 +8,8 @@ module Bitcache class Adapter
       super
     end
 
+    def transient?() false end
+
     module RepositoryMethods #:nodoc:
       def open(mode = :read, &block)
         @url ||= URI.parse(uri)

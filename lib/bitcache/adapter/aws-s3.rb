@@ -7,6 +7,8 @@ module Bitcache class Adapter
       super
     end
 
+    def transient?() false end
+
     module RepositoryMethods #:nodoc:
       def create!() end # for faster startup
 
