@@ -10,6 +10,8 @@ module Bitcache
     autoload :SFTP,     'bitcache/adapter/sftp'
     #autoload :TFTP,    'bitcache/adapter/tftp' # TODO
 
+    extend Enumerable
+
     def self.each(&block)
       self.constants.each do |const|
         if (adapter = self.const_get(const)).superclass == Adapter
