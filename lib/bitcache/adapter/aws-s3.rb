@@ -3,7 +3,7 @@ module Bitcache class Adapter
   class AWS_S3 < Adapter
 
     def initialize(config = {}, &block)
-      require 'aws/s3' unless defined?(AWS::S3)
+      require 'aws/s3' unless defined?(::AWS::S3)
       super
     end
 

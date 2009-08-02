@@ -34,6 +34,10 @@ module Bitcache
       end
     end
 
+    def available?
+      true
+    end
+
     def initialize(config = {}, &block)
       raise NotImplementedError if self.class == Bitcache::Adapter
 

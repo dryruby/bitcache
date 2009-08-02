@@ -3,7 +3,7 @@ module Bitcache class Adapter
   class HTTP < Adapter
 
     def initialize(config = {}, &block)
-      require 'net/http' unless defined?(Net::HTTP)
+      require 'net/http' unless defined?(::Net::HTTP)
       require 'uri' unless defined?(::URI)
       super
     end
