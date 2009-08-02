@@ -8,7 +8,15 @@ module Bitcache
     autoload :Memory,   'bitcache/adapter/memory'
     autoload :SDBM,     'bitcache/adapter/sdbm'
     autoload :SFTP,     'bitcache/adapter/sftp'
-    autoload :TFTP,     'bitcache/adapter/tftp' # TODO
+    #autoload :TFTP,    'bitcache/adapter/tftp' # TODO
+
+    def self.each(&block)
+      self.constants.each do |const|
+        if (adapter = self.const_get(const)).superclass == Adapter
+          block.call(adapter)
+        end
+      end
+    end
 
     def self.for(adapter_name)
       adapter_name = adapter_name.to_sym
@@ -48,7 +56,7 @@ module Bitcache
       @@registry = {}
 
       def self.inherited(child) #:nodoc:
-        @@registry[$1.to_sym] = child if caller.first =~ /\/([\w\d_-]+)\.rb:\d+$/
+        @@registry[$1.to_sym] = child if caller.first =~ /\/([\w\d_-]+)\.rb:\d+$/ # FIXME
         super
       end
 
