@@ -8,5 +8,5 @@ module Bitcache
   autoload :Encoders,   'bitcache/encoders' # FIXME
   autoload :Repository, 'bitcache/repository'
   autoload :Stream,     'bitcache/stream'
-  autoload :Version,    'bitcache/version'
+  autoload :VERSION,    'bitcache/version'
 end
