@@ -37,3 +37,5 @@ define "bitcache", :layout => LAYOUT do
     sh "rsync -avz --no-perms --chmod=ugo=rwX #{UPLOAD_LOCAL}/ #{UPLOAD_REMOTE}"
   end
 end
+
+RakeFileUtils.verbose_flag = false
