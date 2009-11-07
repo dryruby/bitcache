@@ -3,10 +3,10 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-class ByteBufferInputStream extends InputStream {
+public class ByteBufferInputStream extends InputStream {
   ByteBuffer buffer;
 
-  ByteBufferInputStream(ByteBuffer buffer) {
+  public ByteBufferInputStream(ByteBuffer buffer) {
     this.buffer = buffer;
   }
 
