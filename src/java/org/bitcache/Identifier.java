@@ -12,7 +12,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.ProviderException;
 
 public class Identifier {
-  public static String ALGORITHM = "SHA-1";
+  public static final String ALGORITHM = "SHA-1";
   public byte[] id;
 
   public static String getHexDigest(String text) {
