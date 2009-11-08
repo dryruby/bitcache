@@ -15,6 +15,14 @@ public class Identifier {
   public static String ALGORITHM = "SHA-1";
   public byte[] id;
 
+  public static String getHexDigest(String text) {
+    return Identifier.forString(text).toHexString();
+  }
+
+  public static String getHexDigest(byte[] data) {
+    return Identifier.forBytes(data).toHexString();
+  }
+
   public static MessageDigest getDigestAlgorithm() {
     return getDigestAlgorithm(ALGORITHM);
   }
@@ -59,6 +67,10 @@ public class Identifier {
     MessageDigest digest = getDigestAlgorithm();
     digest.update(data);
     return new Identifier(digest.digest());
+  }
+
+  public static Identifier forString(String text) {
+    return forBytes(text.getBytes());
   }
 
   public static Identifier forBytes(byte[] data) {
