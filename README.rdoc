@@ -62,4 +62,5 @@ directly from GitHub as follows:
 
 == License
 
-Bitcache is released under the MIT license.
+Bitcache is free and unencumbered public domain software. For more
+information, see <http://unlicense.org/> or the accompanying UNLICENSE file.

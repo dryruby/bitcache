@@ -39,7 +39,7 @@ rdoc = Rake::RDocTask.new('rdoc') do |rdoc|
   rdoc.rdoc_dir = 'doc'
   rdoc.title = "Bitcache -- Distributed content-addressable storage"
   rdoc.options << '--line-numbers' << '--inline-source' << '--main' << 'README'
-  rdoc.rdoc_files.include('README', 'LICENSE')
+  rdoc.rdoc_files.include('README', 'UNLICENSE')
   rdoc.rdoc_files.include('lib/**/*.rb', 'doc/**/*.rdoc')
 end
 
