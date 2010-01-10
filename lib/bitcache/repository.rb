@@ -1,6 +1,3 @@
-require 'stringio'
-require 'pathname'
-
 module Bitcache
 
   class Repository
