@@ -16,9 +16,9 @@ GEMSPEC = Gem::Specification.new do |gem|
   gem.email              = 'arto.bendiken@gmail.com'
 
   gem.platform           = Gem::Platform::RUBY
-  gem.files              = %w(AUTHORS README UNLICENSE VERSION lib/bitcache.rb lib/bitcache/encoder.rb lib/bitcache/spec.rb lib/bitcache/version.rb) # TODO
+  gem.files              = %w(AUTHORS README UNLICENSE VERSION) + Dir.glob('lib/**/*.rb')
   gem.bindir             = %q(bin)
-  gem.executables        = %w() # TODO
+  gem.executables        = %w()
   gem.default_executable = gem.executables.first
   gem.require_paths      = %w(lib)
   gem.extensions         = %w()

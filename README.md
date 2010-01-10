@@ -15,6 +15,13 @@ Documentation
 
 * <http://bitcache.rubyforge.org/>
 
+### Classes
+
+* {Bitcache::Adapter}
+* {Bitcache::Encoder}
+* {Bitcache::Repository}
+* {Bitcache::Stream}
+
 Dependencies
 ------------
 
@@ -48,6 +55,7 @@ Resources
 * <http://gemcutter.org/gems/bitcache>
 * <http://rubyforge.org/projects/bitcache/>
 * <http://raa.ruby-lang.org/project/bitcache/>
+* <http://www.ohloh.net/p/bitcache>
 
 See also
 --------
