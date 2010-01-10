@@ -14,6 +14,7 @@ module Bitcache
     # @yield  [repository]
     # @yieldparam [Repository] repository
     def initialize(options = {}, &block)
+      @streams = options.delete(:data) || {}
       @options = options
 
       if block_given?
@@ -55,7 +56,7 @@ module Bitcache
     #
     # @return [Boolean]
     def empty?
-      true # FIXME
+      @streams.empty?
     end
 
     ##
@@ -63,7 +64,26 @@ module Bitcache
     #
     # @return [Integer]
     def count
-      0 # FIXME
+      @streams.size
     end
+
+    alias_method :size, :count
+
+    ##
+    # Stores a bitstream in this repository.
+    #
+    # @param  [String] id
+    # @param  [Stream] stream
+    # @param  [Hash{Symbol => Object}] options
+    # @return [String] the bitstream's identifier
+    def store(id, stream, options = {})
+      if id ||= Bitcache.identify(stream)
+        id = id.to_str
+        @streams[id] = stream unless @streams.has_key?(id)
+        return id
+      end
+    end
+
+    alias_method :[]=, :store
   end
 end

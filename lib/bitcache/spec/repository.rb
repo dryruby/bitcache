@@ -39,6 +39,10 @@ share_as :Bitcache_Repository do
   context "when storing bitstreams" do
     it "should support #store" do
       @repository.should respond_to(:store)
+
+      @repository.store(nil, '').should == 'da39a3ee5e6b4b0d3255bfef95601890afd80709'
+      @repository.empty?.should be_false
+      @repository.count.should == 1
     end
   end
 
