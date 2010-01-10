@@ -48,6 +48,12 @@ share_as :Bitcache_Repository do
   context "when enumerating bitstreams" do
     it "should support #each" do
       @repository.should respond_to(:each)
+
+      @repository.store(nil, '')
+      @repository.store(nil, '123')
+      @repository.each do |stream|
+        stream.should be_a_stream
+      end
     end
   end
 

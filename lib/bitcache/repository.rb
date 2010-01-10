@@ -70,6 +70,18 @@ module Bitcache
     alias_method :size, :count
 
     ##
+    # Enumerates over each bitstream in this repository.
+    #
+    # @yield  [stream]
+    # @yield  [Stream] stream
+    # @return [Enumerator]
+    def each(&block)
+      @streams.each do |id, data|
+        block.call(Stream.new(id, data))
+      end
+    end
+
+    ##
     # Stores a bitstream in this repository.
     #
     # @param  [String] id
