@@ -21,6 +21,12 @@ module Bitcache
     end
 
     ##
+    # Returns `true` to indicate this is a bitstream.
+    def stream?
+      true
+    end
+
+    ##
     # @return [String] the bitstream's identifier
     def to_s
       id
