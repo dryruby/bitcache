@@ -3,7 +3,7 @@
 
 GEMSPEC = Gem::Specification.new do |gem|
   gem.version            = File.read('VERSION').chomp
-  gem.date               = '2010-01-01'
+  gem.date               = File.mtime('VERSION').strftime('%Y-%m-%d')
 
   gem.name               = 'bitcache'
   gem.homepage           = 'http://bitcache.org/'
@@ -16,7 +16,7 @@ GEMSPEC = Gem::Specification.new do |gem|
   gem.email              = 'arto.bendiken@gmail.com'
 
   gem.platform           = Gem::Platform::RUBY
-  gem.files              = %w(AUTHORS README UNLICENSE VERSION lib/bitcache.rb lib/bitcache/version.rb) # TODO
+  gem.files              = %w(AUTHORS README UNLICENSE VERSION lib/bitcache.rb lib/bitcache/encoder.rb lib/bitcache/spec.rb lib/bitcache/version.rb) # TODO
   gem.bindir             = %q(bin)
   gem.executables        = %w() # TODO
   gem.default_executable = gem.executables.first
