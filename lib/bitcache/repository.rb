@@ -142,15 +142,15 @@ module Bitcache
       end
 
       def encoder
-        @encoder ||= Encoders[config[:"encode-keys"]]
+        @encoder ||= Encoder.for(config[:"encode-keys"])
       end
 
       def encode_key(key)
-        encoder ? encoder.encode(Encoders::Base16.decode(key)) : key
+        encoder ? encoder.encode(Encoder::Base16.decode(key)) : key
       end
 
       def decode_key(key)
-        encoder ? Encoders::Base16.encode(encoder.decode(key)).rjust(40, "0") : key # FIXME
+        encoder ? Encoder::Base16.encode(encoder.decode(key)).rjust(40, "0") : key # FIXME
       end
 
       def should_ignore?(id, filter)
