@@ -125,7 +125,7 @@ module Bitcache::Commands
       abort "Usage: #{basename} sync [options] repo1 repo2 ..." unless sync_repos.size >= 2
 
       sync_repos = sync_repos.map { |name| @repos[name.to_sym] }
-      sync_keys = sync_repos.map_concurrently { |repo| repo.keys }
+      sync_keys = map_concurrently(sync_repos) { |repo| repo.keys }
 
       sync_repos.zip(sync_keys) do |repo1, keys1|
         sync_repos.clone.zip(sync_keys).delete_if { |r, k| r == repo1 }.each do |repo2, keys2|
@@ -168,6 +168,15 @@ module Bitcache::Commands
           @repos.values.find { |repo| repo.config[:default] } ||
           @repos.values.find { |repo| repo.config[:adapter] == 'file' } ||
           @repos[@repos.keys.first]
+      end
+
+      ##
+      # Returns a new array containing the results of running `block`
+      # concurrently (in separate threads) for every element in `enum`.
+      def map_concurrently(enum, &block)
+        threads = []
+        enum.each { |item| threads << Thread.new(item, &block) }
+        threads.map { |thread| thread.value }
       end
 
       def ensure_files_exist!(*files)
