@@ -49,5 +49,21 @@ module Bitcache
     end
 
     alias_method :mutable?, :writable?
+
+    ##
+    # Returns `true` if this repository is empty.
+    #
+    # @return [Boolean]
+    def empty?
+      true # FIXME
+    end
+
+    ##
+    # Returns the number of bitstreams in this repository.
+    #
+    # @return [Integer]
+    def count
+      0 # FIXME
+    end
   end
 end
