@@ -96,7 +96,8 @@ module Bitcache
       end
     end
 
-    alias_method :[]=, :store
+    alias_method :[]=,    :store
+    alias_method :store!, :store
 
     ##
     # Fetches a bitstream from this repository.
@@ -123,5 +124,24 @@ module Bitcache
         @streams.delete(id)
       end
     end
+
+    alias_method :delete!, :delete
+
+    ##
+    # Deletes all bitstreams from this repository.
+    #
+    # @param  [Hash{Symbol => Object}] options
+    # @return [Integer]
+    def clear(options = {})
+      if empty?
+        count = 0
+      else
+        count = @streams.size
+        @streams.clear
+        count
+      end
+    end
+
+    alias_method :clear!, :clear
   end
 end

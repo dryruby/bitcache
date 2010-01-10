@@ -63,14 +63,24 @@ share_as :Bitcache_Repository do
 
       id = @repository.store(nil, '')
       @repository.empty?.should be_false
+      @repository.count.should == 1
       @repository.delete(id)
       @repository.empty?.should be_true
+      @repository.count.should == 0
     end
   end
 
   context "when clearing all bitstreams" do
     it "should support #clear" do
       @repository.should respond_to(:clear)
+
+      @repository.store(nil, '')
+      @repository.store(nil, '123')
+      @repository.empty?.should be_false
+      @repository.count.should == 2
+      @repository.clear
+      @repository.empty?.should be_true
+      @repository.count.should == 0
     end
   end
 end
