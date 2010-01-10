@@ -31,5 +31,23 @@ module Bitcache
     def accessible?
       true
     end
+
+    ##
+    # Returns `true` if this repository is readable.
+    #
+    # @return [Boolean]
+    def readable?
+      true
+    end
+
+    ##
+    # Returns `true` if this repository is writable.
+    #
+    # @return [Boolean]
+    def writable?
+      true
+    end
+
+    alias_method :mutable?, :writable?
   end
 end

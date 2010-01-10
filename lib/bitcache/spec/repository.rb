@@ -15,6 +15,10 @@ share_as :Bitcache_Repository do
     @repository.readable?.should be_true
   end
 
+  it "should be writable" do
+    @repository.writable?.should be_true
+  end
+
   it "should be empty initially" do
     @repository.empty?.should be_true
     @repository.count.should be_zero
