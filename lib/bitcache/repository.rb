@@ -23,5 +23,13 @@ module Bitcache
         end
       end
     end
+
+    ##
+    # Returns `true` if this repository is currently accessible.
+    #
+    # @return [Boolean]
+    def accessible?
+      true
+    end
   end
 end

@@ -7,8 +7,8 @@ share_as :Bitcache_Repository do
     raise '+@repository+ must be defined in a before(:each) block' unless instance_variable_get('@repository')
   end
 
-  it "should be available" do
-    @repository.available?.should be_true
+  it "should be accessible" do
+    @repository.accessible?.should be_true
   end
 
   it "should be readable" do
