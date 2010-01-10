@@ -60,6 +60,11 @@ share_as :Bitcache_Repository do
   context "when deleting bitstreams" do
     it "should support #delete" do
       @repository.should respond_to(:delete)
+
+      id = @repository.store(nil, '')
+      @repository.empty?.should be_false
+      @repository.delete(id)
+      @repository.empty?.should be_true
     end
   end
 

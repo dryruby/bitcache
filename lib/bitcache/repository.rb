@@ -111,5 +111,17 @@ module Bitcache
     end
 
     alias_method :[], :fetch
+
+    ##
+    # Deletes a bitstream from this repository.
+    #
+    # @param  [String] id
+    # @param  [Hash{Symbol => Object}] options
+    # @return [Boolean]
+    def delete(id, options = {})
+      if id && @streams.has_key?(id = id.to_str)
+        @streams.delete(id)
+      end
+    end
   end
 end
