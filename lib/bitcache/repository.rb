@@ -85,5 +85,19 @@ module Bitcache
     end
 
     alias_method :[]=, :store
+
+    ##
+    # Fetches a bitstream from this repository.
+    #
+    # @param  [String] id
+    # @param  [Hash{Symbol => Object}] options
+    # @return [Stream] the bitstream
+    def fetch(id, options = {})
+      if id && @streams.has_key?(id = id.to_str)
+        Stream.new(id, @streams[id])
+      end
+    end
+
+    alias_method :[], :fetch
   end
 end

@@ -24,18 +24,6 @@ share_as :Bitcache_Repository do
     @repository.count.should be_zero
   end
 
-  context "when enumerating bitstreams" do
-    it "should support #each" do
-      @repository.should respond_to(:each)
-    end
-  end
-
-  context "when fetching bitstreams" do
-    it "should support #fetch" do
-      @repository.should respond_to(:fetch)
-    end
-  end
-
   context "when storing bitstreams" do
     it "should support #store" do
       @repository.should respond_to(:store)
@@ -43,6 +31,23 @@ share_as :Bitcache_Repository do
       @repository.store(nil, '').should == 'da39a3ee5e6b4b0d3255bfef95601890afd80709'
       @repository.empty?.should be_false
       @repository.count.should == 1
+    end
+  end
+
+  context "when fetching bitstreams" do
+    it "should support #fetch" do
+      @repository.should respond_to(:fetch)
+
+      id = @repository.store(nil, data = 'Hello, world!')
+      @repository.fetch(id).should be_instance_of(Bitcache::Stream)
+      @repository.fetch(id).id.should == id
+      @repository.fetch(id).data.should == data
+    end
+  end
+
+  context "when enumerating bitstreams" do
+    it "should support #each" do
+      @repository.should respond_to(:each)
     end
   end
 
