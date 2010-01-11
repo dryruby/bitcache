@@ -5,26 +5,31 @@ module Bitcache
     include Comparable
 
     ##
-    # @return [String] the bitstream's identifier
-    attr_reader :id
-
-    ##
     # @return [String] the bitstream's contents
     attr_reader :data
 
     ##
     # Initializes this bitstream instance.
     #
-    # @param  [String] id
-    # @param  [String] data
-    def initialize(id, data)
-      @id, @data = id, Bitcache.read(data)
+    # @param  [String, #to_str] id
+    # @param  [String, #read, #to_str] data
+    def initialize(id, data = nil, options = {})
+      @id   = id.respond_to?(:to_str) ? id.to_str : nil
+      @data = Bitcache.read(data) if data
     end
 
     ##
     # Returns `true` to indicate that this is a bitstream.
     def stream?
       true
+    end
+
+    ##
+    # Returns the identifier for this bitstream.
+    #
+    # @return [String]
+    def id
+      @id ||= Bitcache.identify(data)
     end
 
     ##
@@ -51,6 +56,16 @@ module Bitcache
     # @return [String]
     def read
       data
+    end
+
+    ##
+    # Returns `-1`, `0`, or `1` depending on whether the lexical ordering of
+    # this bitstream's identifier is less than, equal, or greater than the
+    # identifier of `other`.
+    #
+    # @see Comparable
+    def <=>(other)
+      id <=> other.id
     end
 
     ##
