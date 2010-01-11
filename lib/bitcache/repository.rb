@@ -70,6 +70,14 @@ module Bitcache
     alias_method :size, :count
 
     ##
+    # Returns `true` if this repository has a bitstream identified by `id`.
+    #
+    # @return [Boolean]
+    def has_id?(id)
+      @streams.has_key?(id)
+    end
+
+    ##
     # Enumerates over each bitstream in this repository.
     #
     # @yield  [stream]
@@ -96,8 +104,28 @@ module Bitcache
       end
     end
 
-    alias_method :[]=,    :store
     alias_method :store!, :store
+
+    ##
+    # Stores a bitstream in this repository.
+    #
+    # @param  [Stream] stream
+    # @return [Stream]
+    def []=(id, stream)
+      raise ArgumentError.new("expected String identifier, got #{id.inspect}") unless id
+      store(id, stream)
+      stream
+    end
+
+    ##
+    # Stores a bitstream in this repository.
+    #
+    # @param  [Stream] stream
+    # @return [Repository]
+    def <<(stream)
+      store(nil, stream)
+      self
+    end
 
     ##
     # Fetches a bitstream from this repository.
