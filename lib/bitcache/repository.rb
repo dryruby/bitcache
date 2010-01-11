@@ -10,7 +10,12 @@ module Bitcache
     ##
     # Initializes this repository instance.
     #
-    # @param  [Hash{Symbol => Object}] options
+    # @overload initialize(url)
+    #   @param  [String, #to_s] url
+    #
+    # @overload initialize(options = {})
+    #   @param  [Hash{Symbol => Object}] options
+    #
     # @yield  [repository]
     # @yieldparam [Repository] repository
     def initialize(options = {}, &block)
@@ -26,7 +31,7 @@ module Bitcache
     end
 
     ##
-    # Returns `true` if this repository is currently accessible.
+    # Returns `true` if this repository is accessible at present.
     #
     # @return [Boolean]
     def accessible?
@@ -72,10 +77,13 @@ module Bitcache
     ##
     # Returns `true` if this repository has a bitstream identified by `id`.
     #
+    # @param  [String, #to_str] id
     # @return [Boolean]
     def has_id?(id)
-      @streams.has_key?(id)
+      @streams.has_key?(id.to_str)
     end
+
+    alias_method :has_key?, :has_id?
 
     ##
     # Enumerates over each bitstream in this repository.
@@ -93,34 +101,37 @@ module Bitcache
     # Stores a bitstream in this repository.
     #
     # @param  [String] id
-    # @param  [Stream] stream
+    # @param  [Stream, Proc, #read, #to_str] stream
     # @param  [Hash{Symbol => Object}] options
     # @return [String] the bitstream's identifier
     def store(id, stream, options = {})
       if id ||= Bitcache.identify(stream)
         id = id.to_str
-        @streams[id] = stream unless @streams.has_key?(id)
+        @streams[id] = read(stream) unless has_id?(id)
         return id
       end
     end
 
     alias_method :store!, :store
+    alias_method :set,    :store
+    alias_method :put,    :store
 
     ##
     # Stores a bitstream in this repository.
     #
-    # @param  [Stream] stream
+    # @param  [String] id
+    # @param  [Stream, Proc, #read, #to_str] stream
     # @return [Stream]
     def []=(id, stream)
       raise ArgumentError.new("expected String identifier, got #{id.inspect}") unless id
       store(id, stream)
-      stream
+      stream # FIXME
     end
 
     ##
     # Stores a bitstream in this repository.
     #
-    # @param  [Stream] stream
+    # @param  [Stream, Proc, #read, #to_str] stream
     # @return [Repository]
     def <<(stream)
       store(nil, stream)
@@ -134,12 +145,13 @@ module Bitcache
     # @param  [Hash{Symbol => Object}] options
     # @return [Stream] the bitstream
     def fetch(id, options = {})
-      if id && @streams.has_key?(id = id.to_str)
+      if id && has_id?(id = id.to_str)
         Stream.new(id, @streams[id])
       end
     end
 
-    alias_method :[], :fetch
+    alias_method :[],  :fetch
+    alias_method :get, :fetch
 
     ##
     # Deletes a bitstream from this repository.
@@ -148,8 +160,11 @@ module Bitcache
     # @param  [Hash{Symbol => Object}] options
     # @return [Boolean]
     def delete(id, options = {})
-      if id && @streams.has_key?(id = id.to_str)
+      if id && has_id?(id = id.to_str)
         @streams.delete(id)
+        true
+      else
+        false
       end
     end
 
@@ -164,12 +179,37 @@ module Bitcache
       if empty?
         count = 0
       else
-        count = @streams.size
+        count = self.count
         @streams.clear
         count
       end
     end
 
     alias_method :clear!, :clear
+
+    ##
+    # Returns the contents of `input` as a raw bitstream.
+    #
+    # @param  [Stream, Proc, #read, #to_str] input
+    # @return [String]
+    def read(input)
+      case
+        when input.is_a?(Proc)          # data producer block
+          buffer = StringIO.new
+          case input.arity
+            when 1 then input.call(buffer)
+            else buffer.instance_eval(&input)
+          end
+          buffer.string
+        when input.respond_to?(:read)   # Stream, IO, Pathname
+          input.read
+        when input.respond_to?(:to_str) # String
+          input.to_str
+        else
+          raise ArgumentError.new("expected a Bitcache::Stream, IO, Proc or String, but got #{input.inspect}")
+      end
+    end
+
+    protected :read
   end
 end
