@@ -5,6 +5,10 @@ module Bitcache
     include Enumerable
 
     ##
+    # @return [Addressable::URI]
+    attr_accessor :url
+
+    ##
     # @return [Hash{Symbol => Object}]
     attr_accessor :options
 
@@ -25,7 +29,7 @@ module Bitcache
           @streams = url_or_options.delete(:data) || {}
           @options = url_or_options
         else
-          uri = Addressable::URI.parse(url_or_options.to_s)
+          @url = Addressable::URI.parse(url_or_options.to_s)
           # TODO
           @streams = {}
           @options = {}
@@ -214,5 +218,31 @@ module Bitcache
     end
 
     alias_method :clear!, :clear
+
+    ##
+    # Returns the URL of this repository.
+    #
+    # @return [String]
+    def to_s
+      url.to_s
+    end
+
+    ##
+    # Returns the URL of this repository.
+    #
+    # @return [Addressable::URI]
+    def to_uri
+      url
+    end
+
+    alias_method :to_url, :to_uri
+
+    ##
+    # Returns the URL of this repository.
+    #
+    # @return [RDF::URI]
+    def to_rdf
+      RDF::URI.new(url)
+    end
   end
 end
