@@ -17,13 +17,21 @@ module Bitcache
     # @param  [String] id
     # @param  [String] data
     def initialize(id, data)
-      @id, @data = id, data
+      @id, @data = id, data.to_s
     end
 
     ##
     # Returns `true` to indicate this is a bitstream.
     def stream?
       true
+    end
+
+    ##
+    # Returns the contents of this bitstream.
+    #
+    # @return [String]
+    def read
+      data
     end
 
     ##
