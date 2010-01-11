@@ -34,9 +34,13 @@ module Bitcache
         end
       end
 
-      define :be_a_bitstream do
-        match do |value|
-          value.kind_of?(Bitcache::Stream) || value.is_a?(String) # FIXME
+      define :be_a_stream do |id, data, size|
+        match do |stream|
+          stream.should be_a_kind_of(Bitcache::Stream)
+          stream.id.should == id if id
+          stream.data.should == data if data
+          stream.size.should == (size || data.size) if size || data
+          true
         end
       end
 
@@ -46,7 +50,7 @@ module Bitcache
         end
       end
 
-      define :have_bitstream do |stream|
+      define :have_stream do |stream|
         match do |repository|
           repository.has_stream?(stream)
         end
