@@ -54,12 +54,16 @@ module Bitcache
     end
 
     ##
+    # Returns a string representation of this bitstream.
+    #
     # @return [String] the bitstream's identifier
     def to_s
       id
     end
 
     ##
+    # Returns the contents of this bitstream as a string.
+    #
     # @return [String] the bitstream's contents
     def to_str
       data
@@ -71,6 +75,14 @@ module Bitcache
     # @return [RDF::Literal]
     def to_rdf
       RDF::Literal.new(to_str)
+    end
+
+    ##
+    # Returns a `Hash` representation of this bitstream.
+    #
+    # @return [Hash{Symbol => Object}]
+    def to_hash
+      { :id => id, :size => size, :data => data }
     end
   end
 end
