@@ -80,7 +80,13 @@ module Bitcache
       @streams.size
     end
 
-    alias_method :size, :count
+    ##
+    # Returns the total octet size of this repository.
+    #
+    # @return [Integer]
+    def size
+      inject(0) { |sum, stream| sum + stream.size }
+    end
 
     ##
     # Returns `true` if this repository has a bitstream identified by `id`.
