@@ -107,7 +107,7 @@ module Bitcache
     def store(id, stream, options = {})
       if id ||= Bitcache.identify(stream)
         id = id.to_str
-        @streams[id] = read(stream) unless has_id?(id)
+        @streams[id] = Bitcache.read(stream) unless has_id?(id)
         return id
       end
     end
@@ -186,30 +186,5 @@ module Bitcache
     end
 
     alias_method :clear!, :clear
-
-    ##
-    # Returns the contents of `input` as a raw bitstream.
-    #
-    # @param  [Stream, Proc, #read, #to_str] input
-    # @return [String]
-    def read(input)
-      case
-        when input.is_a?(Proc)          # data producer block
-          buffer = StringIO.new
-          case input.arity
-            when 1 then input.call(buffer)
-            else buffer.instance_eval(&input)
-          end
-          buffer.string
-        when input.respond_to?(:read)   # Stream, IO, Pathname
-          input.read
-        when input.respond_to?(:to_str) # String
-          input.to_str
-        else
-          raise ArgumentError.new("expected a Bitcache::Stream, IO, Proc or String, but got #{input.inspect}")
-      end
-    end
-
-    protected :read
   end
 end

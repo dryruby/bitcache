@@ -11,15 +11,35 @@ module Bitcache
   autoload :Stream,     'bitcache/stream'
 
   ##
-  # Returns the Bitcache identifier for the given bitstream.
+  # Returns the Bitcache identifier for `input`.
   #
-  # @param  [String, #to_str] stream
+  # @param  [Stream, Proc, #read, #to_str] input
+  # @param  [Hash{Symbol => Object} options
   # @return [String]
-  def self.identify(stream)
-    if stream.respond_to?(:to_str)
-      Digest::SHA1.hexdigest(stream.to_str)
-    else
-      raise ArgumentError.new("expected Bitcache::Stream or String, got #{stream.inspect}")
+  def self.identify(input, options = {})
+    Digest::SHA1.hexdigest(Bitcache.read(input))
+  end
+
+  ##
+  # Returns the contents of `input` as a raw bitstream.
+  #
+  # @param  [Stream, Proc, #read, #to_str] input
+  # @return [String]
+  def self.read(input)
+    case
+      when input.is_a?(Proc)          # data producer block
+        buffer = StringIO.new
+        case input.arity
+          when 1 then input.call(buffer)
+          else buffer.instance_eval(&input)
+        end
+        buffer.string
+      when input.respond_to?(:read)   # Stream, IO, Pathname
+        input.read
+      when input.respond_to?(:to_str) # String
+        input.to_str
+      else
+        raise ArgumentError.new("expected a Bitcache::Stream, IO, Proc or String, but got #{input.inspect}")
     end
   end
 end
