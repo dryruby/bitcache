@@ -64,5 +64,13 @@ module Bitcache
     def to_str
       data
     end
+
+    ##
+    # Returns the contents of this bitstream as an RDF literal.
+    #
+    # @return [RDF::Literal]
+    def to_rdf
+      RDF::Literal.new(to_str)
+    end
   end
 end
