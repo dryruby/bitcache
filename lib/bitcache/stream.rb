@@ -27,6 +27,14 @@ module Bitcache
     end
 
     ##
+    # Returns the octet size of this bitstream.
+    #
+    # @return [Integer]
+    def size
+      data.size
+    end
+
+    ##
     # Returns the contents of this bitstream.
     #
     # @return [String]
