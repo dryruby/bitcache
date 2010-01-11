@@ -89,7 +89,8 @@ module Bitcache
     end
 
     ##
-    # Returns `true` if this repository has a bitstream identified by `id`.
+    # Returns `true` if this repository contains a bitstream identified by
+    # `id`.
     #
     # @param  [String, #to_str] id
     # @return [Boolean]
@@ -98,6 +99,18 @@ module Bitcache
     end
 
     alias_method :has_key?, :has_id?
+
+    ##
+    # Returns `true` if this repository contains `stream`.
+    #
+    # @param  [Stream, Proc, #read, #to_str] stream
+    # @return [Boolean]
+    def has_stream?(stream)
+      @streams.has_key?(Bitcache.identify(stream))
+    end
+
+    alias_method :has_data?,  :has_stream?
+    alias_method :has_value?, :has_stream?
 
     ##
     # Enumerates over each bitstream in this repository.
