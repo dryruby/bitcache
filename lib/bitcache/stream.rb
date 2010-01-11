@@ -17,14 +17,24 @@ module Bitcache
     # @param  [String] id
     # @param  [String] data
     def initialize(id, data)
-      @id, @data = id, data.to_s
+      @id, @data = id, Bitcache.read(data)
     end
 
     ##
-    # Returns `true` to indicate this is a bitstream.
+    # Returns `true` to indicate that this is a bitstream.
     def stream?
       true
     end
+
+    ##
+    # Returns `true` if this bitstream has an octet size of zero.
+    #
+    # @return [Boolean]
+    def empty?
+      size.zero?
+    end
+
+    alias_method :blank?, :empty?
 
     ##
     # Returns the octet size of this bitstream.
