@@ -5,10 +5,11 @@ require 'addressable/uri'
 require 'bitcache/version'
 
 module Bitcache
-  autoload :Adapter,    'bitcache/adapter'
-  autoload :Encoder,    'bitcache/encoder'
-  autoload :Repository, 'bitcache/repository'
-  autoload :Stream,     'bitcache/stream'
+  autoload :Adapter,     'bitcache/adapter'
+  autoload :Encoder,     'bitcache/encoder'
+  autoload :Inspectable, 'bitcache/inspectable'
+  autoload :Repository,  'bitcache/repository'
+  autoload :Stream,      'bitcache/stream'
 
   ##
   # Returns the Bitcache identifier for `input`.

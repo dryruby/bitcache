@@ -1,6 +1,7 @@
 module Bitcache
   ##
   class Repository
+    include Inspectable
     include Enumerable
 
     ##

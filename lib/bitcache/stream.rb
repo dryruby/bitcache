@@ -1,6 +1,7 @@
 module Bitcache
   ##
   class Stream
+    include Inspectable
     include Comparable
 
     ##
@@ -62,22 +63,6 @@ module Bitcache
     # @return [String] the bitstream's contents
     def to_str
       data
-    end
-
-    ##
-    # Returns a developer-friendly representation of this object.
-    #
-    # @return [String]
-    def inspect
-      sprintf("#<%s:%#0x(%s)>", self.class.name, __id__, id)
-    end
-
-    ##
-    # Outputs a developer-friendly representation of this object to `stderr`.
-    #
-    # @return [void]
-    def inspect!
-      warn(inspect)
     end
   end
 end
