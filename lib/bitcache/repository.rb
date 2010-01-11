@@ -18,9 +18,17 @@ module Bitcache
     #
     # @yield  [repository]
     # @yieldparam [Repository] repository
-    def initialize(options = {}, &block)
-      @streams = options.delete(:data) || {}
-      @options = options
+    def initialize(url_or_options = {}, &block)
+      case url_or_options
+        when Hash
+          @streams = url_or_options.delete(:data) || {}
+          @options = url_or_options
+        else
+          uri = Addressable::URI.parse(url_or_options.to_s)
+          # TODO
+          @streams = {}
+          @options = {}
+      end
 
       if block_given?
         case block.arity
