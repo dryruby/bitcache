@@ -22,6 +22,15 @@ module Bitcache
         end
       end
 
+      define :be_inspectable do
+        match do |value|
+          value.should respond_to(:inspect)
+          value.inspect.should be_a_kind_of(String)
+          value.should respond_to(:inspect!)
+          true
+        end
+      end
+
       define :be_an_adapter do
         match do |value|
           value.kind_of?(Bitcache::Adapter)

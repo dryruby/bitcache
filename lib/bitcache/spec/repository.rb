@@ -18,6 +18,10 @@ share_as :Bitcache_Repository do
     @repository.should be_a_repository
   end
 
+  it "should be inspectable" do
+    @repository.should be_inspectable
+  end
+
   it "should be accessible" do
     @repository.should be_accessible
   end

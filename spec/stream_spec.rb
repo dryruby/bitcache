@@ -14,9 +14,7 @@ describe Bitcache::Stream do
 
   it "should be inspectable" do
     @streams.each do |stream|
-      stream.should respond_to(:inspect)
-      stream.inspect.should be_a_kind_of(String)
-      stream.should respond_to(:inspect!)
+      stream.should be_inspectable
     end
   end
 
