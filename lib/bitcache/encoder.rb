@@ -54,6 +54,19 @@ module Bitcache
       end
 
       ##
+      # Returns `true` if `id` matches the digits in this encoder class.
+      #
+      # @example
+      #   Base16 === "deadbeef"  #=> true
+      #   Base16 === "foobar"    #=> false
+      #
+      # @param  [String, #to_s] id
+      # @return [Boolean]
+      def self.===(id)
+        self.regexp === id.to_s
+      end
+
+      ##
       # Encodes a number using this encoder class.
       #
       # @param  [Integer] number
