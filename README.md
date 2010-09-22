@@ -6,16 +6,12 @@ provides repository storage for bitstreams (colloquially known as blobs) of
 any length, each uniquely identified and addressed by a digital fingerprint
 derived through a secure cryptographic hash algorithm.
 
-### About Bitcache
-
-* <http://bitcache.org/>
+* <http://github.com/bendiken/bitcache>
 
 Documentation
 -------------
 
-* <http://bitcache.rubyforge.org/>
-
-### Classes
+<http://bitcache.rubyforge.org/>
 
 * {Bitcache::Adapter}
 * {Bitcache::Encoder}
@@ -25,13 +21,14 @@ Documentation
 Dependencies
 ------------
 
-* [Addressable](http://addressable.rubyforge.org/) (>= 2.2.1)
+* [Ruby](http://ruby-lang.org/) (>= 1.8.7) or (>= 1.8.1 with [Backports][])
+* [Addressable](http://rubygems.org/gems/addressable) (>= 2.2.1)
 
 Installation
 ------------
 
-The recommended installation method is via RubyGems. To install the latest
-official release from Gemcutter, do:
+The recommended installation method is via [RubyGems](http://rubygems.org/).
+To install the latest official release of the Bitcache gem, do:
 
     % [sudo] gem install bitcache
 
@@ -52,7 +49,7 @@ Resources
 
 * <http://bitcache.rubyforge.org/>
 * <http://github.com/bendiken/bitcache>
-* <http://gemcutter.org/gems/bitcache>
+* <http://rubygems.org/gems/bitcache>
 * <http://rubyforge.org/projects/bitcache/>
 * <http://raa.ruby-lang.org/project/bitcache/>
 * <http://www.ohloh.net/p/bitcache>
@@ -79,3 +76,5 @@ License
 
 This is free and unencumbered public domain software. For more information,
 see <http://unlicense.org/> or the accompanying {file:UNLICENSE} file.
+
+[Backports]: http://rubygems.org/gems/backports
