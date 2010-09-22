@@ -6,3 +6,8 @@ begin
 rescue LoadError => e
 end
 require 'bitcache'
+
+desc "Build the bitcache-#{File.read('VERSION').chomp}.gem file"
+task :build do
+  sh "gem build .gemspec"
+end
