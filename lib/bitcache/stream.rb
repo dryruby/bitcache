@@ -97,7 +97,7 @@ module Bitcache
     #
     # @return [Hash{Symbol => Object}]
     def to_hash
-      { :id => id, :size => size, :data => data }
+      {:id => id, :size => size, :data => data}
     end
-  end
-end
+  end # Stream
+end # Bitcache

@@ -2,5 +2,7 @@ module Bitcache
   ##
   class Adapter
     extend Enumerable
-  end
-end
+
+    # TODO
+  end # Adapter
+end # Bitcache

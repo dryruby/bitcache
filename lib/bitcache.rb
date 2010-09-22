@@ -1,8 +1,7 @@
 require 'digest/sha1'
 require 'pathname'
 require 'stringio'
-require 'addressable/uri'
-require 'bitcache/version'
+require 'addressable/uri' # @see http://rubygems.org/gems/addressable
 
 module Bitcache
   autoload :Adapter,     'bitcache/adapter'
@@ -10,6 +9,7 @@ module Bitcache
   autoload :Inspectable, 'bitcache/inspectable'
   autoload :Repository,  'bitcache/repository'
   autoload :Stream,      'bitcache/stream'
+  autoload :VERSION,     'bitcache/version'
 
   ##
   # Returns the Bitcache identifier for `input`.

@@ -52,7 +52,7 @@ module Bitcache
         result = []
         while number > 0
           number, digit = number.divmod(base)
-          result.unshift digits[digit].chr
+          result.unshift(digits[digit].chr)
         end
         result.empty? ? digits.first.chr : result.join('')
       end
@@ -70,7 +70,7 @@ module Bitcache
         end
         result
       end
-    end
+    end # Base
 
     ##
     # Base-16 (hexadecimal) encoder.
@@ -79,7 +79,7 @@ module Bitcache
     # @see http://en.wikipedia.org/wiki/Hexadecimal
     class Base16 < Base
       DIGITS = (?0..?9).to_a + (?a..?f).to_a
-    end
+    end # Base16
 
     ##
     # Base-62 encoder.
@@ -88,7 +88,7 @@ module Bitcache
     # @see http://en.wikipedia.org/wiki/Base_62
     class Base62 < Base
       DIGITS = (?0..?9).to_a + (?A..?Z).to_a + (?a..?z).to_a
-    end
+    end # Base62
 
     ##
     # Base-94 encoder.
@@ -96,6 +96,6 @@ module Bitcache
     # @see Base
     class Base94 < Base
       DIGITS = (33..126).to_a
-    end
-  end
-end
+    end # Base94
+  end # Encoder
+end # Bitcache

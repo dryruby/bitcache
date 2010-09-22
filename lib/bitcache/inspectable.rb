@@ -16,5 +16,5 @@ module Bitcache
     def inspect!
       warn(inspect)
     end
-  end
-end
+  end # Inspectable
+end # Bitcache

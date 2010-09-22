@@ -1,4 +1,4 @@
-require 'spec'
+require 'spec' # @see http://rubygems.org/gems/rspec
 
 module Bitcache
   ##
@@ -64,6 +64,6 @@ module Bitcache
           repository.has_stream?(stream)
         end
       end
-    end # module Matchers
-  end # module Spec
-end # module Bitcache
+    end # Matchers
+  end # Spec
+end # Bitcache

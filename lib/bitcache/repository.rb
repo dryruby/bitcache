@@ -244,5 +244,5 @@ module Bitcache
     def to_rdf
       RDF::URI.new(url)
     end
-  end
-end
+  end # Repository
+end # Bitcache
