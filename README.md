@@ -69,6 +69,11 @@ Author
 
 [Arto Bendiken](mailto:arto.bendiken@gmail.com) - <http://ar.to/>
 
+Contributors
+------------
+
+Refer to the accompanying `CREDITS` file.
+
 License
 -------
 
