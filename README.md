@@ -25,7 +25,7 @@ Documentation
 Dependencies
 ------------
 
-* [Addressable](http://addressable.rubyforge.org/) (>= 2.1.1)
+* [Addressable](http://addressable.rubyforge.org/) (>= 2.2.1)
 
 Installation
 ------------
@@ -67,10 +67,10 @@ See also
 Author
 ------
 
-* [Arto Bendiken](mailto:arto.bendiken@gmail.com) - <http://ar.to/>
+[Arto Bendiken](mailto:arto.bendiken@gmail.com) - <http://ar.to/>
 
 License
 -------
 
-Bitcache.rb is free and unencumbered public domain software. For more
-information, see <http://unlicense.org/> or the accompanying UNLICENSE file.
+This is free and unencumbered public domain software. For more information,
+see <http://unlicense.org/> or the accompanying {file:UNLICENSE} file.

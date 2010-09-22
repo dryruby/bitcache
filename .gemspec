@@ -12,7 +12,7 @@ GEMSPEC = Gem::Specification.new do |gem|
   gem.description        = 'Bitcache is a distributed content-addressable storage (CAS) system.'
   gem.rubyforge_project  = 'bitcache'
 
-  gem.authors            = ['Arto Bendiken']
+  gem.author             = 'Arto Bendiken'
   gem.email              = 'arto.bendiken@gmail.com'
 
   gem.platform           = Gem::Platform::RUBY
@@ -25,10 +25,10 @@ GEMSPEC = Gem::Specification.new do |gem|
   gem.test_files         = %w()
   gem.has_rdoc           = false
 
-  gem.required_ruby_version      = '>= 1.8.2'
+  gem.required_ruby_version      = '>= 1.8.1'
   gem.requirements               = []
-  gem.add_development_dependency 'rspec',       '>= 1.2.9'
-  gem.add_development_dependency 'yard' ,       '>= 0.5.2'
-  gem.add_runtime_dependency     'addressable', '>= 2.1.1'
+  gem.add_runtime_dependency     'addressable', '>= 2.2.1'
+  gem.add_development_dependency 'yard' ,       '>= 0.6.0'
+  gem.add_development_dependency 'rspec',       '>= 1.3.0'
   gem.post_install_message       = nil
 end
