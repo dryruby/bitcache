@@ -65,7 +65,7 @@ module Bitcache
       def self.decode(string)
         result, index = 0, 0
         string.reverse.each_byte do |char|
-          result += digits.index(char) * (base ** index)
+          result += digits.index(char.ord) * (base ** index)
           index  += 1
         end
         result
@@ -78,7 +78,7 @@ module Bitcache
     # @see Base
     # @see http://en.wikipedia.org/wiki/Hexadecimal
     class Base16 < Base
-      DIGITS = (?0..?9).to_a + (?a..?f).to_a
+      DIGITS = ((?0..?9).to_a + (?a..?f).to_a).map(&:ord)
     end # Base16
 
     ##
@@ -87,7 +87,7 @@ module Bitcache
     # @see Base
     # @see http://en.wikipedia.org/wiki/Base_62
     class Base62 < Base
-      DIGITS = (?0..?9).to_a + (?A..?Z).to_a + (?a..?z).to_a
+      DIGITS = ((?0..?9).to_a + (?A..?Z).to_a + (?a..?z).to_a).map(&:ord)
     end # Base62
 
     ##
@@ -95,7 +95,7 @@ module Bitcache
     #
     # @see Base
     class Base94 < Base
-      DIGITS = (33..126).to_a
+      DIGITS = ((33..126).to_a).map(&:ord)
     end # Base94
   end # Encoder
 end # Bitcache

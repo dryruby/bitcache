@@ -23,14 +23,14 @@ describe Bitcache::Encoder do
     end
 
     it "should encode identifiers" do
-      @encoder.encode(  0).should be_a_kind_of(String)
+      @encoder.encode(  0).should be_a(String)
       @encoder.encode(  0).should == '0'
       @encoder.encode( 15).should == 'f'
       @encoder.encode(255).should == 'ff'
     end
 
     it "should decode identifiers" do
-      @encoder.decode('0' ).should be_a_kind_of(Integer)
+      @encoder.decode('0' ).should be_an(Integer)
       @encoder.decode('0' ).should == 0
       @encoder.decode('f' ).should == 15
       @encoder.decode('ff').should == 255
