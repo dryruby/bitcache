@@ -88,8 +88,10 @@ module Bitcache
     # Returns the contents of this bitstream as an RDF literal.
     #
     # @return [RDF::Literal]
+    # @see    http://rdf.rubyforge.org/RDF/Literal.html
     def to_rdf
-      RDF::Literal.new(to_str)
+      require 'rdf' unless defined?(::RDF)
+      RDF::Literal(to_str)
     end
 
     ##

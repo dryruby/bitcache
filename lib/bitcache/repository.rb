@@ -241,8 +241,10 @@ module Bitcache
     # Returns the URL of this repository.
     #
     # @return [RDF::URI]
+    # @see    http://rdf.rubyforge.org/RDF/URI.html
     def to_rdf
-      RDF::URI.new(url)
+      require 'rdf' unless defined?(::RDF)
+      RDF::URI(url)
     end
   end # Repository
 end # Bitcache
