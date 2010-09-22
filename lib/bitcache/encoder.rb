@@ -44,6 +44,16 @@ module Bitcache
       end
 
       ##
+      # Returns a regular expression matching the digits of this encoder
+      # class.
+      #
+      # @return [Regexp
+      def self.regexp
+        const_defined?(:REGEXP) ? const_get(:REGEXP) :
+          /^(?:#{digits.map { |digit| Regexp.quote(digit.chr) }.join('|')})+$/
+      end
+
+      ##
       # Encodes a number using this encoder class.
       #
       # @param  [Integer] number
@@ -79,6 +89,7 @@ module Bitcache
     # @see http://en.wikipedia.org/wiki/Hexadecimal
     class Base16 < Base
       DIGITS = ((?0..?9).to_a + (?a..?f).to_a).map(&:ord)
+      REGEXP = /^[0-9a-f]+$/
     end # Base16
 
     ##
@@ -88,6 +99,7 @@ module Bitcache
     # @see http://en.wikipedia.org/wiki/Base_62
     class Base62 < Base
       DIGITS = ((?0..?9).to_a + (?A..?Z).to_a + (?a..?z).to_a).map(&:ord)
+      REGEXP = /^[0-9A-Za-z]+$/
     end # Base62
 
     ##
@@ -96,6 +108,7 @@ module Bitcache
     # @see Base
     class Base94 < Base
       DIGITS = ((33..126).to_a).map(&:ord)
+      REGEXP = /^(?:#{DIGITS.map { |digit| Regexp.quote(digit.chr) }.join('|')})+$/
     end # Base94
   end # Encoder
 end # Bitcache
