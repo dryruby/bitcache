@@ -58,7 +58,6 @@ See also
 --------
 
 * [Bitcache for Drupal](http://drupal.org/project/bitcache)
-* [Bitcache/C](http://github.com/bendiken/bitcache-c)
 * [Bitcache/Java](http://github.com/bendiken/bitcache-java)
 
 Author
