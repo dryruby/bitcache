@@ -9,6 +9,7 @@ module Bitcache
   autoload :Inspectable, 'bitcache/inspectable'
   autoload :Repository,  'bitcache/repository'
   autoload :Stream,      'bitcache/stream'
+  autoload :FFI,         'bitcache/ffi'
   autoload :VERSION,     'bitcache/version'
 
   ##
@@ -43,4 +44,4 @@ module Bitcache
         raise ArgumentError.new("expected a Bitcache::Stream, IO, Proc or String, but got #{input.inspect}")
     end
   end
-end
+end # Bitcache
