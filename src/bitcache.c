@@ -157,12 +157,6 @@ bitcache_id_equal(const bitcache_id* id1, const bitcache_id* id2) {
   return (id1 == id2) || (id1->type == id2->type && bitcache_id_compare(id1, id2) == 0);
 }
 
-int
-bitcache_id_compare(const bitcache_id* id1, const bitcache_id* id2) {
-  assert(id1 != NULL && id2 != NULL && id1->type == id2->type);
-  return memcmp(id1->data, id2->data, bitcache_id_get_size(id1));
-}
-
 guint
 bitcache_id_hash(const bitcache_id* id) {
   assert(id != NULL);
@@ -170,6 +164,12 @@ bitcache_id_hash(const bitcache_id* id) {
     (guint)(id->data[2] << 16) +
     (guint)(id->data[1] << 8) +
     (guint)(id->data[0] << 0);
+}
+
+int
+bitcache_id_compare(const bitcache_id* id1, const bitcache_id* id2) {
+  assert(id1 != NULL && id2 != NULL && id1->type == id2->type);
+  return memcmp(id1->data, id2->data, bitcache_id_get_size(id1));
 }
 
 char*
@@ -197,6 +197,200 @@ bitcache_id_to_mpi(const bitcache_id* id) {
 
 //////////////////////////////////////////////////////////////////////////////
 // Lists
+
+bitcache_list*
+bitcache_list_alloc() {
+  return g_slist_alloc();
+}
+
+bitcache_list*
+bitcache_list_copy(const bitcache_list* list) {
+  return g_slist_copy((bitcache_list*)list);
+}
+
+bitcache_list*
+bitcache_list_new() {
+  bitcache_list* list = bitcache_list_alloc();
+  bitcache_list_init(list);
+  return list;
+}
+
+void
+bitcache_list_init(bitcache_list* list) {
+  assert(list != BITCACHE_LIST_EMPTY);
+}
+
+void
+bitcache_list_free(bitcache_list* list) {
+  g_slist_free(list);
+}
+
+bool
+bitcache_list_equal(const bitcache_list* list1, const bitcache_list* list2) {
+  return (list1 == list2) || (list1 == BITCACHE_LIST_EMPTY || list2 == BITCACHE_LIST_EMPTY) || FALSE; // TODO
+}
+
+guint
+bitcache_list_hash(const bitcache_list* list) {
+  return g_direct_hash(list);
+}
+
+bitcache_list*
+bitcache_list_clear(bitcache_list* list) {
+  bitcache_list_free(list);
+  return BITCACHE_LIST_EMPTY;
+}
+
+bitcache_list*
+bitcache_list_append(bitcache_list* list, const bitcache_id* id) {
+  assert(id != NULL);
+  return g_slist_append(list, (void*)id);
+}
+
+bitcache_list*
+bitcache_list_prepend(const bitcache_list* list, const bitcache_id* id) {
+  assert(id != NULL);
+  return g_slist_prepend((bitcache_list*)list, (void*)id);
+}
+
+bitcache_list*
+bitcache_list_insert_at(bitcache_list* list, const int position, const bitcache_id* id) {
+  assert(id != NULL);
+  return g_slist_insert(list, (void*)id, position);
+}
+
+bitcache_list*
+bitcache_list_insert_before(bitcache_list* list, const bitcache_list* next, const bitcache_id* id) {
+  assert(id != NULL);
+  return g_slist_insert_before(list, (bitcache_list*)next, (void*)id);
+}
+
+bitcache_list*
+bitcache_list_insert_after(bitcache_list* list, const bitcache_list* prev, const bitcache_id* id) {
+  assert(id != NULL);
+  return g_slist_insert_before(list, bitcache_list_next(prev), (void*)id);
+}
+
+bitcache_list*
+bitcache_list_remove_at(bitcache_list* list, const gint position) {
+  bitcache_list* nth = bitcache_list_nth(list, position);
+  return (nth != NULL && nth != BITCACHE_LIST_EMPTY) ? g_slist_delete_link(list, nth) : list;
+}
+
+bitcache_list*
+bitcache_list_remove(bitcache_list* list, const bitcache_id* id) {
+  assert(id != NULL);
+  return g_slist_remove(list, (void*)id);
+}
+
+bitcache_list*
+bitcache_list_remove_all(bitcache_list* list, const bitcache_id* id) {
+  assert(id != NULL);
+  return g_slist_remove_all(list, (void*)id);
+}
+
+bitcache_list*
+bitcache_list_reverse(const bitcache_list* list) {
+  return g_slist_reverse((bitcache_list*)list);
+}
+
+bitcache_list*
+bitcache_list_concat(bitcache_list* list1, const bitcache_list* list2) {
+  return g_slist_concat(list1, (bitcache_list*)list2);
+}
+
+bool
+bitcache_list_is_empty(const bitcache_list* list) {
+  return list == BITCACHE_LIST_EMPTY;
+}
+
+guint
+bitcache_list_length(const bitcache_list* list) {
+  return g_slist_length((bitcache_list*)list);
+}
+
+guint
+bitcache_list_count(const bitcache_list* list, const bitcache_id* id) {
+  assert(id != NULL);
+  guint count = 0;
+  bitcache_list* head = (bitcache_list*)list;
+  while (head != BITCACHE_LIST_EMPTY) {
+    if (bitcache_id_equal(bitcache_list_first_id(head), id)) {
+      count += 1;
+    }
+    head = bitcache_list_next(head);
+  }
+  return count;
+}
+
+gint
+bitcache_list_position(const bitcache_list* list, const bitcache_list* link) {
+  return g_slist_position((bitcache_list*)list, (bitcache_list*)link);
+}
+
+gint
+bitcache_list_index(const bitcache_list* list, const bitcache_id* id) {
+  assert(id != NULL);
+  return g_slist_index((bitcache_list*)list, id);
+}
+
+bitcache_list*
+bitcache_list_find(const bitcache_list* list, const bitcache_id* id) {
+  assert(id != NULL);
+  return g_slist_find((bitcache_list*)list, id);
+}
+
+bitcache_list*
+bitcache_list_first(const bitcache_list* list) {
+  return (bitcache_list*)list;
+}
+
+bitcache_list*
+bitcache_list_next(const bitcache_list* list) {
+  return g_slist_next(list);
+}
+
+bitcache_list*
+bitcache_list_nth(const bitcache_list* list, const guint n) {
+  return g_slist_nth((bitcache_list*)list, n);
+}
+
+bitcache_list*
+bitcache_list_last(const bitcache_list* list) {
+  return g_slist_last((bitcache_list*)list);
+}
+
+bitcache_id*
+bitcache_list_first_id(const bitcache_list* list) {
+  return (list != BITCACHE_LIST_EMPTY) ? list->data : NULL;
+}
+
+bitcache_id*
+bitcache_list_next_id(const bitcache_list* list) {
+  return (list != BITCACHE_LIST_EMPTY) ? bitcache_list_first_id(list->next) : NULL;
+}
+
+bitcache_id*
+bitcache_list_nth_id(const bitcache_list* list, const guint n) {
+  return g_slist_nth_data((bitcache_list*)list, n);
+}
+
+bitcache_id*
+bitcache_list_last_id(const bitcache_list* list) {
+  bitcache_list* last = bitcache_list_last(list);
+  return bitcache_list_first_id(last);
+}
+
+void
+bitcache_list_each_id(const bitcache_list* list, const bitcache_id_func func, void* user_data) {
+  assert(func != NULL);
+  g_slist_foreach((bitcache_list*)list, (GFunc)func, user_data);
+}
+
+/*bitcache_set*
+bitcache_list_to_set(const bitcache_list* list) {
+  return (list != BITCACHE_LIST_EMPTY) ? NULL : NULL; // TODO
+}*/
 
 //////////////////////////////////////////////////////////////////////////////
 // Sets
