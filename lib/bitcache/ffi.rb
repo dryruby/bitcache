@@ -7,7 +7,19 @@ module Bitcache
   # @see https://github.com/ffi/ffi
   module FFI
     extend ::FFI::Library
-    ffi_lib LIBBITCACHE if const_defined?(:LIBBITCACHE)
+    ffi_lib const_defined?(:LIBBITCACHE) ? LIBBITCACHE : 'libbitcache'
+
+    ##
+    # Returns the installed `libbitcache` version number.
+    #
+    # @example
+    #   Bitcache::FFI.version  #=> "0.0.1"
+    #
+    # @return [String] an "x.y.z" version string
+    def version
+      bitcache_version_string.freeze
+    end
+    module_function :version
 
     ##
     # An FFI wrapper for the `bitcache_id` data structure.
@@ -51,5 +63,7 @@ module Bitcache
     class Stream < ::FFI::Struct
       # TODO: wrap the `bitcache_stream` data structure.
     end # Stream
+
+    attach_variable :bitcache_version_string, :string
   end # FFI
 end # Bitcache
