@@ -1,3 +1,5 @@
+/* This is free and unencumbered software released into the public domain. */
+
 #ifndef BITCACHE_H
 #define BITCACHE_H
 
