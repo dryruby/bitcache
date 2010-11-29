@@ -91,14 +91,14 @@ extern void bitcache_id_clear(bitcache_id* id);
 extern void bitcache_id_fill(bitcache_id* id, const byte value);
 
 // Accessors
+extern guint bitcache_id_get_hash(const bitcache_id* id);
 extern bitcache_id_type bitcache_id_get_type(const bitcache_id* id);
 extern byte* bitcache_id_get_digest(const bitcache_id* id);
 extern size_t bitcache_id_get_digest_size(const bitcache_id* id);
-extern guint bitcache_id_get_hash(const bitcache_id* id);
 
 // Predicates
-extern bool bitcache_id_is_zero(const bitcache_id* id);
 extern bool bitcache_id_is_equal(const bitcache_id* id1, const bitcache_id* id2);
+extern bool bitcache_id_is_zero(const bitcache_id* id);
 
 // Comparators
 extern int bitcache_id_compare(const bitcache_id* id1, const bitcache_id* id2);
@@ -111,44 +111,63 @@ extern byte* bitcache_id_to_mpi(const bitcache_id* id, byte* buffer);
 //////////////////////////////////////////////////////////////////////////////
 // List API
 
-#define BITCACHE_LIST_EMPTY   NULL // the canonical empty list
+#define BITCACHE_LIST_SENTINEL NULL // the canonical empty list sentinel
 
-typedef GSList bitcache_list;
+typedef GSList bitcache_list_element;
+
+typedef struct {
+  bitcache_list_element* head;
+} bitcache_list;
+
+typedef void (*bitcache_list_element_func)(const bitcache_list_element* element, void* user_data);
 typedef void (*bitcache_list_func)(const bitcache_list* list, void* user_data);
 
+// Allocators
+extern bitcache_list_element* bitcache_list_element_alloc();
+extern void bitcache_list_element_free(bitcache_list_element* element);
 extern bitcache_list* bitcache_list_alloc();
-extern bitcache_list* bitcache_list_copy(const bitcache_list* list);
-extern bitcache_list* bitcache_list_new();
-extern void bitcache_list_init(bitcache_list* list);
 extern void bitcache_list_free(bitcache_list* list);
-extern bool bitcache_list_equal(const bitcache_list* list1, const bitcache_list* list2);
-extern guint bitcache_list_hash(const bitcache_list* list);
-extern bitcache_list* bitcache_list_clear(bitcache_list* list);
-extern bitcache_list* bitcache_list_append(bitcache_list* list, const bitcache_id* id);
-extern bitcache_list* bitcache_list_prepend(const bitcache_list* list, const bitcache_id* id);
-extern bitcache_list* bitcache_list_insert_at(bitcache_list* list, const gint position, const bitcache_id* id);
-extern bitcache_list* bitcache_list_insert_before(bitcache_list* list, const bitcache_list* next, const bitcache_id* id);
-extern bitcache_list* bitcache_list_insert_after(bitcache_list* list, const bitcache_list* prev, const bitcache_id* id);
-extern bitcache_list* bitcache_list_remove_at(bitcache_list* list, const gint position);
-extern bitcache_list* bitcache_list_remove(bitcache_list* list, const bitcache_id* id);
-extern bitcache_list* bitcache_list_remove_all(bitcache_list* list, const bitcache_id* id);
-extern bitcache_list* bitcache_list_concat(bitcache_list* list1, const bitcache_list* list2);
-extern bitcache_list* bitcache_list_reverse(const bitcache_list* list);
+
+// Constructors
+extern bitcache_list_element* bitcache_list_element_new(const bitcache_id* first, const bitcache_list_element* rest);
+extern bitcache_list_element* bitcache_list_element_copy(const bitcache_list_element* element);
+extern bitcache_list* bitcache_list_new(const bitcache_list_element* head);
+extern bitcache_list* bitcache_list_copy(const bitcache_list* list);
+
+// Mutators
+extern void bitcache_list_element_init(bitcache_list_element* element, const bitcache_id* first, const bitcache_list_element* rest);
+extern void bitcache_list_init(bitcache_list* list, const bitcache_list_element* head);
+extern void bitcache_list_clear(bitcache_list* list);
+extern void bitcache_list_prepend(bitcache_list* list, const bitcache_id* id);
+extern void bitcache_list_append(bitcache_list* list, const bitcache_id* id);
+extern void bitcache_list_insert(bitcache_list* list, const bitcache_id* id);
+extern void bitcache_list_insert_at(bitcache_list* list, const gint position, const bitcache_id* id);
+extern void bitcache_list_insert_before(bitcache_list* list, const bitcache_list_element* next, const bitcache_id* id);
+extern void bitcache_list_insert_after(bitcache_list* list, const bitcache_list_element* prev, const bitcache_id* id);
+extern void bitcache_list_remove(bitcache_list* list, const bitcache_id* id);
+extern void bitcache_list_remove_all(bitcache_list* list, const bitcache_id* id);
+extern void bitcache_list_remove_at(bitcache_list* list, const gint position);
+extern void bitcache_list_reverse(bitcache_list* list);
+extern void bitcache_list_concat(bitcache_list* list1, const bitcache_list* list2);
+
+// Accessors
+extern guint bitcache_list_get_hash(const bitcache_list* list);
+extern guint bitcache_list_get_length(const bitcache_list* list);
+extern guint bitcache_list_get_count(const bitcache_list* list, const bitcache_id* id);
+extern guint bitcache_list_get_position(const bitcache_list* list, const bitcache_id* id);
+extern bitcache_list_element* bitcache_list_get_rest(const bitcache_list* list);
+extern bitcache_id* bitcache_list_get_first(const bitcache_list* list);
+extern bitcache_id* bitcache_list_get_last(const bitcache_list* list);
+extern bitcache_id* bitcache_list_get_nth(const bitcache_list* list, const gint position);
+
+// Predicates
+extern bool bitcache_list_is_equal(const bitcache_list* list1, const bitcache_list* list2);
 extern bool bitcache_list_is_empty(const bitcache_list* list);
-extern guint bitcache_list_length(const bitcache_list* list);
-extern guint bitcache_list_count(const bitcache_list* list, const bitcache_id* id);
-extern gint bitcache_list_position(const bitcache_list* list, const bitcache_list* link);
-extern gint bitcache_list_index(const bitcache_list* list, const bitcache_id* id);
-extern bitcache_list* bitcache_list_find(const bitcache_list* list, const bitcache_id* id);
-extern bitcache_list* bitcache_list_first(const bitcache_list* list);
-extern bitcache_list* bitcache_list_next(const bitcache_list* list);
-extern bitcache_list* bitcache_list_nth(const bitcache_list* list, const guint n);
-extern bitcache_list* bitcache_list_last(const bitcache_list* list);
-extern bitcache_id* bitcache_list_first_id(const bitcache_list* list);
-extern bitcache_id* bitcache_list_next_id(const bitcache_list* list);
-extern bitcache_id* bitcache_list_nth_id(const bitcache_list* list, const guint n);
-extern bitcache_id* bitcache_list_last_id(const bitcache_list* list);
-extern void bitcache_list_each_id(const bitcache_list* list, const bitcache_id_func func, void* user_data);
+
+// Iterators
+extern void bitcache_list_foreach(const bitcache_list* list, const bitcache_id_func func, void* user_data);
+
+// Converters
 //extern bitcache_set* bitcache_list_to_set(const bitcache_list* list);
 
 //////////////////////////////////////////////////////////////////////////////

@@ -216,6 +216,21 @@ describe Bitcache::FFI do
 
     # Identifier API: Accessors
     context "Accessors" do
+      describe "bitcache_id_get_hash(id)" do
+        it "returns an Integer" do
+          bitcache_id_get_hash(bitcache_id_new_sha1(nil)).should be_an Integer
+        end
+
+        it "returns a hash code based on the digest of the identifier" do
+          id1 = bitcache_id_new_sha1(nil)
+          bitcache_id_get_hash(id1).should eql 0
+
+          id2 = bitcache_id_new_sha1(nil)
+          bitcache_id_fill(id2, 0xff)
+          bitcache_id_get_hash(id2).should eql 0xffffffff
+        end
+      end
+
       describe "bitcache_id_get_type(id)" do
         it "returns an Integer" do
           bitcache_id_get_type(bitcache_id_new_sha1(nil)).should be_an Integer
@@ -247,43 +262,10 @@ describe Bitcache::FFI do
           bitcache_id_get_digest_size(bitcache_id_new_sha256(nil)).should eql BITCACHE_SHA256_SIZE
         end
       end
-
-      describe "bitcache_id_get_hash(id)" do
-        it "returns an Integer" do
-          bitcache_id_get_hash(bitcache_id_new_sha1(nil)).should be_an Integer
-        end
-
-        it "returns a hash code based on the digest of the identifier" do
-          id1 = bitcache_id_new_sha1(nil)
-          bitcache_id_get_hash(id1).should eql 0
-
-          id2 = bitcache_id_new_sha1(nil)
-          bitcache_id_fill(id2, 0xff)
-          bitcache_id_get_hash(id2).should eql 0xffffffff
-        end
-      end
     end
 
     # Identifier API: Predicates
     context "Predicates" do
-      describe "bitcache_id_is_zero(id)" do
-        it "returns a Boolean" do
-          bitcache_id_is_zero(bitcache_id_new_sha1(nil)).should be_a_boolean
-        end
-
-        it "returns TRUE if the digest of the identifier is all zeroes" do
-          id = bitcache_id_new_sha1(nil)
-          bitcache_id_fill(id, 0x00)
-          bitcache_id_is_zero(id).should eql true
-        end
-
-        it "returns FALSE if the digest of the identifier is not all zeroes" do
-          id = bitcache_id_new_sha1(nil)
-          bitcache_id_fill(id, 0xff)
-          bitcache_id_is_zero(id).should eql false
-        end
-      end
-
       describe "bitcache_id_is_equal(id1, id2)" do
         it "returns a Boolean" do
           id1 = id2 = bitcache_id_new_sha1(nil)
@@ -309,6 +291,24 @@ describe Bitcache::FFI do
           id2 = bitcache_id_new_sha1(nil)
           bitcache_id_fill(id2, 0xba)
           bitcache_id_is_equal(id1, id2).should eql false
+        end
+      end
+
+      describe "bitcache_id_is_zero(id)" do
+        it "returns a Boolean" do
+          bitcache_id_is_zero(bitcache_id_new_sha1(nil)).should be_a_boolean
+        end
+
+        it "returns TRUE if the digest of the identifier is all zeroes" do
+          id = bitcache_id_new_sha1(nil)
+          bitcache_id_fill(id, 0x00)
+          bitcache_id_is_zero(id).should eql true
+        end
+
+        it "returns FALSE if the digest of the identifier is not all zeroes" do
+          id = bitcache_id_new_sha1(nil)
+          bitcache_id_fill(id, 0xff)
+          bitcache_id_is_zero(id).should eql false
         end
       end
     end
@@ -404,11 +404,197 @@ describe Bitcache::FFI do
   # LIST API
 
   context "List API" do
-    # TODO
+    # List API: Allocators
+    context "Allocators" do
+      describe "bitcache_list_element_alloc()" do
+        # TODO
+      end
+
+      describe "bitcache_list_element_free(element)" do
+        # TODO
+      end
+
+      describe "bitcache_list_alloc()" do
+        # TODO
+      end
+
+      describe "bitcache_list_free(list)" do
+        # TODO
+      end
+    end
+
+    # List API: Constructors
+    context "Constructors" do
+      describe "bitcache_list_element_new(first, rest)" do
+        # TODO
+      end
+
+      describe "bitcache_list_element_copy(element)" do
+        # TODO
+      end
+
+      describe "bitcache_list_new(head)" do
+        # TODO
+      end
+
+      describe "bitcache_list_copy(list)" do
+        # TODO
+      end
+    end
+
+    # List API: Mutators
+    context "Mutators" do
+      describe "bitcache_list_element_init(element, first, rest)" do
+        # TODO
+      end
+
+      describe "bitcache_list_init(list, head)" do
+        # TODO
+      end
+
+      describe "bitcache_list_clear(list)" do
+        # TODO
+      end
+
+      describe "bitcache_list_prepend(list, id)" do
+        # TODO
+      end
+
+      describe "bitcache_list_append(list, id)" do
+        # TODO
+      end
+
+      describe "bitcache_list_insert(list, id)" do
+        # TODO
+      end
+
+      describe "bitcache_list_insert_at(list, position, id)" do
+        # TODO
+      end
+
+      describe "bitcache_list_insert_before(list, next, id)" do
+        # TODO
+      end
+
+      describe "bitcache_list_insert_after(list, prev, id)" do
+        # TODO
+      end
+
+      describe "bitcache_list_remove(list, id)" do
+        # TODO
+      end
+
+      describe "bitcache_list_remove_all(list, id)" do
+        # TODO
+      end
+
+      describe "bitcache_list_remove_at(list, position)" do
+        # TODO
+      end
+
+      describe "bitcache_list_reverse(list)" do
+        # TODO
+      end
+
+      describe "bitcache_list_concat(list1, list2)" do
+        # TODO
+      end
+    end
+
+    # List API: Accessors
+    context "Accessors" do
+      describe "bitcache_list_get_hash(list)" do
+        # TODO
+      end
+
+      describe "bitcache_list_get_length(list)" do
+        # TODO
+      end
+
+      describe "bitcache_list_get_count(list, id)" do
+        # TODO
+      end
+
+      describe "bitcache_list_get_position(list, id)" do
+        # TODO
+      end
+
+      describe "bitcache_list_get_rest(list)" do
+        # TODO
+      end
+
+      describe "bitcache_list_get_first(list)" do
+        # TODO
+      end
+
+      describe "bitcache_list_get_last(list)" do
+        # TODO
+      end
+
+      describe "bitcache_list_get_nth(list, position)" do
+        # TODO
+      end
+    end
+
+    # List API: Predicates
+    context "Predicates" do
+      describe "bitcache_list_is_equal(list1, list2)" do
+        # TODO
+      end
+
+      describe "bitcache_list_is_empty(list)" do
+        # TODO
+      end
+    end
+
+    # List API: Iterators
+    context "Iterators" do
+      describe "bitcache_list_foreach(list, func, user_data)" do
+        # TODO
+      end
+    end
+
+    # List API: Converters
+    context "Converters" do
+      describe "bitcache_list_to_set(list)" do
+        # TODO
+      end
+    end
   end
 
+  ##########################################################################
+
   context "Set API" do
-    # TODO
+    # Set API: Allocators
+    context "Allocators" do
+    end
+
+    # Set API: Constructors
+    context "Constructors" do
+    end
+
+    # Set API: Mutators
+    context "Mutators" do
+    end
+
+    # Set API: Accessors
+    context "Accessors" do
+    end
+
+    # Set API: Predicates
+    context "Predicates" do
+    end
+
+    # Set API: Iterators
+    context "Iterators" do
+    end
+
+    # Set API: Converters
+    context "Converters" do
+      describe "bitcache_set_to_list(set)" do
+        # TODO
+      end
+    end
   end
 
   context "Queue API" do

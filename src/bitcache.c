@@ -18,21 +18,21 @@ const char* const bitcache_version_string = PACKAGE_VERSION;
 // Digest API
 
 byte*
-bitcache_md5(const byte* data, const size_t size, byte* digest) {
+bitcache_md5(const byte* data, const size_t size, byte* buffer) {
   assert(data != NULL || size == 0);
-  return MD5(data, size, digest); // currently uses OpenSSL
+  return MD5(data, size, buffer); // currently uses OpenSSL
 }
 
 byte*
-bitcache_sha1(const byte* data, const size_t size, byte* digest) {
+bitcache_sha1(const byte* data, const size_t size, byte* buffer) {
   assert(data != NULL || size == 0);
-  return SHA1(data, size, digest); // currently uses OpenSSL
+  return SHA1(data, size, buffer); // currently uses OpenSSL
 }
 
 byte*
-bitcache_sha256(const byte* data, const size_t size, byte* digest) {
+bitcache_sha256(const byte* data, const size_t size, byte* buffer) {
   assert(data != NULL || size == 0);
-  return (digest = NULL); // TODO
+  return (buffer = NULL); // TODO
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -162,6 +162,15 @@ bitcache_id_fill(bitcache_id* id, const byte value) {
 //////////////////////////////////////////////////////////////////////////////
 // Identifier API: Accessors
 
+guint
+bitcache_id_get_hash(const bitcache_id* id) {
+  assert(id != NULL);
+  return (guint)(id->data[3] << 24) +
+    (guint)(id->data[2] << 16) +
+    (guint)(id->data[1] << 8) +
+    (guint)(id->data[0] << 0);
+}
+
 bitcache_id_type
 bitcache_id_get_type(const bitcache_id* id) {
   assert(id != NULL && id->type > BITCACHE_NONE);
@@ -180,17 +189,14 @@ bitcache_id_get_digest_size(const bitcache_id* id) {
   return (size_t)id->type; // HACK
 }
 
-guint
-bitcache_id_get_hash(const bitcache_id* id) {
-  assert(id != NULL);
-  return (guint)(id->data[3] << 24) +
-    (guint)(id->data[2] << 16) +
-    (guint)(id->data[1] << 8) +
-    (guint)(id->data[0] << 0);
-}
-
 //////////////////////////////////////////////////////////////////////////////
 // Identifier API: Predicates
+
+bool
+bitcache_id_is_equal(const bitcache_id* id1, const bitcache_id* id2) {
+  assert(id1 != NULL && id2 != NULL);
+  return (id1 == id2) || (id1->type == id2->type && bitcache_id_compare(id1, id2) == 0);
+}
 
 bool
 bitcache_id_is_zero(const bitcache_id* id) {
@@ -200,12 +206,6 @@ bitcache_id_is_zero(const bitcache_id* id) {
       return FALSE;
   }
   return TRUE;
-}
-
-bool
-bitcache_id_is_equal(const bitcache_id* id1, const bitcache_id* id2) {
-  assert(id1 != NULL && id2 != NULL);
-  return (id1 == id2) || (id1->type == id2->type && bitcache_id_compare(id1, id2) == 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -244,207 +244,273 @@ bitcache_id_to_mpi(const bitcache_id* id, byte* buffer) {
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// List API
+// List API: Allocators
 
-bitcache_list*
-bitcache_list_alloc() {
+bitcache_list_element*
+bitcache_list_element_alloc() {
   return g_slist_alloc();
 }
 
-bitcache_list*
-bitcache_list_copy(const bitcache_list* list) {
-  return g_slist_copy((bitcache_list*)list);
-}
-
-bitcache_list*
-bitcache_list_new() {
-  bitcache_list* list = bitcache_list_alloc();
-  bitcache_list_init(list);
-  return list;
-}
-
 void
-bitcache_list_init(bitcache_list* list) {
-  assert(list != BITCACHE_LIST_EMPTY);
+bitcache_list_element_free(bitcache_list_element* element) {
+  if (element != BITCACHE_LIST_SENTINEL)
+    g_slist_free(element);
+}
+
+bitcache_list*
+bitcache_list_alloc() {
+  return bitcache_slice_alloc(sizeof(bitcache_list));
 }
 
 void
 bitcache_list_free(bitcache_list* list) {
-  g_slist_free(list);
+  assert(list != NULL);
+  bitcache_list_element_free(list->head);
+  bitcache_slice_free1(sizeof(bitcache_list), list);
 }
 
-bool
-bitcache_list_equal(const bitcache_list* list1, const bitcache_list* list2) {
-  return (list1 == list2) || (list1 == BITCACHE_LIST_EMPTY || list2 == BITCACHE_LIST_EMPTY) || FALSE; // TODO
+//////////////////////////////////////////////////////////////////////////////
+// List API: Constructors
+
+bitcache_list_element*
+bitcache_list_element_new(const bitcache_id* first, const bitcache_list_element* rest) {
+  bitcache_list_element* element = bitcache_list_element_alloc();
+  bitcache_list_element_init(element, first, rest);
+  return element;
 }
+
+bitcache_list_element*
+bitcache_list_element_copy(const bitcache_list_element* element) {
+  return g_slist_copy((bitcache_list_element*)element);
+}
+
+bitcache_list*
+bitcache_list_new(const bitcache_list_element* head) {
+  bitcache_list* list = bitcache_list_alloc();
+  bitcache_list_init(list, head);
+  return list;
+}
+
+bitcache_list*
+bitcache_list_copy(const bitcache_list* list) {
+  assert(list != NULL);
+  return bitcache_list_new(list->head);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// List API: Mutators
+
+void
+bitcache_list_element_init(bitcache_list_element* element, const bitcache_id* first, const bitcache_list_element* rest) {
+  assert(element != NULL);
+  element->data = (bitcache_id*)first;
+  element->next = (bitcache_list_element*)rest;
+}
+
+void
+bitcache_list_init(bitcache_list* list, const bitcache_list_element* head) {
+  assert(list != NULL);
+  list->head = (head != NULL) ? (bitcache_list_element*)head : BITCACHE_LIST_SENTINEL;
+}
+
+void
+bitcache_list_clear(bitcache_list* list) {
+  assert(list != NULL);
+  if (list->head != BITCACHE_LIST_SENTINEL) {
+    bitcache_list_element_free(list->head);
+    list->head = BITCACHE_LIST_SENTINEL;
+  }
+}
+
+void
+bitcache_list_prepend(bitcache_list* list, const bitcache_id* id) {
+  assert(list != NULL && id != NULL);
+  list->head = g_slist_prepend(list->head, (void*)id);
+}
+
+void
+bitcache_list_append(bitcache_list* list, const bitcache_id* id) {
+  assert(list != NULL && id != NULL);
+  list->head = g_slist_append(list->head, (void*)id);
+}
+
+void
+bitcache_list_insert(bitcache_list* list, const bitcache_id* id) {
+  assert(list != NULL && id != NULL);
+  bitcache_list_prepend(list, id); // the most efficient insertion operation
+}
+
+void
+bitcache_list_insert_at(bitcache_list* list, const gint position, const bitcache_id* id) {
+  assert(list != NULL && id != NULL);
+  list->head = g_slist_insert(list->head, (void*)id, position);
+}
+
+void
+bitcache_list_insert_before(bitcache_list* list, const bitcache_list_element* next, const bitcache_id* id) {
+  assert(list != NULL && id != NULL);
+  list->head = g_slist_insert_before(list->head, (bitcache_list_element*)next, (void*)id);
+}
+
+void
+bitcache_list_insert_after(bitcache_list* list, const bitcache_list_element* prev, const bitcache_id* id) {
+  assert(list != NULL && id != NULL);
+  list->head = g_slist_insert_before(list->head, g_slist_next(prev), (void*)id);
+}
+
+void
+bitcache_list_remove(bitcache_list* list, const bitcache_id* id) {
+  assert(list != NULL && id != NULL);
+  list->head = g_slist_remove(list->head, (void*)id);
+}
+
+void
+bitcache_list_remove_all(bitcache_list* list, const bitcache_id* id) {
+  assert(list != NULL && id != NULL);
+  list->head = g_slist_remove_all(list->head, (void*)id);
+}
+
+void
+bitcache_list_remove_at(bitcache_list* list, const gint position) {
+  assert(list != NULL);
+  bitcache_list_element* element = g_slist_nth(list->head, position);
+  if (element != NULL && element != BITCACHE_LIST_SENTINEL) {
+    list->head = g_slist_delete_link(list->head, element);
+  }
+}
+
+void
+bitcache_list_reverse(bitcache_list* list) {
+  assert(list != NULL);
+  list->head = g_slist_reverse(list->head);
+}
+
+void
+bitcache_list_concat(bitcache_list* list1, const bitcache_list* list2) {
+  assert(list1 != NULL && list2 != NULL);
+  list1->head = g_slist_concat(list1->head, list2->head);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// List API: Accessors
 
 guint
-bitcache_list_hash(const bitcache_list* list) {
+bitcache_list_get_hash(const bitcache_list* list) {
+  assert(list != NULL);
   return g_direct_hash(list);
 }
 
-bitcache_list*
-bitcache_list_clear(bitcache_list* list) {
-  bitcache_list_free(list);
-  return BITCACHE_LIST_EMPTY;
-}
-
-bitcache_list*
-bitcache_list_append(bitcache_list* list, const bitcache_id* id) {
-  assert(id != NULL);
-  return g_slist_append(list, (void*)id);
-}
-
-bitcache_list*
-bitcache_list_prepend(const bitcache_list* list, const bitcache_id* id) {
-  assert(id != NULL);
-  return g_slist_prepend((bitcache_list*)list, (void*)id);
-}
-
-bitcache_list*
-bitcache_list_insert_at(bitcache_list* list, const int position, const bitcache_id* id) {
-  assert(id != NULL);
-  return g_slist_insert(list, (void*)id, position);
-}
-
-bitcache_list*
-bitcache_list_insert_before(bitcache_list* list, const bitcache_list* next, const bitcache_id* id) {
-  assert(id != NULL);
-  return g_slist_insert_before(list, (bitcache_list*)next, (void*)id);
-}
-
-bitcache_list*
-bitcache_list_insert_after(bitcache_list* list, const bitcache_list* prev, const bitcache_id* id) {
-  assert(id != NULL);
-  return g_slist_insert_before(list, bitcache_list_next(prev), (void*)id);
-}
-
-bitcache_list*
-bitcache_list_remove_at(bitcache_list* list, const gint position) {
-  bitcache_list* nth = bitcache_list_nth(list, position);
-  return (nth != NULL && nth != BITCACHE_LIST_EMPTY) ? g_slist_delete_link(list, nth) : list;
-}
-
-bitcache_list*
-bitcache_list_remove(bitcache_list* list, const bitcache_id* id) {
-  assert(id != NULL);
-  return g_slist_remove(list, (void*)id);
-}
-
-bitcache_list*
-bitcache_list_remove_all(bitcache_list* list, const bitcache_id* id) {
-  assert(id != NULL);
-  return g_slist_remove_all(list, (void*)id);
-}
-
-bitcache_list*
-bitcache_list_reverse(const bitcache_list* list) {
-  return g_slist_reverse((bitcache_list*)list);
-}
-
-bitcache_list*
-bitcache_list_concat(bitcache_list* list1, const bitcache_list* list2) {
-  return g_slist_concat(list1, (bitcache_list*)list2);
-}
-
-bool
-bitcache_list_is_empty(const bitcache_list* list) {
-  return list == BITCACHE_LIST_EMPTY;
+guint
+bitcache_list_get_length(const bitcache_list* list) {
+  assert(list != NULL);
+  return g_slist_length(list->head);
 }
 
 guint
-bitcache_list_length(const bitcache_list* list) {
-  return g_slist_length((bitcache_list*)list);
-}
-
-guint
-bitcache_list_count(const bitcache_list* list, const bitcache_id* id) {
-  assert(id != NULL);
+bitcache_list_get_count(const bitcache_list* list, const bitcache_id* id) {
+  assert(list != NULL);
   guint count = 0;
-  bitcache_list* head = (bitcache_list*)list;
-  while (head != BITCACHE_LIST_EMPTY) {
-    if (bitcache_id_is_equal(bitcache_list_first_id(head), id)) {
-      count += 1;
+  if (id != NULL) {
+    bitcache_list_element* head = list->head;
+    while (head != BITCACHE_LIST_SENTINEL) {
+      if (bitcache_id_is_equal(head->data, id)) {
+        count += 1;
+      }
+      head = head->next;
     }
-    head = bitcache_list_next(head);
+  }
+  else {
+    count = bitcache_list_get_length(list);
   }
   return count;
 }
 
-gint
-bitcache_list_position(const bitcache_list* list, const bitcache_list* link) {
-  return g_slist_position((bitcache_list*)list, (bitcache_list*)link);
+guint
+bitcache_list_get_position(const bitcache_list* list, const bitcache_id* id) {
+  assert(list != NULL && id != NULL);
+  return g_slist_index(list->head, id);
 }
 
-gint
-bitcache_list_index(const bitcache_list* list, const bitcache_id* id) {
-  assert(id != NULL);
-  return g_slist_index((bitcache_list*)list, id);
-}
-
-bitcache_list*
-bitcache_list_find(const bitcache_list* list, const bitcache_id* id) {
-  assert(id != NULL);
-  return g_slist_find((bitcache_list*)list, id);
-}
-
-bitcache_list*
-bitcache_list_first(const bitcache_list* list) {
-  return (bitcache_list*)list;
-}
-
-bitcache_list*
-bitcache_list_next(const bitcache_list* list) {
-  return g_slist_next(list);
-}
-
-bitcache_list*
-bitcache_list_nth(const bitcache_list* list, const guint n) {
-  return g_slist_nth((bitcache_list*)list, n);
-}
-
-bitcache_list*
-bitcache_list_last(const bitcache_list* list) {
-  return g_slist_last((bitcache_list*)list);
+bitcache_list_element*
+bitcache_list_get_rest(const bitcache_list* list) {
+  assert(list != NULL);
+  return g_slist_next(list->head);
 }
 
 bitcache_id*
-bitcache_list_first_id(const bitcache_list* list) {
-  return (list != BITCACHE_LIST_EMPTY) ? list->data : NULL;
+bitcache_list_get_first(const bitcache_list* list) {
+  assert(list != NULL);
+  if (list->head != BITCACHE_LIST_SENTINEL) {
+    bitcache_list_element* element = list->head;
+    assert(element != NULL);
+    return element->data;
+  }
+  return NULL;
 }
 
 bitcache_id*
-bitcache_list_next_id(const bitcache_list* list) {
-  return (list != BITCACHE_LIST_EMPTY) ? bitcache_list_first_id(list->next) : NULL;
+bitcache_list_get_last(const bitcache_list* list) {
+  assert(list != NULL);
+  if (list->head != BITCACHE_LIST_SENTINEL) {
+    bitcache_list_element* element = g_slist_last(list->head);
+    assert(element != NULL);
+    return element->data;
+  }
+  return NULL;
 }
 
 bitcache_id*
-bitcache_list_nth_id(const bitcache_list* list, const guint n) {
-  return g_slist_nth_data((bitcache_list*)list, n);
+bitcache_list_get_nth(const bitcache_list* list, const gint position) {
+  assert(list != NULL);
+  if (list->head != BITCACHE_LIST_SENTINEL) {
+    bitcache_list_element* element = g_slist_nth(list->head, position);
+    return element->data;
+  }
+  return NULL;
 }
 
-bitcache_id*
-bitcache_list_last_id(const bitcache_list* list) {
-  bitcache_list* last = bitcache_list_last(list);
-  return bitcache_list_first_id(last);
+//////////////////////////////////////////////////////////////////////////////
+// List API: Predicates
+
+bool
+bitcache_list_is_equal(const bitcache_list* list1, const bitcache_list* list2) {
+  assert(list1 != NULL && list2 != NULL);
+  return (list1 == list2) || FALSE; // TODO
 }
+
+bool
+bitcache_list_is_empty(const bitcache_list* list) {
+  assert(list != NULL);
+  return list->head == BITCACHE_LIST_SENTINEL;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// List API: Iterators
 
 void
-bitcache_list_each_id(const bitcache_list* list, const bitcache_id_func func, void* user_data) {
-  assert(func != NULL);
-  g_slist_foreach((bitcache_list*)list, (GFunc)func, user_data);
+bitcache_list_foreach(const bitcache_list* list, const bitcache_id_func func, void* user_data) {
+  assert(list != NULL && func != NULL);
+  g_slist_foreach(list->head, (GFunc)func, user_data);
 }
 
-/*bitcache_set*
+//////////////////////////////////////////////////////////////////////////////
+// List API: Converters
+
+/*
+bitcache_set*
 bitcache_list_to_set(const bitcache_list* list) {
-  return (list != BITCACHE_LIST_EMPTY) ? NULL : NULL; // TODO
-}*/
+  return bitcache_list_is_empty(list) ? NULL : NULL; // TODO
+}
+*/
 
 //////////////////////////////////////////////////////////////////////////////
 // Set API
 
 //////////////////////////////////////////////////////////////////////////////
 // Queue API
+
+//////////////////////////////////////////////////////////////////////////////
+// Index API
 
 //////////////////////////////////////////////////////////////////////////////
 // Stream API
