@@ -5,7 +5,7 @@ AC_CONFIG_MACRO_DIR([etc/aclocal])
 AM_INIT_AUTOMAKE([foreign -Wall -Werror dist-bzip2])
 LT_INIT
 AC_PROG_CC
-AM_PATH_GLIB_2_0([2.17.0], [], [], [gthread-2.0])
+AM_PATH_GLIB_2_0([2.24.0], [], [], [gthread-2.0])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([Makefile src/Makefile])
 AC_OUTPUT
