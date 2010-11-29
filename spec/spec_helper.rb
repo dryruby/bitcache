@@ -6,3 +6,15 @@ Spec::Runner.configure do |config|
 end
 
 include Bitcache
+
+class Object
+  def boolean?() false end
+end
+
+class TrueClass
+  def boolean?() true end
+end
+
+class FalseClass
+  def boolean?() true end
+end
