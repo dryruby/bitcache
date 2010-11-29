@@ -3,6 +3,7 @@ AC_CONFIG_SRCDIR([src/bitcache.h])
 AC_CONFIG_AUX_DIR([etc/aclocal])
 AC_CONFIG_MACRO_DIR([etc/aclocal])
 AM_INIT_AUTOMAKE([foreign -Wall -Werror dist-bzip2])
+AM_SILENT_RULES([yes])
 LT_INIT
 AC_PROG_CC
 AM_PATH_GLIB_2_0([2.24.0], [], [], [gthread-2.0])
