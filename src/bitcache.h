@@ -29,14 +29,14 @@ typedef guint8 byte;
 extern const char* const bitcache_version_string;
 
 //////////////////////////////////////////////////////////////////////////////
-// Digests
+// Digest API
 
-extern byte* bitcache_md5(const byte* data, const size_t size, byte* id);
-extern byte* bitcache_sha1(const byte* data, const size_t size, byte* id);
-extern byte* bitcache_sha256(const byte* data, const size_t size, byte* id);
+extern byte* bitcache_md5(const byte* data, const size_t size, byte* buffer);
+extern byte* bitcache_sha1(const byte* data, const size_t size, byte* buffer);
+extern byte* bitcache_sha256(const byte* data, const size_t size, byte* buffer);
 
 //////////////////////////////////////////////////////////////////////////////
-// Identifiers
+// Identifier API
 
 #define BITCACHE_MD5_SIZE     16 // bytes
 #define BITCACHE_SHA1_SIZE    20 // bytes
@@ -72,32 +72,46 @@ typedef struct {
 
 typedef void (*bitcache_id_func)(const bitcache_id* id, void* user_data);
 
-extern size_t bitcache_id_sizeof(const bitcache_id_type type);
+// Allocators
 extern bitcache_id* bitcache_id_alloc(const bitcache_id_type type);
-extern bitcache_id* bitcache_id_copy(const bitcache_id* id);
-extern bitcache_id* bitcache_id_new_md5(const byte* data);
-extern bitcache_id* bitcache_id_new_sha1(const byte* data);
-extern bitcache_id* bitcache_id_new_sha256(const byte* data);
-extern bitcache_id* bitcache_id_new(const bitcache_id_type type, const byte* data);
+extern void bitcache_id_free(bitcache_id* id);
+
+// Constructors
+extern bitcache_id* bitcache_id_new(const bitcache_id_type type, const byte* digest);
+extern bitcache_id* bitcache_id_new_md5(const byte* digest);
+extern bitcache_id* bitcache_id_new_sha1(const byte* digest);
+extern bitcache_id* bitcache_id_new_sha256(const byte* digest);
 extern bitcache_id* bitcache_id_new_from_hex_string(const char* string);
 extern bitcache_id* bitcache_id_new_from_base64_string(const char* string);
-extern void bitcache_id_init(bitcache_id* id, const bitcache_id_type type, const byte* data);
-extern void bitcache_id_free(bitcache_id* id);
+extern bitcache_id* bitcache_id_copy(const bitcache_id* id);
+
+// Mutators
+extern void bitcache_id_init(bitcache_id* id, const bitcache_id_type type, const byte* digest);
 extern void bitcache_id_clear(bitcache_id* id);
 extern void bitcache_id_fill(bitcache_id* id, const byte value);
+
+// Accessors
 extern bitcache_id_type bitcache_id_get_type(const bitcache_id* id);
-extern size_t bitcache_id_get_size(const bitcache_id* id);
-extern bool bitcache_id_equal(const bitcache_id* id1, const bitcache_id* id2);
-extern guint bitcache_id_hash(const bitcache_id* id);
+extern byte* bitcache_id_get_digest(const bitcache_id* id);
+extern size_t bitcache_id_get_digest_size(const bitcache_id* id);
+extern guint bitcache_id_get_hash(const bitcache_id* id);
+
+// Predicates
+extern bool bitcache_id_is_zero(const bitcache_id* id);
+extern bool bitcache_id_is_equal(const bitcache_id* id1, const bitcache_id* id2);
+
+// Comparators
 extern int bitcache_id_compare(const bitcache_id* id1, const bitcache_id* id2);
-extern char* bitcache_id_to_hex_string(const bitcache_id* id, char* string);
-extern char* bitcache_id_to_base64_string(const bitcache_id* id, char* string);
-extern byte* bitcache_id_to_mpi(const bitcache_id* id);
+
+// Converters
+extern char* bitcache_id_to_hex_string(const bitcache_id* id, char* buffer);
+extern char* bitcache_id_to_base64_string(const bitcache_id* id, char* buffer);
+extern byte* bitcache_id_to_mpi(const bitcache_id* id, byte* buffer);
 
 //////////////////////////////////////////////////////////////////////////////
-// Lists
+// List API
 
-#define BITCACHE_LIST_EMPTY   NULL // the canonical empty list sentinel
+#define BITCACHE_LIST_EMPTY   NULL // the canonical empty list
 
 typedef GSList bitcache_list;
 typedef void (*bitcache_list_func)(const bitcache_list* list, void* user_data);

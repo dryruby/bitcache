@@ -73,83 +73,107 @@ module Bitcache
     end
     module_function :define_type
 
-    # Types
-    define_type     :byte, :uint8
-    define_type     :bitcache_id_type, :int # FIXME?
-    define_type     :bitcache_id, :pointer
-    define_type     :bitcache_id_md5, :pointer
-    define_type     :bitcache_id_sha1, :pointer
-    define_type     :bitcache_id_sha256, :pointer
-    define_type     :bitcache_list, :pointer
+    # Bitcache API: Typedefs
+    typedef :uint8, :byte
 
-    # Constants
+    # Bitcache API: Constants
+    NULL             = ::FFI::Pointer::NULL
     attach_variable :bitcache_version_string, :string
 
-    # Digests
+    # Digest API
     attach_function :bitcache_md5, [:pointer, :size_t, :pointer], :pointer
     attach_function :bitcache_sha1, [:pointer, :size_t, :pointer], :pointer
     attach_function :bitcache_sha256, [:pointer, :size_t, :pointer], :pointer
 
-    # Identifiers
-    BITCACHE_MD5_SIZE     = 16 # bytes
-    BITCACHE_SHA1_SIZE    = 20 # bytes
-    BITCACHE_SHA256_SIZE  = 32 # bytes
-    BITCACHE_ID_SIZE      = BITCACHE_SHA256_SIZE
-    attach_function :bitcache_id_alloc, [bitcache_id_type], bitcache_id
-    attach_function :bitcache_id_copy, [bitcache_id], bitcache_id
-    attach_function :bitcache_id_new_md5, [:pointer], bitcache_id
-    attach_function :bitcache_id_new_sha1, [:pointer], bitcache_id
-    attach_function :bitcache_id_new_sha256, [:pointer], bitcache_id
-    attach_function :bitcache_id_new, [bitcache_id_type, :pointer], bitcache_id
-    attach_function :bitcache_id_new_from_hex_string, [:string], bitcache_id
-    attach_function :bitcache_id_new_from_base64_string, [:string], bitcache_id
-    attach_function :bitcache_id_init, [bitcache_id, bitcache_id_type, :pointer], :void
-    attach_function :bitcache_id_free, [bitcache_id], :void
-    attach_function :bitcache_id_clear, [bitcache_id], :void
-    attach_function :bitcache_id_fill, [bitcache_id, byte], :void
-    attach_function :bitcache_id_get_type, [bitcache_id], bitcache_id_type
-    attach_function :bitcache_id_get_size, [bitcache_id], :size_t
-    attach_function :bitcache_id_equal, [bitcache_id, bitcache_id], :bool
-    attach_function :bitcache_id_hash, [bitcache_id], :uint
-    attach_function :bitcache_id_compare, [bitcache_id, bitcache_id], :int
-    attach_function :bitcache_id_to_hex_string, [bitcache_id, :string], :string
-    attach_function :bitcache_id_to_base64_string, [bitcache_id, :string], :string
-    attach_function :bitcache_id_to_mpi, [bitcache_id], :pointer
+    # Identifier API: Constants
+    BITCACHE_MD5     = BITCACHE_MD5_SIZE     = 16 # bytes
+    BITCACHE_SHA1    = BITCACHE_SHA1_SIZE    = 20 # bytes
+    BITCACHE_SHA256  = BITCACHE_SHA256_SIZE  = 32 # bytes
+    BITCACHE_ID_SIZE = BITCACHE_SHA256_SIZE
 
-    # Lists
-    BITCACHE_LIST_EMPTY   = nil # the canonical empty list sentinel
-    attach_function :bitcache_list_alloc, [], bitcache_list
-    attach_function :bitcache_list_copy, [bitcache_list], bitcache_list
-    attach_function :bitcache_list_new, [], bitcache_list
-    attach_function :bitcache_list_init, [bitcache_list], :void
-    attach_function :bitcache_list_free, [bitcache_list], :void
-    attach_function :bitcache_list_equal, [bitcache_list, bitcache_list], :bool
-    attach_function :bitcache_list_hash, [bitcache_list], :uint
-    attach_function :bitcache_list_clear, [bitcache_list], bitcache_list
-    attach_function :bitcache_list_append, [bitcache_list, bitcache_id], bitcache_list
-    attach_function :bitcache_list_prepend, [bitcache_list, bitcache_id], bitcache_list
-    attach_function :bitcache_list_insert_at, [bitcache_list, :int, bitcache_id], bitcache_list
-    attach_function :bitcache_list_insert_before, [bitcache_list, bitcache_list, bitcache_id], bitcache_list
-    attach_function :bitcache_list_insert_after, [bitcache_list, bitcache_list, bitcache_id], bitcache_list
-    attach_function :bitcache_list_remove_at, [bitcache_list, :int], bitcache_list
-    attach_function :bitcache_list_remove, [bitcache_list, bitcache_id], bitcache_list
-    attach_function :bitcache_list_remove_all, [bitcache_list, bitcache_id], bitcache_list
-    attach_function :bitcache_list_concat, [bitcache_list, bitcache_list], bitcache_list
-    attach_function :bitcache_list_reverse, [bitcache_list], bitcache_list
-    attach_function :bitcache_list_is_empty, [bitcache_list], :bool
-    attach_function :bitcache_list_length, [bitcache_list], :uint
-    attach_function :bitcache_list_count, [bitcache_list, bitcache_id], :uint
-    attach_function :bitcache_list_position, [bitcache_list, bitcache_list], :int
-    attach_function :bitcache_list_index, [bitcache_list, bitcache_id], :int
-    attach_function :bitcache_list_find, [bitcache_list, bitcache_id], bitcache_list
-    attach_function :bitcache_list_first, [bitcache_list], bitcache_list
-    attach_function :bitcache_list_next, [bitcache_list], bitcache_list
-    attach_function :bitcache_list_nth, [bitcache_list, :uint], bitcache_list
-    attach_function :bitcache_list_last, [bitcache_list], bitcache_list
-    attach_function :bitcache_list_first_id, [bitcache_list], bitcache_id
-    attach_function :bitcache_list_next_id, [bitcache_list], bitcache_id
-    attach_function :bitcache_list_nth_id, [bitcache_list, :uint], bitcache_id
-    attach_function :bitcache_list_last_id, [bitcache_list], bitcache_id
-    attach_function :bitcache_list_each_id, [bitcache_list, :pointer, :pointer], :void
+    # Identifier API: Typedefs
+    typedef :int,     :bitcache_id_type # FIXME?
+    typedef :pointer, :bitcache_id
+    typedef :pointer, :bitcache_id_md5
+    typedef :pointer, :bitcache_id_sha1
+    typedef :pointer, :bitcache_id_sha256
+    typedef :pointer, :bitcache_id_func
+
+    # Identifier API: Allocators
+    attach_function :bitcache_id_alloc, [:bitcache_id_type], :bitcache_id
+    attach_function :bitcache_id_free, [:bitcache_id], :void
+
+    # Identifier API: Constructors
+    attach_function :bitcache_id_new, [:bitcache_id_type, :pointer], :bitcache_id
+    attach_function :bitcache_id_new_md5, [:pointer], :bitcache_id
+    attach_function :bitcache_id_new_sha1, [:pointer], :bitcache_id
+    attach_function :bitcache_id_new_sha256, [:pointer], :bitcache_id
+    attach_function :bitcache_id_new_from_hex_string, [:string], :bitcache_id
+    attach_function :bitcache_id_new_from_base64_string, [:string], :bitcache_id
+    attach_function :bitcache_id_copy, [:bitcache_id], :bitcache_id
+
+    # Identifier API: Mutators
+    attach_function :bitcache_id_init, [:bitcache_id, :bitcache_id_type, :pointer], :void
+    attach_function :bitcache_id_clear, [:bitcache_id], :void
+    attach_function :bitcache_id_fill, [:bitcache_id, :byte], :void
+
+    # Identifier API: Accessors
+    attach_function :bitcache_id_get_type, [:bitcache_id], :bitcache_id_type
+    attach_function :bitcache_id_get_digest, [:bitcache_id], :pointer
+    attach_function :bitcache_id_get_digest_size, [:bitcache_id], :size_t
+    attach_function :bitcache_id_get_hash, [:bitcache_id], :uint
+
+    # Identifier API: Predicates
+    attach_function :bitcache_id_is_zero, [:bitcache_id], :bool
+    attach_function :bitcache_id_is_equal, [:bitcache_id, :bitcache_id], :bool
+
+    # Identifier API: Comparators
+    attach_function :bitcache_id_compare, [:bitcache_id, :bitcache_id], :int
+
+    # Identifier API: Converters
+    attach_function :bitcache_id_to_hex_string, [:bitcache_id, :pointer], :string
+    attach_function :bitcache_id_to_base64_string, [:bitcache_id, :pointer], :string
+    attach_function :bitcache_id_to_mpi, [:bitcache_id, :pointer], :pointer
+
+    # List API: Constants
+    BITCACHE_LIST_EMPTY = nil # the canonical empty list
+
+    # List API: Typedefs
+    typedef :pointer, :bitcache_list
+
+    # List API
+    attach_function :bitcache_list_alloc, [], :bitcache_list
+    attach_function :bitcache_list_copy, [:bitcache_list], :bitcache_list
+    attach_function :bitcache_list_new, [], :bitcache_list
+    attach_function :bitcache_list_init, [:bitcache_list], :void
+    attach_function :bitcache_list_free, [:bitcache_list], :void
+    attach_function :bitcache_list_equal, [:bitcache_list, :bitcache_list], :bool
+    attach_function :bitcache_list_hash, [:bitcache_list], :uint
+    attach_function :bitcache_list_clear, [:bitcache_list], :bitcache_list
+    attach_function :bitcache_list_append, [:bitcache_list, :bitcache_id], :bitcache_list
+    attach_function :bitcache_list_prepend, [:bitcache_list, :bitcache_id], :bitcache_list
+    attach_function :bitcache_list_insert_at, [:bitcache_list, :int, :bitcache_id], :bitcache_list
+    attach_function :bitcache_list_insert_before, [:bitcache_list, :bitcache_list, :bitcache_id], :bitcache_list
+    attach_function :bitcache_list_insert_after, [:bitcache_list, :bitcache_list, :bitcache_id], :bitcache_list
+    attach_function :bitcache_list_remove_at, [:bitcache_list, :int], :bitcache_list
+    attach_function :bitcache_list_remove, [:bitcache_list, :bitcache_id], :bitcache_list
+    attach_function :bitcache_list_remove_all, [:bitcache_list, :bitcache_id], :bitcache_list
+    attach_function :bitcache_list_concat, [:bitcache_list, :bitcache_list], :bitcache_list
+    attach_function :bitcache_list_reverse, [:bitcache_list], :bitcache_list
+    attach_function :bitcache_list_is_empty, [:bitcache_list], :bool
+    attach_function :bitcache_list_length, [:bitcache_list], :uint
+    attach_function :bitcache_list_count, [:bitcache_list, :bitcache_id], :uint
+    attach_function :bitcache_list_position, [:bitcache_list, :bitcache_list], :int
+    attach_function :bitcache_list_index, [:bitcache_list, :bitcache_id], :int
+    attach_function :bitcache_list_find, [:bitcache_list, :bitcache_id], :bitcache_list
+    attach_function :bitcache_list_first, [:bitcache_list], :bitcache_list
+    attach_function :bitcache_list_next, [:bitcache_list], :bitcache_list
+    attach_function :bitcache_list_nth, [:bitcache_list, :uint], :bitcache_list
+    attach_function :bitcache_list_last, [:bitcache_list], :bitcache_list
+    attach_function :bitcache_list_first_id, [:bitcache_list], :bitcache_id
+    attach_function :bitcache_list_next_id, [:bitcache_list], :bitcache_id
+    attach_function :bitcache_list_nth_id, [:bitcache_list, :uint], :bitcache_id
+    attach_function :bitcache_list_last_id, [:bitcache_list], :bitcache_id
+    attach_function :bitcache_list_each_id, [:bitcache_list, :bitcache_id_func, :pointer], :void
   end # FFI
 end # Bitcache

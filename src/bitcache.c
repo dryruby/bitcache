@@ -15,30 +15,30 @@
 const char* const bitcache_version_string = PACKAGE_VERSION;
 
 //////////////////////////////////////////////////////////////////////////////
-// Digests
+// Digest API
 
 byte*
-bitcache_md5(const byte* data, const size_t size, byte* id) {
+bitcache_md5(const byte* data, const size_t size, byte* digest) {
   assert(data != NULL || size == 0);
-  return MD5(data, size, id); // currently uses OpenSSL
+  return MD5(data, size, digest); // currently uses OpenSSL
 }
 
 byte*
-bitcache_sha1(const byte* data, const size_t size, byte* id) {
+bitcache_sha1(const byte* data, const size_t size, byte* digest) {
   assert(data != NULL || size == 0);
-  return SHA1(data, size, id); // currently uses OpenSSL
+  return SHA1(data, size, digest); // currently uses OpenSSL
 }
 
 byte*
-bitcache_sha256(const byte* data, const size_t size, byte* id) {
+bitcache_sha256(const byte* data, const size_t size, byte* digest) {
   assert(data != NULL || size == 0);
-  return (id = NULL); // TODO
+  return (digest = NULL); // TODO
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// Identifiers
+// Identifier API: Internals
 
-size_t
+static inline size_t
 bitcache_id_sizeof(const bitcache_id_type type) {
   assert(type > BITCACHE_NONE);
   switch (type) {
@@ -53,40 +53,51 @@ bitcache_id_sizeof(const bitcache_id_type type) {
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////
+// Identifier API: Allocators
+
 bitcache_id*
 bitcache_id_alloc(const bitcache_id_type type) {
   assert(type > BITCACHE_NONE);
   size_t size = bitcache_id_sizeof(type);
-  return size > 0 ? bitcache_slice_alloc(size) : NULL;
+  if (size > 0) {
+    bitcache_id* id = (bitcache_id*)bitcache_slice_alloc(size);
+    id->type = type;
+    return id;
+  }
+  return NULL;
 }
 
-bitcache_id*
-bitcache_id_copy(const bitcache_id* id) {
+void
+bitcache_id_free(bitcache_id* id) {
   assert(id != NULL);
-  return bitcache_slice_copy(bitcache_id_sizeof(id->type), id);
+  bitcache_slice_free1(bitcache_id_sizeof(id->type), id);
 }
 
-bitcache_id*
-bitcache_id_new_md5(const byte* data) {
-  return bitcache_id_new(BITCACHE_MD5, data);
-}
+//////////////////////////////////////////////////////////////////////////////
+// Identifier API: Constructors
 
 bitcache_id*
-bitcache_id_new_sha1(const byte* data) {
-  return bitcache_id_new(BITCACHE_SHA1, data);
-}
-
-bitcache_id*
-bitcache_id_new_sha256(const byte* data) {
-  return bitcache_id_new(BITCACHE_SHA256, data);
-}
-
-bitcache_id*
-bitcache_id_new(const bitcache_id_type type, const byte* data) {
+bitcache_id_new(const bitcache_id_type type, const byte* digest) {
   assert(type != BITCACHE_NONE);
   bitcache_id* id = bitcache_id_alloc(type);
-  bitcache_id_init(id, type, data);
+  bitcache_id_init(id, type, digest);
   return id;
+}
+
+bitcache_id*
+bitcache_id_new_md5(const byte* digest) {
+  return bitcache_id_new(BITCACHE_MD5, digest);
+}
+
+bitcache_id*
+bitcache_id_new_sha1(const byte* digest) {
+  return bitcache_id_new(BITCACHE_SHA1, digest);
+}
+
+bitcache_id*
+bitcache_id_new_sha256(const byte* digest) {
+  return bitcache_id_new(BITCACHE_SHA256, digest);
 }
 
 bitcache_id*
@@ -118,32 +129,38 @@ bitcache_id_new_from_base64_string(const char* string) {
   return NULL; // TODO
 }
 
-void
-bitcache_id_init(bitcache_id* id, const bitcache_id_type type, const byte* data) {
-  assert(type != BITCACHE_NONE);
-  id->type = type;
-  if (data != NULL) {
-    bitcache_memmove(id->data, data, bitcache_id_get_size(id));
-  }
+bitcache_id*
+bitcache_id_copy(const bitcache_id* id) {
+  assert(id != NULL);
+  return bitcache_slice_copy(bitcache_id_sizeof(id->type), id);
 }
 
+//////////////////////////////////////////////////////////////////////////////
+// Identifier API: Mutators
+
 void
-bitcache_id_free(bitcache_id* id) {
-  assert(id != NULL);
-  bitcache_slice_free1(bitcache_id_sizeof(id->type), id);
+bitcache_id_init(bitcache_id* id, const bitcache_id_type type, const byte* digest) {
+  assert(type != BITCACHE_NONE);
+  id->type = type;
+  if (digest != NULL) {
+    bitcache_memmove(id->data, digest, bitcache_id_get_digest_size(id));
+  }
 }
 
 void
 bitcache_id_clear(bitcache_id* id) {
   assert(id != NULL);
-  bzero(id->data, bitcache_id_get_size(id));
+  bzero(id->data, bitcache_id_get_digest_size(id));
 }
 
 void
 bitcache_id_fill(bitcache_id* id, const byte value) {
   assert(id != NULL);
-  memset(id->data, value, bitcache_id_get_size(id));
+  memset(id->data, value, bitcache_id_get_digest_size(id));
 }
+
+//////////////////////////////////////////////////////////////////////////////
+// Identifier API: Accessors
 
 bitcache_id_type
 bitcache_id_get_type(const bitcache_id* id) {
@@ -151,20 +168,20 @@ bitcache_id_get_type(const bitcache_id* id) {
   return id->type;
 }
 
+byte*
+bitcache_id_get_digest(const bitcache_id* id) {
+  assert(id != NULL && id->type > BITCACHE_NONE);
+  return (byte*)id->data;
+}
+
 size_t
-bitcache_id_get_size(const bitcache_id* id) {
+bitcache_id_get_digest_size(const bitcache_id* id) {
   assert(id != NULL && id->type > BITCACHE_NONE);
   return (size_t)id->type; // HACK
 }
 
-bool
-bitcache_id_equal(const bitcache_id* id1, const bitcache_id* id2) {
-  assert(id1 != NULL && id2 != NULL);
-  return (id1 == id2) || (id1->type == id2->type && bitcache_id_compare(id1, id2) == 0);
-}
-
 guint
-bitcache_id_hash(const bitcache_id* id) {
+bitcache_id_get_hash(const bitcache_id* id) {
   assert(id != NULL);
   return (guint)(id->data[3] << 24) +
     (guint)(id->data[2] << 16) +
@@ -172,17 +189,42 @@ bitcache_id_hash(const bitcache_id* id) {
     (guint)(id->data[0] << 0);
 }
 
+//////////////////////////////////////////////////////////////////////////////
+// Identifier API: Predicates
+
+bool
+bitcache_id_is_zero(const bitcache_id* id) {
+  assert(id != NULL);
+  for (int i = 0; i < bitcache_id_get_digest_size(id); i++) {
+    if (id->data[i] != 0)
+      return FALSE;
+  }
+  return TRUE;
+}
+
+bool
+bitcache_id_is_equal(const bitcache_id* id1, const bitcache_id* id2) {
+  assert(id1 != NULL && id2 != NULL);
+  return (id1 == id2) || (id1->type == id2->type && bitcache_id_compare(id1, id2) == 0);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Identifier API: Comparators
+
 int
 bitcache_id_compare(const bitcache_id* id1, const bitcache_id* id2) {
   assert(id1 != NULL && id2 != NULL && id1->type == id2->type);
-  return memcmp(id1->data, id2->data, bitcache_id_get_size(id1));
+  return memcmp(id1->data, id2->data, bitcache_id_get_digest_size(id1));
 }
 
+//////////////////////////////////////////////////////////////////////////////
+// Identifier API: Converters
+
 char*
-bitcache_id_to_hex_string(const bitcache_id* id, char* string) {
+bitcache_id_to_hex_string(const bitcache_id* id, char* buffer) {
   assert(id != NULL);
-  size_t size = bitcache_id_get_size(id);
-  string = (string != NULL) ? string : bitcache_malloc(size * 2 + 1);
+  size_t size = bitcache_id_get_digest_size(id);
+  char* string = (buffer != NULL) ? buffer : bitcache_malloc(size * 2 + 1);
   for (int i = 0; i< (int)size; i++) {
     snprintf(string + i * 2, 3, "%02x", id->data[i]); // TODO: optimize this
   }
@@ -190,19 +232,19 @@ bitcache_id_to_hex_string(const bitcache_id* id, char* string) {
 }
 
 char*
-bitcache_id_to_base64_string(const bitcache_id* id, char* string) {
+bitcache_id_to_base64_string(const bitcache_id* id, char* buffer) {
   assert(id != NULL);
-  return (string = NULL); // TODO
+  return (buffer = NULL); // TODO
 }
 
 byte*
-bitcache_id_to_mpi(const bitcache_id* id) {
+bitcache_id_to_mpi(const bitcache_id* id, byte* buffer) {
   assert(id != NULL);
-  return NULL; // TODO
+  return (buffer = NULL); // TODO
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// Lists
+// List API
 
 bitcache_list*
 bitcache_list_alloc() {
@@ -321,7 +363,7 @@ bitcache_list_count(const bitcache_list* list, const bitcache_id* id) {
   guint count = 0;
   bitcache_list* head = (bitcache_list*)list;
   while (head != BITCACHE_LIST_EMPTY) {
-    if (bitcache_id_equal(bitcache_list_first_id(head), id)) {
+    if (bitcache_id_is_equal(bitcache_list_first_id(head), id)) {
       count += 1;
     }
     head = bitcache_list_next(head);
@@ -399,10 +441,10 @@ bitcache_list_to_set(const bitcache_list* list) {
 }*/
 
 //////////////////////////////////////////////////////////////////////////////
-// Sets
+// Set API
 
 //////////////////////////////////////////////////////////////////////////////
-// Queues
+// Queue API
 
 //////////////////////////////////////////////////////////////////////////////
-// Streams
+// Stream API
