@@ -28,6 +28,13 @@ typedef guint8 byte;
 
 extern const char* const bitcache_version_string;
 
+typedef enum {
+  BITCACHE_OP_NOP = 0, // no-op
+  BITCACHE_OP_OR  = 1, // logical or  (set union)
+  BITCACHE_OP_AND = 2, // logical and (set intersection)
+  BITCACHE_OP_XOR = 3, // logical xor (set difference)
+} bitcache_op;
+
 //////////////////////////////////////////////////////////////////////////////
 // Digest API
 
@@ -52,22 +59,22 @@ typedef enum {
 
 typedef struct {
   bitcache_id_type type;
-  byte data[BITCACHE_ID_SIZE];
+  byte digest[BITCACHE_ID_SIZE];
 } bitcache_id;
 
 typedef struct {
   bitcache_id_type type;
-  byte data[BITCACHE_MD5_SIZE];
+  byte digest[BITCACHE_MD5_SIZE];
 } bitcache_id_md5;
 
 typedef struct {
   bitcache_id_type type;
-  byte data[BITCACHE_SHA1_SIZE];
+  byte digest[BITCACHE_SHA1_SIZE];
 } bitcache_id_sha1;
 
 typedef struct {
   bitcache_id_type type;
-  byte data[BITCACHE_SHA256_SIZE];
+  byte digest[BITCACHE_SHA256_SIZE];
 } bitcache_id_sha256;
 
 typedef void (*bitcache_id_func)(const bitcache_id* id, void* user_data);
@@ -109,6 +116,43 @@ extern char* bitcache_id_to_base64_string(const bitcache_id* id, char* buffer);
 extern byte* bitcache_id_to_mpi(const bitcache_id* id, byte* buffer);
 
 //////////////////////////////////////////////////////////////////////////////
+// Filter API
+
+#define BITCACHE_FILTER_DEFAULT_SIZE 1024
+
+typedef struct {
+  size_t bitsize;
+  byte* bitmap;
+} bitcache_filter;
+
+// Allocators
+extern bitcache_filter* bitcache_filter_alloc();
+extern void bitcache_filter_free(bitcache_filter* filter);
+
+// Constructors
+extern bitcache_filter* bitcache_filter_new(size_t size);
+extern bitcache_filter* bitcache_filter_copy(const bitcache_filter* filter);
+
+// Mutators
+extern void bitcache_filter_init(bitcache_filter* filter, size_t size);
+extern void bitcache_filter_clear(bitcache_filter* filter);
+extern void bitcache_filter_insert(bitcache_filter* filter, const bitcache_id* id);
+extern void bitcache_filter_remove(bitcache_filter* filter, const bitcache_id* id);
+extern void bitcache_filter_merge(bitcache_filter* filter1, const bitcache_filter* filter2, const bitcache_op op);
+
+// Accessors
+extern guint bitcache_filter_get_hash(const bitcache_filter* filter);
+extern size_t bitcache_filter_get_bitsize(const bitcache_filter* filter);
+extern size_t bitcache_filter_get_bytesize(const bitcache_filter* filter);
+extern byte* bitcache_filter_get_bitmap(const bitcache_filter* filter);
+extern size_t bitcache_filter_get_count(const bitcache_filter* filter, const bitcache_id* id);
+
+// Predicates
+extern bool bitcache_filter_is_equal(const bitcache_filter* filter1, const bitcache_filter* filter2);
+extern bool bitcache_filter_is_empty(const bitcache_filter* filter);
+extern bool bitcache_filter_has_element(const bitcache_filter* filter, const bitcache_id* id);
+
+//////////////////////////////////////////////////////////////////////////////
 // List API
 
 #define BITCACHE_LIST_SENTINEL NULL // the canonical end-of-list sentinel
@@ -120,7 +164,6 @@ typedef struct {
 } bitcache_list;
 
 typedef void (*bitcache_list_element_func)(const bitcache_list_element* element, void* user_data);
-typedef void (*bitcache_list_func)(const bitcache_list* list, void* user_data);
 
 // Allocators
 extern bitcache_list_element* bitcache_list_element_alloc();
@@ -168,6 +211,7 @@ extern bool bitcache_list_is_empty(const bitcache_list* list);
 extern void bitcache_list_foreach(const bitcache_list* list, const bitcache_id_func func, void* user_data);
 
 // Converters
+extern bitcache_filter* bitcache_list_to_filter(const bitcache_list* list);
 //extern bitcache_set* bitcache_list_to_set(const bitcache_list* list);
 
 //////////////////////////////////////////////////////////////////////////////
@@ -175,18 +219,10 @@ extern void bitcache_list_foreach(const bitcache_list* list, const bitcache_id_f
 
 typedef GHashTable bitcache_set_map;
 
-typedef enum {
-  BITCACHE_SET_NOP = 0, // no-op
-  BITCACHE_SET_OR  = 1, // set union
-  BITCACHE_SET_AND = 2, // set intersection
-  BITCACHE_SET_XOR = 3, // set difference
-} bitcache_set_op;
-
 typedef struct {
-  bitcache_set_map* map;
+  bitcache_set_map* root;
+  bitcache_filter* filter; // an optional Bloom filter
 } bitcache_set;
-
-typedef void (*bitcache_set_func)(const bitcache_set* set, void* user_data);
 
 // Allocators
 extern bitcache_set* bitcache_set_alloc();
@@ -205,7 +241,7 @@ extern void bitcache_set_clear(bitcache_set* set);
 extern void bitcache_set_insert(bitcache_set* set, const bitcache_id* id);
 extern void bitcache_set_remove(bitcache_set* set, const bitcache_id* id);
 extern void bitcache_set_replace(bitcache_set* set, const bitcache_id* id1, const bitcache_id* id2);
-extern void bitcache_set_merge(bitcache_set* set1, const bitcache_set* set2, const bitcache_set_op op);
+extern void bitcache_set_merge(bitcache_set* set1, const bitcache_set* set2, const bitcache_op op);
 
 // Accessors
 extern guint bitcache_set_get_hash(const bitcache_set* set);
@@ -221,6 +257,7 @@ extern bool bitcache_set_has_element(const bitcache_set* set, const bitcache_id*
 extern void bitcache_set_foreach(const bitcache_set* set, const bitcache_id_func func, void* user_data);
 
 // Converters
+extern bitcache_filter* bitcache_set_to_filter(const bitcache_set* set);
 extern bitcache_list* bitcache_set_to_list(const bitcache_set* set);
 
 //////////////////////////////////////////////////////////////////////////////

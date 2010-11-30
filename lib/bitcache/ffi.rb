@@ -10,6 +10,7 @@ module Bitcache
     include ::FFI
     ffi_lib const_defined?(:LIBBITCACHE) ? LIBBITCACHE : 'libbitcache'
 
+    autoload :Filter,     'bitcache/ffi/filter'
     autoload :Identifier, 'bitcache/ffi/id'
     autoload :Index,      'bitcache/ffi/index'
     autoload :List,       'bitcache/ffi/list'
@@ -37,13 +38,20 @@ module Bitcache
     typedef :pointer, :bitcache_id_sha1
     typedef :pointer, :bitcache_id_sha256
     typedef :pointer, :bitcache_id_func
+    typedef :pointer, :bitcache_filter
     typedef :pointer, :bitcache_list_element
     typedef :pointer, :bitcache_list
-    typedef :int,     :bitcache_set_op # FIXME?
+    typedef :int,     :bitcache_op # FIXME?
     typedef :pointer, :bitcache_set
 
     # Bitcache API: Constants
     NULL             = ::FFI::Pointer::NULL
+    BITCACHE_OP_NOP  = 0 # no-op
+    BITCACHE_OP_OR   = 1 # logical or  (set union)
+    BITCACHE_OP_AND  = 2 # logical and (set intersection)
+    BITCACHE_OP_XOR  = 3 # logical xor (set difference)
+
+    # Bitcache API: Variables
     attach_variable :bitcache_version_string, :string
 
     # Digest API
@@ -92,6 +100,36 @@ module Bitcache
     attach_function :bitcache_id_to_hex_string, [:bitcache_id, :pointer], :string
     attach_function :bitcache_id_to_base64_string, [:bitcache_id, :pointer], :string
     attach_function :bitcache_id_to_mpi, [:bitcache_id, :pointer], :pointer
+
+    # Filter API: Allocators
+    attach_function :bitcache_filter_alloc, [], :bitcache_filter
+    attach_function :bitcache_filter_free, [:bitcache_filter], :void
+
+    # Filter API: Constructors
+    attach_function :bitcache_filter_new, [:size_t], :bitcache_filter
+    #attach_function :bitcache_filter_new_union, [:bitcache_filter, :bitcache_filter], :bitcache_filter
+    #attach_function :bitcache_filter_new_intersection, [:bitcache_filter, :bitcache_filter], :bitcache_filter
+    #attach_function :bitcache_filter_new_difference, [:bitcache_filter, :bitcache_filter], :bitcache_filter
+    attach_function :bitcache_filter_copy, [:bitcache_filter], :bitcache_filter
+
+    # Filter API: Mutators
+    attach_function :bitcache_filter_init, [:bitcache_filter, :size_t], :void
+    attach_function :bitcache_filter_clear, [:bitcache_filter], :void
+    attach_function :bitcache_filter_insert, [:bitcache_filter, :bitcache_id], :void
+    attach_function :bitcache_filter_remove, [:bitcache_filter, :bitcache_id], :void
+    attach_function :bitcache_filter_merge, [:bitcache_filter, :bitcache_filter, :bitcache_op], :void
+
+    # Filter API: Accessors
+    attach_function :bitcache_filter_get_hash, [:bitcache_filter], :uint
+    attach_function :bitcache_filter_get_bitsize, [:bitcache_filter], :size_t
+    attach_function :bitcache_filter_get_bytesize, [:bitcache_filter], :size_t
+    attach_function :bitcache_filter_get_bitmap, [:bitcache_filter], :pointer
+    attach_function :bitcache_filter_get_count, [:bitcache_filter, :bitcache_id], :size_t
+
+    # Filter API: Predicates
+    attach_function :bitcache_filter_is_equal, [:bitcache_filter, :bitcache_filter], :bool
+    attach_function :bitcache_filter_is_empty, [:bitcache_filter], :bool
+    attach_function :bitcache_filter_has_element, [:bitcache_filter, :bitcache_id], :bool
 
     # List API: Constants
     BITCACHE_LIST_SENTINEL = nil
@@ -142,13 +180,8 @@ module Bitcache
     attach_function :bitcache_list_foreach, [:bitcache_list, :bitcache_id_func, :pointer], :void
 
     # List API: Converters
+    attach_function :bitcache_list_to_filter, [:bitcache_list], :bitcache_filter
     attach_function :bitcache_list_to_set, [:bitcache_list], :bitcache_set
-
-    # Set API: Constants
-    BITCACHE_SET_NOP = 0
-    BITCACHE_SET_OR  = 1 # set union
-    BITCACHE_SET_AND = 2 # set intersection
-    BITCACHE_SET_XOR = 3 # set difference
 
     # Set API: Allocators
     attach_function :bitcache_set_alloc, [], :bitcache_set
@@ -167,7 +200,7 @@ module Bitcache
     attach_function :bitcache_set_insert, [:bitcache_set, :bitcache_id], :void
     attach_function :bitcache_set_remove, [:bitcache_set, :bitcache_id], :void
     attach_function :bitcache_set_replace, [:bitcache_set, :bitcache_id, :bitcache_id], :void
-    attach_function :bitcache_set_merge, [:bitcache_set, :bitcache_set, :bitcache_set_op], :void
+    attach_function :bitcache_set_merge, [:bitcache_set, :bitcache_set, :bitcache_op], :void
 
     # Set API: Accessors
     attach_function :bitcache_set_get_hash, [:bitcache_set], :uint
@@ -183,10 +216,12 @@ module Bitcache
     attach_function :bitcache_set_foreach, [:bitcache_set, :bitcache_id_func, :pointer], :void
 
     # Set API: Converters
+    attach_function :bitcache_set_to_filter, [:bitcache_set], :bitcache_filter
     attach_function :bitcache_set_to_list, [:bitcache_set], :bitcache_list
 
     # DEBUG
     #attach_function :bitcache_id_inspect, [:bitcache_id], :void
+    #attach_function :bitcache_filter_inspect, [:bitcache_filter], :void
     #attach_function :bitcache_list_inspect, [:bitcache_list], :void
     #attach_function :bitcache_set_inspect, [:bitcache_set], :void
   end # FFI

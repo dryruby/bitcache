@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <strings.h>
+#include <math.h>
 #include <openssl/md5.h>
 #include <openssl/sha.h>
 #include "bitcache.h"
@@ -143,20 +144,20 @@ bitcache_id_init(bitcache_id* id, const bitcache_id_type type, const byte* diges
   assert(type != BITCACHE_NONE);
   id->type = type;
   if (digest != NULL) {
-    bitcache_memmove(id->data, digest, bitcache_id_get_digest_size(id));
+    bitcache_memmove(id->digest, digest, bitcache_id_get_digest_size(id));
   }
 }
 
 void
 bitcache_id_clear(bitcache_id* id) {
   assert(id != NULL);
-  bzero(id->data, bitcache_id_get_digest_size(id));
+  bzero(id->digest, bitcache_id_get_digest_size(id));
 }
 
 void
 bitcache_id_fill(bitcache_id* id, const byte value) {
   assert(id != NULL);
-  memset(id->data, value, bitcache_id_get_digest_size(id));
+  memset(id->digest, value, bitcache_id_get_digest_size(id));
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -165,10 +166,10 @@ bitcache_id_fill(bitcache_id* id, const byte value) {
 guint
 bitcache_id_get_hash(const bitcache_id* id) {
   assert(id != NULL);
-  return (guint)(id->data[3] << 24) +
-    (guint)(id->data[2] << 16) +
-    (guint)(id->data[1] << 8) +
-    (guint)(id->data[0] << 0);
+  return (guint)(id->digest[3] << 24) +
+    (guint)(id->digest[2] << 16) +
+    (guint)(id->digest[1] << 8) +
+    (guint)(id->digest[0] << 0);
 }
 
 bitcache_id_type
@@ -180,7 +181,7 @@ bitcache_id_get_type(const bitcache_id* id) {
 byte*
 bitcache_id_get_digest(const bitcache_id* id) {
   assert(id != NULL && id->type > BITCACHE_NONE);
-  return (byte*)id->data;
+  return (byte*)id->digest;
 }
 
 size_t
@@ -202,7 +203,7 @@ bool
 bitcache_id_is_zero(const bitcache_id* id) {
   assert(id != NULL);
   for (int i = 0; i < bitcache_id_get_digest_size(id); i++) {
-    if (id->data[i] != 0)
+    if (id->digest[i] != 0)
       return FALSE;
   }
   return TRUE;
@@ -214,7 +215,7 @@ bitcache_id_is_zero(const bitcache_id* id) {
 int
 bitcache_id_compare(const bitcache_id* id1, const bitcache_id* id2) {
   assert(id1 != NULL && id2 != NULL && id1->type == id2->type);
-  return memcmp(id1->data, id2->data, bitcache_id_get_digest_size(id1));
+  return memcmp(id1->digest, id2->digest, bitcache_id_get_digest_size(id1));
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -226,7 +227,7 @@ bitcache_id_to_hex_string(const bitcache_id* id, char* buffer) {
   size_t size = bitcache_id_get_digest_size(id);
   char* string = (buffer != NULL) ? buffer : bitcache_malloc(size * 2 + 1);
   for (int i = 0; i< (int)size; i++) {
-    snprintf(string + i * 2, 3, "%02x", id->data[i]); // TODO: optimize this
+    snprintf(string + i * 2, 3, "%02x", id->digest[i]); // TODO: optimize this
   }
   return string;
 }
@@ -241,6 +242,157 @@ byte*
 bitcache_id_to_mpi(const bitcache_id* id, byte* buffer) {
   assert(id != NULL);
   return (buffer = NULL); // TODO
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Filter API: Allocators
+
+bitcache_filter*
+bitcache_filter_alloc() {
+  return bitcache_slice_alloc(sizeof(bitcache_filter));
+}
+
+void
+bitcache_filter_free(bitcache_filter* filter) {
+  assert(filter != NULL);
+  if (filter->bitmap != NULL) {
+    bitcache_free(filter->bitmap);
+    filter->bitmap = NULL;
+  }
+  bitcache_slice_free1(sizeof(bitcache_filter), filter);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Filter API: Constructors
+
+bitcache_filter*
+bitcache_filter_new(size_t size) {
+  bitcache_filter* filter = bitcache_filter_alloc();
+  bitcache_filter_init(filter, size);
+  return filter;
+}
+
+bitcache_filter*
+bitcache_filter_copy(const bitcache_filter* filter) {
+  assert(filter != NULL);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Filter API: Mutators
+
+void
+bitcache_filter_init(bitcache_filter* filter, size_t size) {
+  assert(filter != NULL);
+
+  if (size > 0) {
+    // TODO: calculate the optimal bitmap size and allocate memory for it
+    filter->bitsize = 0;
+    filter->bitmap = NULL;
+  }
+}
+
+void
+bitcache_filter_clear(bitcache_filter* filter) {
+  assert(filter != NULL);
+
+  if (filter->bitmap != NULL) {
+    bzero(filter->bitmap, bitcache_filter_get_bytesize(filter));
+  }
+}
+
+void
+bitcache_filter_insert(bitcache_filter* filter, const bitcache_id* id) {
+  assert(filter != NULL && filter->bitmap != NULL);
+  assert(id != NULL);
+  // TODO
+}
+
+void
+bitcache_filter_remove(bitcache_filter* filter, const bitcache_id* id) {
+  assert(filter != NULL && filter->bitmap != NULL);
+  assert(id != NULL);
+  // this is a no-op in the standard Bloom filter implementation.
+}
+
+void
+bitcache_filter_merge(bitcache_filter* filter1, const bitcache_filter* filter2, const bitcache_op op) {
+  assert(filter1 != NULL && filter2 != NULL);
+
+  if (op == BITCACHE_OP_NOP)
+    return;
+
+  // TODO
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Filter API: Accessors
+
+guint
+bitcache_filter_get_hash(const bitcache_filter* filter) {
+  assert(filter != NULL);
+  return g_direct_hash(filter);
+}
+
+size_t
+bitcache_filter_get_bitsize(const bitcache_filter* filter) {
+  assert(filter != NULL);
+  return filter->bitsize;
+}
+
+size_t
+bitcache_filter_get_bytesize(const bitcache_filter* filter) {
+  assert(filter != NULL);
+  return filter->bitsize == 0 ? 0 : (size_t)ceil(filter->bitsize / 8.0);
+}
+
+byte*
+bitcache_filter_get_bitmap(const bitcache_filter* filter) {
+  assert(filter != NULL);
+  return filter->bitmap;
+}
+
+size_t
+bitcache_filter_get_count(const bitcache_filter* filter, const bitcache_id* id) {
+  assert(filter != NULL && id != NULL);
+  return bitcache_filter_has_element(filter, id) ? 1 : 0; // false positives are possible
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Filter API: Predicates
+
+bool
+bitcache_filter_is_equal(const bitcache_filter* filter1, const bitcache_filter* filter2) {
+  assert(filter1 != NULL && filter2 != NULL);
+
+  if (filter1 == filter2)
+    return TRUE;
+  if (bitcache_filter_get_bitsize(filter1) != bitcache_filter_get_bitsize(filter2))
+    return FALSE;
+  if (bitcache_filter_is_empty(filter1) && bitcache_filter_is_empty(filter2))
+    return TRUE;
+
+  assert(filter1->bitmap != NULL && filter2->bitmap != NULL);
+  return memcmp(filter1->bitmap, filter2->bitmap, bitcache_filter_get_bytesize(filter1)) == 0;
+}
+
+bool
+bitcache_filter_is_empty(const bitcache_filter* filter) {
+  assert(filter != NULL);
+
+  if (filter->bitmap == NULL)
+    return TRUE;
+
+  for (int i = 0; i < bitcache_filter_get_bytesize(filter); i++) {
+    if (filter->bitmap[i] != 0)
+      return FALSE;
+  }
+  return TRUE;
+}
+
+bool
+bitcache_filter_has_element(const bitcache_filter* filter, const bitcache_id* id) {
+  assert(filter != NULL && id != NULL);
+  return TRUE; // FIXME: this is a hardcoded false positive, for now
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -496,10 +648,26 @@ bitcache_list_foreach(const bitcache_list* list, const bitcache_id_func func, vo
 //////////////////////////////////////////////////////////////////////////////
 // List API: Converters
 
+bitcache_filter*
+bitcache_list_to_filter(const bitcache_list* list) {
+  assert(list != NULL);
+
+  bitcache_filter* filter = bitcache_filter_new(bitcache_list_get_length(list));
+  if (!bitcache_list_is_empty(list)) {
+    // TODO
+  }
+  return filter;
+}
+
 bitcache_set*
 bitcache_list_to_set(const bitcache_list* list) {
   assert(list != NULL);
-  return bitcache_list_is_empty(list) ? bitcache_set_new() : NULL; // TODO
+
+  bitcache_set* set = bitcache_set_new();
+  if (!bitcache_list_is_empty(list)) {
+    // TODO
+  }
+  return set;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -518,9 +686,9 @@ bitcache_set_alloc() {
 void
 bitcache_set_free(bitcache_set* set) {
   assert(set != NULL);
-  if (set->map != NULL) {
-    g_hash_table_destroy(set->map);
-    set->map = NULL;
+  if (set->root != NULL) {
+    g_hash_table_destroy(set->root);
+    set->root = NULL;
   }
   bitcache_slice_free1(sizeof(bitcache_set), set);
 }
@@ -538,7 +706,7 @@ bitcache_set_new() {
 bitcache_set*
 bitcache_set_new_union(const bitcache_set* set1, const bitcache_set* set2) {
   assert(set1 != NULL && set2 != NULL);
-  assert(set1->map != NULL && set2->map != NULL);
+  assert(set1->root != NULL && set2->root != NULL);
 
   if (set1 == set2)                // A | A = A
     return bitcache_set_copy(set1);
@@ -550,11 +718,11 @@ bitcache_set_new_union(const bitcache_set* set1, const bitcache_set* set2) {
   bitcache_set* set3 = bitcache_set_new();
   bitcache_id* key;
   GHashTableIter iter;
-  g_hash_table_iter_init(&iter, set1->map);
+  g_hash_table_iter_init(&iter, set1->root);
   while (g_hash_table_iter_next(&iter, (void*)&key, NULL) != FALSE) {
     bitcache_set_insert(set3, key);
   }
-  g_hash_table_iter_init(&iter, set2->map);
+  g_hash_table_iter_init(&iter, set2->root);
   while (g_hash_table_iter_next(&iter, (void*)&key, NULL) != FALSE) {
     bitcache_set_insert(set3, key);
   }
@@ -564,7 +732,7 @@ bitcache_set_new_union(const bitcache_set* set1, const bitcache_set* set2) {
 bitcache_set*
 bitcache_set_new_intersection(const bitcache_set* set1, const bitcache_set* set2) {
   assert(set1 != NULL && set2 != NULL);
-  assert(set1->map != NULL && set2->map != NULL);
+  assert(set1->root != NULL && set2->root != NULL);
 
   if (set1 == set2)                // A & A = A
     return bitcache_set_copy(set1);
@@ -573,7 +741,7 @@ bitcache_set_new_intersection(const bitcache_set* set1, const bitcache_set* set2
   if (bitcache_set_is_empty(set2)) // A & 0 = 0
     return bitcache_set_new();
 
-  if (g_hash_table_size(set2->map) < g_hash_table_size(set1->map)) {
+  if (g_hash_table_size(set2->root) < g_hash_table_size(set1->root)) {
     const bitcache_set* tmp = set1;
     set1 = set2;
     set2 = tmp;
@@ -582,7 +750,7 @@ bitcache_set_new_intersection(const bitcache_set* set1, const bitcache_set* set2
   bitcache_set* set3 = bitcache_set_new();
   bitcache_id* key;
   GHashTableIter iter;
-  g_hash_table_iter_init(&iter, set1->map);
+  g_hash_table_iter_init(&iter, set1->root);
   while (g_hash_table_iter_next(&iter, (void*)&key, NULL) != FALSE) {
     if (bitcache_set_has_element(set2, key)) {
       bitcache_set_insert(set3, key);
@@ -594,7 +762,7 @@ bitcache_set_new_intersection(const bitcache_set* set1, const bitcache_set* set2
 bitcache_set*
 bitcache_set_new_difference(const bitcache_set* set1, const bitcache_set* set2) {
   assert(set1 != NULL && set2 != NULL);
-  assert(set1->map != NULL && set2->map != NULL);
+  assert(set1->root != NULL && set2->root != NULL);
 
   if (set1 == set2)                // A ^ A = 0
     return bitcache_set_new();
@@ -606,13 +774,13 @@ bitcache_set_new_difference(const bitcache_set* set1, const bitcache_set* set2) 
   bitcache_set* set3 = bitcache_set_new();
   bitcache_id* key;
   GHashTableIter iter;
-  g_hash_table_iter_init(&iter, set1->map);
+  g_hash_table_iter_init(&iter, set1->root);
   while (g_hash_table_iter_next(&iter, (void*)&key, NULL) != FALSE) {
     if (!bitcache_set_has_element(set2, key)) {
       bitcache_set_insert(set3, key);
     }
   }
-  g_hash_table_iter_init(&iter, set2->map);
+  g_hash_table_iter_init(&iter, set2->root);
   while (g_hash_table_iter_next(&iter, (void*)&key, NULL) != FALSE) {
     if (!bitcache_set_has_element(set1, key)) {
       bitcache_set_insert(set3, key);
@@ -625,7 +793,7 @@ bitcache_set*
 bitcache_set_copy(const bitcache_set* set) {
   assert(set != NULL);
   bitcache_set* copy = bitcache_set_new();
-  copy->map = set->map; // FIXME
+  copy->root = set->root; // FIXME
   return copy;
 }
 
@@ -635,34 +803,34 @@ bitcache_set_copy(const bitcache_set* set) {
 void
 bitcache_set_init(bitcache_set* set) {
   assert(set != NULL);
-  set->map = g_hash_table_new(
+  set->root = g_hash_table_new(
     (GHashFunc)bitcache_id_get_hash,
     (GEqualFunc)bitcache_id_is_equal);
 }
 
 void
 bitcache_set_clear(bitcache_set* set) {
-  assert(set != NULL && set->map != NULL);
-  g_hash_table_remove_all(set->map);
+  assert(set != NULL && set->root != NULL);
+  g_hash_table_remove_all(set->root);
 }
 
 void
 bitcache_set_insert(bitcache_set* set, const bitcache_id* id) {
-  assert(set != NULL && set->map != NULL);
+  assert(set != NULL && set->root != NULL);
   assert(id != NULL);
-  g_hash_table_insert(set->map, (bitcache_id*)id, NULL);
+  g_hash_table_insert(set->root, (bitcache_id*)id, NULL);
 }
 
 void
 bitcache_set_remove(bitcache_set* set, const bitcache_id* id) {
-  assert(set != NULL && set->map != NULL);
+  assert(set != NULL && set->root != NULL);
   assert(id != NULL);
-  g_hash_table_remove(set->map, id);
+  g_hash_table_remove(set->root, id);
 }
 
 void
 bitcache_set_replace(bitcache_set* set, const bitcache_id* id1, const bitcache_id* id2) {
-  assert(set != NULL && set->map != NULL);
+  assert(set != NULL && set->root != NULL);
   assert(id1 != NULL && id2 != NULL);
 
   bitcache_set_remove(set, id1);
@@ -670,10 +838,10 @@ bitcache_set_replace(bitcache_set* set, const bitcache_id* id1, const bitcache_i
 }
 
 void
-bitcache_set_merge(bitcache_set* set1, const bitcache_set* set2, const bitcache_set_op op) {
+bitcache_set_merge(bitcache_set* set1, const bitcache_set* set2, const bitcache_op op) {
   assert(set1 != NULL && set2 != NULL);
 
-  if (op == BITCACHE_SET_NOP)
+  if (op == BITCACHE_OP_NOP)
     return;
 
   // TODO
@@ -684,19 +852,19 @@ bitcache_set_merge(bitcache_set* set1, const bitcache_set* set2, const bitcache_
 
 guint
 bitcache_set_get_hash(const bitcache_set* set) {
-  assert(set != NULL && set->map != NULL);
+  assert(set != NULL && set->root != NULL);
   return g_direct_hash(set);
 }
 
 guint
 bitcache_set_get_size(const bitcache_set* set) {
-  assert(set != NULL && set->map != NULL);
-  return g_hash_table_size(set->map);
+  assert(set != NULL && set->root != NULL);
+  return g_hash_table_size(set->root);
 }
 
 guint
 bitcache_set_get_count(const bitcache_set* set, const bitcache_id* id) {
-  assert(set != NULL);
+  assert(set != NULL && id != NULL);
   return bitcache_set_has_element(set, id) ? 1 : 0;
 }
 
@@ -706,7 +874,7 @@ bitcache_set_get_count(const bitcache_set* set, const bitcache_id* id) {
 bool
 bitcache_set_is_equal(const bitcache_set* set1, const bitcache_set* set2) {
   assert(set1 != NULL && set2 != NULL);
-  assert(set1->map != NULL && set2->map != NULL);
+  assert(set1->root != NULL && set2->root != NULL);
 
   if (set1 == set2)
     return TRUE;
@@ -717,7 +885,7 @@ bitcache_set_is_equal(const bitcache_set* set1, const bitcache_set* set2) {
 
   bitcache_id* key;
   GHashTableIter iter;
-  g_hash_table_iter_init(&iter, set1->map);
+  g_hash_table_iter_init(&iter, set1->root);
   while (g_hash_table_iter_next(&iter, (void*)&key, NULL) != FALSE) {
     if (!bitcache_set_has_element(set2, key)) {
       return FALSE;
@@ -728,16 +896,16 @@ bitcache_set_is_equal(const bitcache_set* set1, const bitcache_set* set2) {
 
 bool
 bitcache_set_is_empty(const bitcache_set* set) {
-  assert(set != NULL && set->map != NULL);
-  return (g_hash_table_size(set->map) == 0);
+  assert(set != NULL && set->root != NULL);
+  return (g_hash_table_size(set->root) == 0);
 }
 
 bool
 bitcache_set_has_element(const bitcache_set* set, const bitcache_id* id) {
   assert(set != NULL && id != NULL);
-  assert(set->map != NULL);
-  return g_hash_table_size(set->map) > 0 &&
-    g_hash_table_lookup_extended(set->map, id, NULL, NULL);
+  assert(set->root != NULL);
+  return g_hash_table_size(set->root) > 0 &&
+    g_hash_table_lookup_extended(set->root, id, NULL, NULL);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -752,8 +920,8 @@ bitcache_set_foreach(const bitcache_set* set, const bitcache_id_func func, void*
   GHashTableIter iter;
   bitcache_id* key;
 
-  assert(set->map != NULL);
-  g_hash_table_iter_init(&iter, set->map);
+  assert(set->root != NULL);
+  g_hash_table_iter_init(&iter, set->root);
   while (g_hash_table_iter_next(&iter, (void*)&key, NULL) != FALSE) {
     if (bitcache_id_is_equal(key, id)) {
       result = TRUE;
@@ -766,6 +934,22 @@ bitcache_set_foreach(const bitcache_set* set, const bitcache_id_func func, void*
 //////////////////////////////////////////////////////////////////////////////
 // Set API: Converters
 
+bitcache_filter*
+bitcache_set_to_filter(const bitcache_set* set) {
+  assert(set != NULL);
+
+  bitcache_filter* filter = bitcache_filter_new(bitcache_set_get_size(set));
+  if (!bitcache_set_is_empty(set)) {
+    bitcache_id* key;
+    GHashTableIter iter;
+    g_hash_table_iter_init(&iter, set->root);
+    while (g_hash_table_iter_next(&iter, (void*)&key, NULL) != FALSE) {
+      bitcache_filter_insert(filter, key);
+    }
+  }
+  return filter;
+}
+
 bitcache_list*
 bitcache_set_to_list(const bitcache_set* set) {
   assert(set != NULL);
@@ -774,7 +958,7 @@ bitcache_set_to_list(const bitcache_set* set) {
   if (!bitcache_set_is_empty(set)) {
     bitcache_id* key;
     GHashTableIter iter;
-    g_hash_table_iter_init(&iter, set->map);
+    g_hash_table_iter_init(&iter, set->root);
     while (g_hash_table_iter_next(&iter, (void*)&key, NULL) != FALSE) {
       bitcache_list_insert(list, key);
     }

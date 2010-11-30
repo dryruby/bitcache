@@ -404,6 +404,33 @@ describe Bitcache::FFI do
   end
 
   ##########################################################################
+  # FILTER API
+
+  context "Filter API" do
+    before :all do end
+
+    # Filter API: Allocators
+    context "Allocators" do
+    end
+
+    # Filter API: Constructors
+    context "Constructors" do
+    end
+
+    # Filter API: Mutators
+    context "Mutators" do
+    end
+
+    # Filter API: Accessors
+    context "Accessors" do
+    end
+
+    # Filter API: Predicates
+    context "Predicates" do
+    end
+  end
+
+  ##########################################################################
   # LIST API
 
   context "List API" do
@@ -827,12 +854,12 @@ describe Bitcache::FFI do
 
       describe "bitcache_set_merge(set1, set2, op)" do
         it "raises an ArgumentError if the two first arguments are not pointers" do
-          lambda { bitcache_set_merge(0, 0, BITCACHE_SET_OR) }.should raise_error ArgumentError
+          lambda { bitcache_set_merge(0, 0, BITCACHE_OP_OR) }.should raise_error ArgumentError
         end
 
         it "returns void" do
           set1, set2 = bitcache_set_new(), bitcache_set_new()
-          bitcache_set_merge(set1, set2, BITCACHE_SET_OR).should equal nil
+          bitcache_set_merge(set1, set2, BITCACHE_OP_OR).should equal nil
         end
 
         # TODO
