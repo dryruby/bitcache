@@ -111,7 +111,7 @@ extern byte* bitcache_id_to_mpi(const bitcache_id* id, byte* buffer);
 //////////////////////////////////////////////////////////////////////////////
 // List API
 
-#define BITCACHE_LIST_SENTINEL NULL // the canonical empty list sentinel
+#define BITCACHE_LIST_SENTINEL NULL // the canonical end-of-list sentinel
 
 typedef GSList bitcache_list_element;
 
@@ -169,6 +169,59 @@ extern void bitcache_list_foreach(const bitcache_list* list, const bitcache_id_f
 
 // Converters
 //extern bitcache_set* bitcache_list_to_set(const bitcache_list* list);
+
+//////////////////////////////////////////////////////////////////////////////
+// Set API
+
+typedef GHashTable bitcache_set_map;
+
+typedef enum {
+  BITCACHE_SET_NOP = 0, // no-op
+  BITCACHE_SET_OR  = 1, // set union
+  BITCACHE_SET_AND = 2, // set intersection
+  BITCACHE_SET_XOR = 3, // set difference
+} bitcache_set_op;
+
+typedef struct {
+  bitcache_set_map* map;
+} bitcache_set;
+
+typedef void (*bitcache_set_func)(const bitcache_set* set, void* user_data);
+
+// Allocators
+extern bitcache_set* bitcache_set_alloc();
+extern void bitcache_set_free(bitcache_set* set);
+
+// Constructors
+extern bitcache_set* bitcache_set_new();
+extern bitcache_set* bitcache_set_new_union(const bitcache_set* set1, const bitcache_set* set2);
+extern bitcache_set* bitcache_set_new_intersection(const bitcache_set* set1, const bitcache_set* set2);
+extern bitcache_set* bitcache_set_new_difference(const bitcache_set* set1, const bitcache_set* set2);
+extern bitcache_set* bitcache_set_copy(const bitcache_set* set);
+
+// Mutators
+extern void bitcache_set_init(bitcache_set* set);
+extern void bitcache_set_clear(bitcache_set* set);
+extern void bitcache_set_insert(bitcache_set* set, const bitcache_id* id);
+extern void bitcache_set_remove(bitcache_set* set, const bitcache_id* id);
+extern void bitcache_set_replace(bitcache_set* set, const bitcache_id* id1, const bitcache_id* id2);
+extern void bitcache_set_merge(bitcache_set* set1, const bitcache_set* set2, const bitcache_set_op op);
+
+// Accessors
+extern guint bitcache_set_get_hash(const bitcache_set* set);
+extern guint bitcache_set_get_size(const bitcache_set* set);
+extern guint bitcache_set_get_count(const bitcache_set* set, const bitcache_id* id);
+
+// Predicates
+extern bool bitcache_set_is_equal(const bitcache_set* set1, const bitcache_set* set2);
+extern bool bitcache_set_is_empty(const bitcache_set* set);
+extern bool bitcache_set_has_element(const bitcache_set* set, const bitcache_id* id);
+
+// Iterators
+extern void bitcache_set_foreach(const bitcache_set* set, const bitcache_id_func func, void* user_data);
+
+// Converters
+extern bitcache_list* bitcache_set_to_list(const bitcache_set* set);
 
 //////////////////////////////////////////////////////////////////////////////
 // Miscellaneous

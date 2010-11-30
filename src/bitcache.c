@@ -496,15 +496,291 @@ bitcache_list_foreach(const bitcache_list* list, const bitcache_id_func func, vo
 //////////////////////////////////////////////////////////////////////////////
 // List API: Converters
 
-/*
 bitcache_set*
 bitcache_list_to_set(const bitcache_list* list) {
-  return bitcache_list_is_empty(list) ? NULL : NULL; // TODO
+  assert(list != NULL);
+  return bitcache_list_is_empty(list) ? bitcache_set_new() : NULL; // TODO
 }
-*/
 
 //////////////////////////////////////////////////////////////////////////////
-// Set API
+// Set API: Internals
+
+// TODO
+
+//////////////////////////////////////////////////////////////////////////////
+// Set API: Allocators
+
+bitcache_set*
+bitcache_set_alloc() {
+  return bitcache_slice_alloc(sizeof(bitcache_set));
+}
+
+void
+bitcache_set_free(bitcache_set* set) {
+  assert(set != NULL);
+  if (set->map != NULL) {
+    g_hash_table_destroy(set->map);
+    set->map = NULL;
+  }
+  bitcache_slice_free1(sizeof(bitcache_set), set);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Set API: Constructors
+
+bitcache_set*
+bitcache_set_new() {
+  bitcache_set* set = bitcache_set_alloc();
+  bitcache_set_init(set);
+  return set;
+}
+
+bitcache_set*
+bitcache_set_new_union(const bitcache_set* set1, const bitcache_set* set2) {
+  assert(set1 != NULL && set2 != NULL);
+  assert(set1->map != NULL && set2->map != NULL);
+
+  if (set1 == set2)                // A | A = A
+    return bitcache_set_copy(set1);
+  if (bitcache_set_is_empty(set1)) // 0 | A = A
+    return bitcache_set_copy(set2);
+  if (bitcache_set_is_empty(set2)) // A | 0 = A
+    return bitcache_set_copy(set1);
+
+  bitcache_set* set3 = bitcache_set_new();
+  bitcache_id* key;
+  GHashTableIter iter;
+  g_hash_table_iter_init(&iter, set1->map);
+  while (g_hash_table_iter_next(&iter, (void*)&key, NULL) != FALSE) {
+    bitcache_set_insert(set3, key);
+  }
+  g_hash_table_iter_init(&iter, set2->map);
+  while (g_hash_table_iter_next(&iter, (void*)&key, NULL) != FALSE) {
+    bitcache_set_insert(set3, key);
+  }
+  return set3;
+}
+
+bitcache_set*
+bitcache_set_new_intersection(const bitcache_set* set1, const bitcache_set* set2) {
+  assert(set1 != NULL && set2 != NULL);
+  assert(set1->map != NULL && set2->map != NULL);
+
+  if (set1 == set2)                // A & A = A
+    return bitcache_set_copy(set1);
+  if (bitcache_set_is_empty(set1)) // 0 & A = 0
+    return bitcache_set_new();
+  if (bitcache_set_is_empty(set2)) // A & 0 = 0
+    return bitcache_set_new();
+
+  if (g_hash_table_size(set2->map) < g_hash_table_size(set1->map)) {
+    const bitcache_set* tmp = set1;
+    set1 = set2;
+    set2 = tmp;
+  }
+
+  bitcache_set* set3 = bitcache_set_new();
+  bitcache_id* key;
+  GHashTableIter iter;
+  g_hash_table_iter_init(&iter, set1->map);
+  while (g_hash_table_iter_next(&iter, (void*)&key, NULL) != FALSE) {
+    if (bitcache_set_has_element(set2, key)) {
+      bitcache_set_insert(set3, key);
+    }
+  }
+  return set3;
+}
+
+bitcache_set*
+bitcache_set_new_difference(const bitcache_set* set1, const bitcache_set* set2) {
+  assert(set1 != NULL && set2 != NULL);
+  assert(set1->map != NULL && set2->map != NULL);
+
+  if (set1 == set2)                // A ^ A = 0
+    return bitcache_set_new();
+  if (bitcache_set_is_empty(set1)) // 0 ^ A = 0
+    return bitcache_set_new();
+  if (bitcache_set_is_empty(set2)) // A ^ 0 = 0
+    return bitcache_set_new();
+
+  bitcache_set* set3 = bitcache_set_new();
+  bitcache_id* key;
+  GHashTableIter iter;
+  g_hash_table_iter_init(&iter, set1->map);
+  while (g_hash_table_iter_next(&iter, (void*)&key, NULL) != FALSE) {
+    if (!bitcache_set_has_element(set2, key)) {
+      bitcache_set_insert(set3, key);
+    }
+  }
+  g_hash_table_iter_init(&iter, set2->map);
+  while (g_hash_table_iter_next(&iter, (void*)&key, NULL) != FALSE) {
+    if (!bitcache_set_has_element(set1, key)) {
+      bitcache_set_insert(set3, key);
+    }
+  }
+  return set3;
+}
+
+bitcache_set*
+bitcache_set_copy(const bitcache_set* set) {
+  assert(set != NULL);
+  bitcache_set* copy = bitcache_set_new();
+  copy->map = set->map; // FIXME
+  return copy;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Set API: Mutators
+
+void
+bitcache_set_init(bitcache_set* set) {
+  assert(set != NULL);
+  set->map = g_hash_table_new(
+    (GHashFunc)bitcache_id_get_hash,
+    (GEqualFunc)bitcache_id_is_equal);
+}
+
+void
+bitcache_set_clear(bitcache_set* set) {
+  assert(set != NULL && set->map != NULL);
+  g_hash_table_remove_all(set->map);
+}
+
+void
+bitcache_set_insert(bitcache_set* set, const bitcache_id* id) {
+  assert(set != NULL && set->map != NULL);
+  assert(id != NULL);
+  g_hash_table_insert(set->map, (bitcache_id*)id, NULL);
+}
+
+void
+bitcache_set_remove(bitcache_set* set, const bitcache_id* id) {
+  assert(set != NULL && set->map != NULL);
+  assert(id != NULL);
+  g_hash_table_remove(set->map, id);
+}
+
+void
+bitcache_set_replace(bitcache_set* set, const bitcache_id* id1, const bitcache_id* id2) {
+  assert(set != NULL && set->map != NULL);
+  assert(id1 != NULL && id2 != NULL);
+
+  bitcache_set_remove(set, id1);
+  bitcache_set_insert(set, id2);
+}
+
+void
+bitcache_set_merge(bitcache_set* set1, const bitcache_set* set2, const bitcache_set_op op) {
+  assert(set1 != NULL && set2 != NULL);
+
+  if (op == BITCACHE_SET_NOP)
+    return;
+
+  // TODO
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Set API: Accessors
+
+guint
+bitcache_set_get_hash(const bitcache_set* set) {
+  assert(set != NULL && set->map != NULL);
+  return g_direct_hash(set);
+}
+
+guint
+bitcache_set_get_size(const bitcache_set* set) {
+  assert(set != NULL && set->map != NULL);
+  return g_hash_table_size(set->map);
+}
+
+guint
+bitcache_set_get_count(const bitcache_set* set, const bitcache_id* id) {
+  assert(set != NULL);
+  return bitcache_set_has_element(set, id) ? 1 : 0;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Set API: Predicates
+
+bool
+bitcache_set_is_equal(const bitcache_set* set1, const bitcache_set* set2) {
+  assert(set1 != NULL && set2 != NULL);
+  assert(set1->map != NULL && set2->map != NULL);
+
+  if (set1 == set2)
+    return TRUE;
+  if (bitcache_set_is_empty(set1) && bitcache_set_is_empty(set2))
+    return TRUE;
+  if (bitcache_set_get_size(set1) != bitcache_set_get_size(set2))
+    return FALSE;
+
+  bitcache_id* key;
+  GHashTableIter iter;
+  g_hash_table_iter_init(&iter, set1->map);
+  while (g_hash_table_iter_next(&iter, (void*)&key, NULL) != FALSE) {
+    if (!bitcache_set_has_element(set2, key)) {
+      return FALSE;
+    }
+  }
+  return TRUE;
+}
+
+bool
+bitcache_set_is_empty(const bitcache_set* set) {
+  assert(set != NULL && set->map != NULL);
+  return (g_hash_table_size(set->map) == 0);
+}
+
+bool
+bitcache_set_has_element(const bitcache_set* set, const bitcache_id* id) {
+  assert(set != NULL && id != NULL);
+  assert(set->map != NULL);
+  return g_hash_table_size(set->map) > 0 &&
+    g_hash_table_lookup_extended(set->map, id, NULL, NULL);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Set API: Iterators
+
+void
+bitcache_set_foreach(const bitcache_set* set, const bitcache_id_func func, void* user_data) {
+  assert(set != NULL && func != NULL);
+  // TODO
+
+  /*bool result = FALSE;
+  GHashTableIter iter;
+  bitcache_id* key;
+
+  assert(set->map != NULL);
+  g_hash_table_iter_init(&iter, set->map);
+  while (g_hash_table_iter_next(&iter, (void*)&key, NULL) != FALSE) {
+    if (bitcache_id_is_equal(key, id)) {
+      result = TRUE;
+      break;
+    }
+  }
+  return result;*/
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Set API: Converters
+
+bitcache_list*
+bitcache_set_to_list(const bitcache_set* set) {
+  assert(set != NULL);
+
+  bitcache_list* list = bitcache_list_new(NULL);
+  if (!bitcache_set_is_empty(set)) {
+    bitcache_id* key;
+    GHashTableIter iter;
+    g_hash_table_iter_init(&iter, set->map);
+    while (g_hash_table_iter_next(&iter, (void*)&key, NULL) != FALSE) {
+      bitcache_list_insert(list, key);
+    }
+  }
+  return list;
+}
 
 //////////////////////////////////////////////////////////////////////////////
 // Queue API

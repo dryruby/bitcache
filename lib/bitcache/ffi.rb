@@ -73,7 +73,17 @@ module Bitcache
     end # Stream
 
     # Bitcache API: Typedefs
-    typedef :uint8, :byte
+    typedef :uint8,   :byte
+    typedef :int,     :bitcache_id_type # FIXME?
+    typedef :pointer, :bitcache_id
+    typedef :pointer, :bitcache_id_md5
+    typedef :pointer, :bitcache_id_sha1
+    typedef :pointer, :bitcache_id_sha256
+    typedef :pointer, :bitcache_id_func
+    typedef :pointer, :bitcache_list_element
+    typedef :pointer, :bitcache_list
+    typedef :int,     :bitcache_set_op # FIXME?
+    typedef :pointer, :bitcache_set
 
     # Bitcache API: Constants
     NULL             = ::FFI::Pointer::NULL
@@ -89,14 +99,6 @@ module Bitcache
     BITCACHE_SHA1    = BITCACHE_SHA1_SIZE    = 20 # bytes
     BITCACHE_SHA256  = BITCACHE_SHA256_SIZE  = 32 # bytes
     BITCACHE_ID_SIZE = BITCACHE_SHA256_SIZE
-
-    # Identifier API: Typedefs
-    typedef :int,     :bitcache_id_type # FIXME?
-    typedef :pointer, :bitcache_id
-    typedef :pointer, :bitcache_id_md5
-    typedef :pointer, :bitcache_id_sha1
-    typedef :pointer, :bitcache_id_sha256
-    typedef :pointer, :bitcache_id_func
 
     # Identifier API: Allocators
     attach_function :bitcache_id_alloc, [:bitcache_id_type], :bitcache_id
@@ -136,10 +138,6 @@ module Bitcache
 
     # List API: Constants
     BITCACHE_LIST_SENTINEL = nil
-
-    # List API: Typedefs
-    typedef :pointer, :bitcache_list_element
-    typedef :pointer, :bitcache_list
 
     # List API: Allocators
     attach_function :bitcache_list_element_alloc, [], :bitcache_list_element
@@ -185,5 +183,54 @@ module Bitcache
 
     # List API: Iterators
     attach_function :bitcache_list_foreach, [:bitcache_list, :bitcache_id_func, :pointer], :void
+
+    # List API: Converters
+    attach_function :bitcache_list_to_set, [:bitcache_list], :bitcache_set
+
+    # Set API: Constants
+    BITCACHE_SET_NOP = 0
+    BITCACHE_SET_OR  = 1 # set union
+    BITCACHE_SET_AND = 2 # set intersection
+    BITCACHE_SET_XOR = 3 # set difference
+
+    # Set API: Allocators
+    attach_function :bitcache_set_alloc, [], :bitcache_set
+    attach_function :bitcache_set_free, [:bitcache_set], :void
+
+    # Set API: Constructors
+    attach_function :bitcache_set_new, [], :bitcache_set
+    attach_function :bitcache_set_new_union, [:bitcache_set, :bitcache_set], :bitcache_set
+    attach_function :bitcache_set_new_intersection, [:bitcache_set, :bitcache_set], :bitcache_set
+    attach_function :bitcache_set_new_difference, [:bitcache_set, :bitcache_set], :bitcache_set
+    attach_function :bitcache_set_copy, [:bitcache_set], :bitcache_set
+
+    # Set API: Mutators
+    attach_function :bitcache_set_init, [:bitcache_set], :void
+    attach_function :bitcache_set_clear, [:bitcache_set], :void
+    attach_function :bitcache_set_insert, [:bitcache_set, :bitcache_id], :void
+    attach_function :bitcache_set_remove, [:bitcache_set, :bitcache_id], :void
+    attach_function :bitcache_set_replace, [:bitcache_set, :bitcache_id, :bitcache_id], :void
+    attach_function :bitcache_set_merge, [:bitcache_set, :bitcache_set, :bitcache_set_op], :void
+
+    # Set API: Accessors
+    attach_function :bitcache_set_get_hash, [:bitcache_set], :uint
+    attach_function :bitcache_set_get_size, [:bitcache_set], :uint
+    attach_function :bitcache_set_get_count, [:bitcache_set, :bitcache_id], :uint
+
+    # Set API: Predicates
+    attach_function :bitcache_set_is_equal, [:bitcache_set, :bitcache_set], :bool
+    attach_function :bitcache_set_is_empty, [:bitcache_set], :bool
+    attach_function :bitcache_set_has_element, [:bitcache_set, :bitcache_id], :bool
+
+    # Set API: Iterators
+    attach_function :bitcache_set_foreach, [:bitcache_set, :bitcache_id_func, :pointer], :void
+
+    # Set API: Converters
+    attach_function :bitcache_set_to_list, [:bitcache_set], :bitcache_list
+
+    # DEBUG
+    #attach_function :bitcache_id_inspect, [:bitcache_id], :void
+    #attach_function :bitcache_list_inspect, [:bitcache_list], :void
+    #attach_function :bitcache_set_inspect, [:bitcache_set], :void
   end # FFI
 end # Bitcache
