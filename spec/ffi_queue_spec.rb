@@ -2,7 +2,7 @@ require File.join(File.dirname(__FILE__), 'spec_helper')
 require 'bitcache/spec/queue'
 
 describe Bitcache::FFI::Queue do
-  before :each do
+  before :all do
     @class = Bitcache::FFI::Queue
   end
 

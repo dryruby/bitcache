@@ -2,7 +2,7 @@ require File.join(File.dirname(__FILE__), 'spec_helper')
 require 'bitcache/spec/set'
 
 describe Bitcache::FFI::Set do
-  before :each do
+  before :all do
     @class = Bitcache::FFI::Set
   end
 

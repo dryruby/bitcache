@@ -2,7 +2,7 @@ require File.join(File.dirname(__FILE__), 'spec_helper')
 require 'bitcache/spec/index'
 
 describe Bitcache::FFI::Index do
-  before :each do
+  before :all do
     @class = Bitcache::FFI::Index
   end
 

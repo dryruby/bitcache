@@ -1,6 +1,15 @@
 require File.join(File.dirname(__FILE__), 'spec_helper')
+require 'bitcache/spec/stream'
 
 describe Bitcache::Stream do
+  before :all do
+    @class = Bitcache::Stream
+  end
+
+  it_should_behave_like Bitcache_Stream
+
+  # TODO: incorporate all the following into the shared spec.
+
   before :each do
     @streams = []
     @streams << Bitcache::Stream.new('da39a3ee5e6b4b0d3255bfef95601890afd80709', '')

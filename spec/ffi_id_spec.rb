@@ -2,7 +2,7 @@ require File.join(File.dirname(__FILE__), 'spec_helper')
 require 'bitcache/spec/id'
 
 describe Bitcache::FFI::Identifier do
-  before :each do
+  before :all do
     @class = Bitcache::FFI::Identifier
   end
 

@@ -2,7 +2,7 @@ require File.join(File.dirname(__FILE__), 'spec_helper')
 require 'bitcache/spec/stream'
 
 describe Bitcache::FFI::Stream do
-  before :each do
+  before :all do
     @class = Bitcache::FFI::Stream
   end
 
