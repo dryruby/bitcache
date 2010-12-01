@@ -13,7 +13,7 @@ Gem::Specification.new do |gem|
   gem.rubyforge_project  = 'bitcache'
 
   gem.author             = 'Arto Bendiken'
-  gem.email              = 'arto.bendiken@gmail.com'
+  gem.email              = 'bitcache@googlegroups.com'
 
   gem.platform           = Gem::Platform::RUBY
   gem.files              = %w(AUTHORS CREDITS README UNLICENSE VERSION) + Dir.glob('lib/**/*.rb')
