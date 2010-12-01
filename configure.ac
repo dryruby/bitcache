@@ -8,5 +8,5 @@ LT_INIT
 AC_PROG_CC
 AM_PATH_GLIB_2_0([2.24.0], [], [], [gthread-2.0])
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_FILES([Makefile src/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile doc/Makefile doc/man/Makefile])
 AC_OUTPUT
