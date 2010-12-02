@@ -5,8 +5,8 @@
 #include "bitcache.h"
 #include "config.h"
 
-#define PROGRAM_DESCRIPTION ""
-#define PROGRAM_SUMMARY     ""
+#define PROGRAM_DESCRIPTION "identify a byte stream or file"
+#define PROGRAM_SUMMARY     "FILES... - " PROGRAM_DESCRIPTION
 
 static gboolean debug   = FALSE;
 static gboolean verbose = FALSE;
