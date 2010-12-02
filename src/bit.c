@@ -8,9 +8,9 @@
 #define PROGRAM_DESCRIPTION ""
 #define PROGRAM_SUMMARY     ""
 
-static gboolean debug   = FALSE;
-static gboolean verbose = FALSE;
-static gboolean version = FALSE;
+static bool debug   = FALSE;
+static bool verbose = FALSE;
+static bool version = FALSE;
 
 static GOptionEntry entries[] = {
    { "debug",   'd', 0, G_OPTION_ARG_NONE, &debug,   "Enable debug output for troubleshooting.", NULL },
@@ -25,13 +25,13 @@ int main(int argc, char* argv[]) {
   g_option_context_add_main_entries(context, entries, NULL);
   if (!g_option_context_parse(context, &argc, &argv, &error)) {
     fprintf(stderr, "%s: %s\n", g_get_prgname(), error->message);
-    exit(1);
+    return 1;
   }
 
   if (version) {
     // Display the Bitcache version and exit:
     printf("%s\n", PACKAGE_VERSION);
-    exit(0);
+    return 0;
   }
 
   return 0;
