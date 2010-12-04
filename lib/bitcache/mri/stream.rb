@@ -1,8 +1,9 @@
 module Bitcache
   ##
+  # A Bitcache byte stream.
   class Stream
-    include Inspectable
     include Comparable
+    include Inspectable
 
     ##
     # @return [String] the bitstream's contents

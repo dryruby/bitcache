@@ -4,13 +4,24 @@ require 'stringio'
 require 'addressable/uri' # @see http://rubygems.org/gems/addressable
 
 module Bitcache
+  autoload :VERSION,     'bitcache/version'
+
   autoload :Adapter,     'bitcache/adapter'
   autoload :Encoder,     'bitcache/encoder'
   autoload :Inspectable, 'bitcache/inspectable'
   autoload :Repository,  'bitcache/repository'
-  autoload :Stream,      'bitcache/stream'
+
+  # Optimized FFI data structure
   autoload :FFI,         'bitcache/ffi'
-  autoload :VERSION,     'bitcache/version'
+
+  # Pure-Ruby data structures
+  autoload :Filter,      'bitcache/mri/filter'
+  autoload :Identifier,  'bitcache/mri/id'
+  autoload :Index,       'bitcache/mri/index'
+  autoload :List,        'bitcache/mri/list'
+  autoload :Queue,       'bitcache/mri/queue'
+  autoload :Set,         'bitcache/mri/set'
+  autoload :Stream,      'bitcache/mri/stream'
 
   ##
   # Returns the Bitcache identifier for `input`.
