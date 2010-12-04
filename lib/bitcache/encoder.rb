@@ -4,23 +4,23 @@ module Bitcache
     ##
     # Returns an encoder class identified by `name`.
     #
-    # @param  [Symbol, #to_sym] name
+    # @param  [Integer, Symbol] base
     # @return [Class]
-    def self.for(name)
-      case (name.to_sym rescue nil)
-        when :base16 then Base16
-        when :base62 then Base62
-        when :base94 then Base94
+    def self.for(base)
+      case base
+        when 16, :base16 then Base16
+        when 62, :base62 then Base62
+        when 94, :base94 then Base94
       end
     end
 
     ##
     # Returns an encoder class identified by `name`.
     #
-    # @param  [Symbol, #to_sym] name
+    # @param  [Integer, Symbol] base
     # @return [Class]
-    def self.[](name)
-      self.for(name)
+    def self.[](base)
+      self.for(base)
     end
 
     private_class_method :new
