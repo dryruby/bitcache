@@ -1,7 +1,6 @@
 require 'digest/sha1'
 require 'pathname'
 require 'stringio'
-require 'addressable/uri' # @see http://rubygems.org/gems/addressable
 
 module Bitcache
   autoload :VERSION,     'bitcache/version'

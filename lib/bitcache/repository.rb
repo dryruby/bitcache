@@ -5,7 +5,7 @@ module Bitcache
     include Enumerable
 
     ##
-    # @return [Addressable::URI]
+    # @return [URI]
     attr_accessor :url
 
     ##
@@ -29,7 +29,8 @@ module Bitcache
           @streams = url_or_options.delete(:data) || {}
           @options = url_or_options
         else
-          @url = Addressable::URI.parse(url_or_options.to_s)
+          #@url = Addressable::URI.parse(url_or_options.to_s)
+          @url = url_or_options.to_s
           # TODO
           @streams = {}
           @options = {}
@@ -66,7 +67,6 @@ module Bitcache
     def writable?
       true
     end
-
     alias_method :mutable?, :writable?
 
     ##
@@ -102,7 +102,6 @@ module Bitcache
     def has_id?(id)
       @streams.has_key?(id.to_str)
     end
-
     alias_method :has_key?, :has_id?
 
     ##
@@ -113,7 +112,6 @@ module Bitcache
     def has_stream?(stream)
       @streams.has_key?(Bitcache.identify(stream))
     end
-
     alias_method :has_data?,  :has_stream?
     alias_method :has_value?, :has_stream?
 
@@ -143,7 +141,6 @@ module Bitcache
         return id
       end
     end
-
     alias_method :store!, :store
     alias_method :set,    :store
     alias_method :put,    :store
@@ -181,7 +178,6 @@ module Bitcache
         Stream.new(id, @streams[id])
       end
     end
-
     alias_method :[],  :fetch
     alias_method :get, :fetch
 
@@ -199,7 +195,6 @@ module Bitcache
         false
       end
     end
-
     alias_method :delete!, :delete
 
     ##
@@ -216,7 +211,6 @@ module Bitcache
         count
       end
     end
-
     alias_method :clear!, :clear
 
     ##
@@ -230,11 +224,10 @@ module Bitcache
     ##
     # Returns the URL of this repository.
     #
-    # @return [Addressable::URI]
+    # @return [URI]
     def to_uri
       url
     end
-
     alias_method :to_url, :to_uri
 
     ##
