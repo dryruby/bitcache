@@ -175,6 +175,14 @@ module Bitcache
     end
 
     ##
+    # Returns the byte array representation of this identifier.
+    #
+    # @return [Array<Integer>] a byte array
+    def to_a
+      digest.each_byte.to_a
+    end
+
+    ##
     # Returns the binary string representation of this identifier.
     #
     # @return [String]

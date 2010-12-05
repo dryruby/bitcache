@@ -241,7 +241,14 @@ share_as :Bitcache_Identifier do
   end
 
   describe "Identifier#to_a" do
-    # TODO
+    it "returns an Array" do
+      @id.to_a.should be_an Array
+    end
+
+    it "returns the byte array representation of the identifier" do
+      @id = @class.parse(s = 'd41d8cd98f00b204e9800998ecf8427e')
+      @id.to_a.should eql [0xd4, 0x1d, 0x8c, 0xd9, 0x8f, 0x00, 0xb2, 0x04, 0xe9, 0x80, 0x09, 0x98, 0xec, 0xf8, 0x42, 0x7e]
+    end
   end
 
   describe "Identifier#to_str" do
@@ -250,7 +257,8 @@ share_as :Bitcache_Identifier do
     end
 
     it "returns the binary string representation of the identifier" do
-      @class.parse(s = 'd41d8cd98f00b204e9800998ecf8427e').to_str.should eql "\xd4\x1d\x8c\xd9\x8f\x00\xb2\x04\xe9\x80\x09\x98\xec\xf8\x42\x7e"
+      @id = @class.parse(s = 'd41d8cd98f00b204e9800998ecf8427e')
+      @id.to_str.should eql "\xd4\x1d\x8c\xd9\x8f\x00\xb2\x04\xe9\x80\x09\x98\xec\xf8\x42\x7e"
     end
   end
 
@@ -260,11 +268,14 @@ share_as :Bitcache_Identifier do
     end
 
     it "returns the hexadecimal string representation of the identifier" do
-      @class.parse(s = 'd41d8cd98f00b204e9800998ecf8427e').to_s.should eql s
+      @id = @class.parse(s = 'd41d8cd98f00b204e9800998ecf8427e')
+      @id.to_s.should eql s
     end
   end
 
   describe "Identifier#inspect" do
-    # TODO
+    it "returns a String" do
+      @id.inspect.should be_a String
+    end
   end
 end
