@@ -116,6 +116,20 @@ module Bitcache
     end
 
     ##
+    # Enumerates each byte in this identifier.
+    #
+    # @yield  [byte]
+    #   each byte in the identifier
+    # @yieldparam  [Integer] byte
+    # @yieldreturn [void] ignored
+    # @return [Enumerator]
+    def each_byte(&block)
+      digest.each_byte(&block) if block_given?
+      enum_for(:each_byte)
+    end
+    alias_method :each, :each_byte
+
+    ##
     # Compares this identifier to the given `other` identifier.
     #
     # @param  [Object] other

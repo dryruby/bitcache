@@ -152,6 +152,20 @@ share_as :Bitcache_Identifier do
     end
   end
 
+  describe "Identifier#each_byte" do
+    before :each do
+      @id = @class.parse('d41d8cd98f00b204e9800998ecf8427e')
+    end
+
+    it "returns an Enumerator" do
+      @id.each_byte.should be_an Enumerator
+    end
+
+    it "yields each byte in the identifier" do
+      @id.each_byte.to_a.should eql [0xd4, 0x1d, 0x8c, 0xd9, 0x8f, 0x00, 0xb2, 0x04, 0xe9, 0x80, 0x09, 0x98, 0xec, 0xf8, 0x42, 0x7e]
+    end
+  end
+
   describe "Identifier#<=>" do
     it "returns an Integer" do
       (@id <=> @id).should be_an Integer
@@ -172,10 +186,6 @@ share_as :Bitcache_Identifier do
       sha1 = @class.parse('da39a3ee5e6b4b0d3255bfef95601890afd80709')
       (md5 <=> sha1).should be_nil
     end
-  end
-
-  describe "Identifier#each_byte" do
-    # TODO
   end
 
   describe "Identifier#clear!" do
