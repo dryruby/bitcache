@@ -5,7 +5,7 @@ share_as :Bitcache_Identifier do
 
   before :each do
     raise '+@class+ must be defined in a before(:all) block' unless instance_variable_get(:@class)
-    @id = @class.new
+    @id = @class.new("\0" * 16)
   end
 
   describe "Identifier.parse" do
@@ -325,6 +325,19 @@ share_as :Bitcache_Identifier do
     it "returns the hexadecimal string representation of the identifier" do
       @id = @class.parse(s = 'd41d8cd98f00b204e9800998ecf8427e')
       @id.to_s.should eql s
+    end
+  end
+
+  describe "Identifier#to_base64" do
+    it "returns a String" do
+      @id.to_base64.should be_a String
+    end
+
+    it "returns the Base64 string representation of the identifier" do
+      @id.clear!
+      @id.to_base64.should eql 'AAAAAAAAAAAAAAAAAAAAAA=='
+      @id = @class.parse(s = 'd41d8cd98f00b204e9800998ecf8427e')
+      @id.to_base64.should eql '1B2M2Y8AsgTpgAmY7PhCfg=='
     end
   end
 

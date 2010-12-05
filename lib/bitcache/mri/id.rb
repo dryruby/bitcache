@@ -236,6 +236,14 @@ module Bitcache
     end
 
     ##
+    # Returns the Base64 string representation of this identifier.
+    #
+    # @return [String]
+    def to_base64
+      [digest].pack('m').delete!("\n")
+    end
+
+    ##
     # Returns a developer-friendly representation of this identifier.
     #
     # @return [String]
