@@ -165,6 +165,7 @@ module Bitcache
     # @return [Integer] `-1`, `0`, or `1`
     # @see    Comparable#<=>
     def <=>(other)
+      return 0 if self.equal?(other)
       case other
         when Identifier
           size.eql?(other.size) ? digest <=> other.digest : nil
@@ -172,6 +173,34 @@ module Bitcache
           size.eql?(other.size) ? digest <=> other : nil
         else nil
       end
+    end
+
+    ##
+    # Returns `true` if this identifier is equal to the given `other`
+    # identifier.
+    #
+    # @return [Boolean] `true` or `false`
+    def eql?(other)
+      return true if self.equal?(other)
+      case other
+        when Identifier
+          self == other
+        else false
+      end
+    end
+
+    ##
+    # Returns the hash code for this identifier.
+    #
+    # The hash code is defined as equal to the 32 most-significant
+    # bits of the identifier, in big-endian order.
+    #
+    # @return [Fixnum] `(0..0xffffffff)`
+    def hash
+      digest[3].ord +
+        (digest[2].ord << 8) +
+        (digest[1].ord << 16) +
+        (digest[0].ord << 24)
     end
 
     ##

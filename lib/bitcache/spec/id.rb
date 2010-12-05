@@ -215,8 +215,13 @@ share_as :Bitcache_Identifier do
       (@id <=> @id).should be_an Integer
     end
 
-    it "returns zero if the identifiers are equal" do
+    it "returns zero if the identifiers are the same object" do
       (@id <=> @id).should eql 0
+    end
+
+    it "returns zero if the identifiers are equal" do
+      id1, id2 = @class.new("\1" * 16), @class.new("\1" * 16)
+      (id1 <=> id2).should eql 0
     end
 
     it "returns -1 or 1 if the identifiers are not equal" do
@@ -232,12 +237,51 @@ share_as :Bitcache_Identifier do
     end
   end
 
-  describe "Identifier#hash" do
-    # TODO
+  describe "Identifier#eql?" do
+    it "returns a Boolean" do
+      @id.eql?(@id).should be_a_boolean
+    end
+
+    it "returns true if the identifiers are the same object" do
+      @id.should eql @id
+    end
+
+    it "returns true if the identifiers are equal" do
+      id1, id2 = @class.new("\1" * 16), @class.new("\1" * 16)
+      id1.should eql id2
+    end
+
+    it "returns false if the identifiers are not equal" do
+      id1, id2 = @class.new("\1" * 16), @class.new("\2" * 16)
+      id1.should_not eql id2
+    end
+
+    it "returns false if the identifiers are incompatible" do
+      md5  = @class.parse('d41d8cd98f00b204e9800998ecf8427e')
+      sha1 = @class.parse('da39a3ee5e6b4b0d3255bfef95601890afd80709')
+      md5.should_not eql sha1
+    end
   end
 
-  describe "Identifier#eql?" do
-    # TODO
+  describe "Identifier#hash" do
+    it "returns a Fixnum" do
+      @id.hash.should be_a Fixnum
+    end
+
+    it "returns zero as the minimum value" do
+      @id.clear!
+      @id.hash.should eql 0
+    end
+
+    it "returns 0xffffffff as the maximum value" do
+      @id.fill!(0xff)
+      @id.hash.should eql 0xffffffff
+    end
+
+    it "returns the 32 most-significant bits in big-endian order" do
+      @id = @class.parse('d41d8cd98f00b204e9800998ecf8427e')
+      @id.hash.should eql 0xd41d8cd9
+    end
   end
 
   describe "Identifier#to_i" do

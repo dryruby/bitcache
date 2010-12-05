@@ -211,10 +211,10 @@ bitcache_id_fill(bitcache_id* id, const byte value) {
 guint
 bitcache_id_get_hash(const bitcache_id* id) {
   assert(id != NULL);
-  return (guint)(id->digest[3] << 24) +
-    (guint)(id->digest[2] << 16) +
-    (guint)(id->digest[1] << 8) +
-    (guint)(id->digest[0] << 0);
+  return (guint)id->digest[3] +
+    (guint)(id->digest[2] << 8) +
+    (guint)(id->digest[1] << 16) +
+    (guint)(id->digest[0] << 24);
 }
 
 bitcache_id_type
