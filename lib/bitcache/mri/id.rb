@@ -102,7 +102,7 @@ module Bitcache
     # @return [Boolean] `true` or `false`
     # @see    #nonzero?
     def zero?
-      digest.each_byte.all? { |byte| byte.zero? } # TODO: optimize
+      /\A\x00+\z/ === digest
     end
     alias_method :blank?, :zero?
 
