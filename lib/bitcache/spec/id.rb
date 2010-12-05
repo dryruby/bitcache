@@ -57,6 +57,44 @@ share_as :Bitcache_Identifier do
     end
   end
 
+  describe "Identifier#dup" do
+    it "returns an Identifier" do
+      @id.dup.should be_an Identifier
+    end
+
+    it "returns an identical copy of the identifier" do
+      copy = @id.dup
+      copy.should_not equal @id
+      copy.should eql @id
+    end
+
+    it "duplicates the digest data in full" do
+      id1, id2 = @id.clear!, @id.dup
+      id2.should eql id1
+
+      id1.fill!(0xff)
+      id2.should_not eql id1 # digest data is not shared after copy
+      id1.each_byte.all? { |byte| byte.eql?(0xff) }
+      id2.each_byte.all? { |byte| byte.eql?(0x00) }
+    end
+  end
+
+  describe "Identifier#freeze" do
+    it "freezes the identifier" do
+      @id.freeze
+      @id.should be_frozen
+    end
+
+    it "freezes the digest data" do
+      @id.freeze
+      @id.digest.should be_frozen
+    end
+
+    it "returns self" do
+      @id.freeze.should equal @id
+    end
+  end
+
   describe "Identifier#digest" do
     it "returns a String" do
       @id.digest.should be_a String

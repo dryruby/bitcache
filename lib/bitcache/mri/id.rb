@@ -53,10 +53,29 @@ module Bitcache
     end
 
     ##
+    # Initializes an identifier cloned from `original`.
+    #
+    # @param  [Identifier] original
+    # @return [void]
+    def initialize_copy(original)
+      @digest = original.digest.clone # copy the digest data
+    end
+
+    ##
+    # Prevents further modifications to this identifier.
+    #
+    # @return [void] `self`
+    def freeze
+      @digest.freeze
+      super
+    end
+
+    ##
     # The message digest as a binary string.
     #
     # @return [String]
     attr_reader :digest
+    alias_method :data, :digest
 
     ##
     # Returns the byte size of this identifier.
