@@ -69,13 +69,42 @@ module Bitcache
     alias_method :length,   :size
 
     ##
-    # Returns `true` if this identifier is zero.
+    # Returns `true` if all bytes in this identifier are zero.
     #
     # @return [Boolean] `true` or `false`
     def zero?
       digest.each_byte.all? { |byte| byte.zero? }
     end
     alias_method :blank?, :zero?
+
+    ##
+    # Fills this identifier with the byte value `0x00`.
+    #
+    # @return [void] `self`
+    def clear!
+      digest.gsub!(/./, "\0")
+      self
+    end
+    alias_method :clear, :clear!
+
+    ##
+    # Fills this identifier with the given `byte` value.
+    #
+    # @param  [Integer, #ord] byte
+    #   a byte value, `(0..255)`
+    # @return [void] `self`
+    def fill!(byte)
+      byte = case byte
+        when String
+          byte = byte[0]
+          byte.force_encoding(Encoding::BINARY) if byte.respond_to?(:force_encoding) # for Ruby 1.9+
+          byte.ord
+        else byte.ord & 0xff
+      end
+      digest.gsub!(/./, byte.chr)
+      self
+    end
+    alias_method :fill, :fill!
 
     ##
     # Returns the byte at offset `index`.

@@ -86,12 +86,56 @@ share_as :Bitcache_Identifier do
       @id.zero?.should be_a_boolean
     end
 
-    it "returns true if the identifier is zero" do
+    it "returns true if all bytes in the identifier are zero" do
       @class.new("\x00" * 16).should be_zero
     end
 
     it "returns false otherwise" do
       @class.new("\xff" * 16).should_not be_zero
+    end
+  end
+
+  describe "Identifier#clear!" do
+    before :each do
+      @id = @class.parse('d41d8cd98f00b204e9800998ecf8427e')
+    end
+
+    it "fills the identifier with the byte value 0x00" do
+      @id.clear!
+      @id.should be_zero
+    end
+
+    it "retains the identifier size unchanged" do
+      size = @id.size
+      @id.clear!
+      @id.size.should eql size
+    end
+
+    it "returns self" do
+      @id.clear!.should equal @id
+    end
+  end
+
+  describe "Identifier#fill!" do
+    before :each do
+      @id = @class.parse('d41d8cd98f00b204e9800998ecf8427e')
+    end
+
+    it "fills the identifier with the given byte value" do
+      @id.fill!(0xff)
+      @id.each_byte.all? { |byte| byte.should eql 0xff }
+      @id.fill!("\xAB")
+      @id.each_byte.all? { |byte| byte.should eql 0xab }
+    end
+
+    it "retains the identifier size unchanged" do
+      size = @id.size
+      @id.fill!(0xff)
+      @id.size.should eql size
+    end
+
+    it "returns self" do
+      @id.fill!(0xff).should equal @id
     end
   end
 
@@ -186,14 +230,6 @@ share_as :Bitcache_Identifier do
       sha1 = @class.parse('da39a3ee5e6b4b0d3255bfef95601890afd80709')
       (md5 <=> sha1).should be_nil
     end
-  end
-
-  describe "Identifier#clear!" do
-    # TODO
-  end
-
-  describe "Identifier#fill!" do
-    # TODO
   end
 
   describe "Identifier#hash" do
