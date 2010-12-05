@@ -88,9 +88,19 @@ module Bitcache
     alias_method :length,   :size
 
     ##
+    # Returns `true` unless all bytes in this identifier are zero.
+    #
+    # @return [Boolean] `true` or `false`
+    # @see    #zero?
+    def nonzero?
+      !(zero?)
+    end
+
+    ##
     # Returns `true` if all bytes in this identifier are zero.
     #
     # @return [Boolean] `true` or `false`
+    # @see    #nonzero?
     def zero?
       digest.each_byte.all? { |byte| byte.zero? }
     end

@@ -119,6 +119,20 @@ share_as :Bitcache_Identifier do
     end
   end
 
+  describe "Identifier#nonzero?" do
+    it "returns a Boolean" do
+      @id.nonzero?.should be_a_boolean
+    end
+
+    it "returns true unless all bytes in the identifier are zero" do
+      @class.new("\xff" * 16).should be_nonzero
+    end
+
+    it "returns false otherwise" do
+      @class.new("\x00" * 16).should_not be_nonzero
+    end
+  end
+
   describe "Identifier#zero?" do
     it "returns a Boolean" do
       @id.zero?.should be_a_boolean
