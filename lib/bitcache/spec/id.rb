@@ -81,6 +81,20 @@ share_as :Bitcache_Identifier do
     end
   end
 
+  describe "Identifier#zero?" do
+    it "returns a Boolean" do
+      @id.zero?.should be_a_boolean
+    end
+
+    it "returns true if the identifier is zero" do
+      @class.new("\x00" * 16).should be_zero
+    end
+
+    it "returns false otherwise" do
+      @class.new("\xff" * 16).should_not be_zero
+    end
+  end
+
   describe "Identifier#<=>" do
     it "returns an Integer" do
       (@id <=> @id).should be_an Integer
@@ -101,10 +115,6 @@ share_as :Bitcache_Identifier do
       sha1 = @class.parse('da39a3ee5e6b4b0d3255bfef95601890afd80709')
       (md5 <=> sha1).should be_nil
     end
-  end
-
-  describe "Identifier#zero?" do
-    # TODO
   end
 
   describe "Identifier#each_byte" do
