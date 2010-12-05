@@ -22,6 +22,7 @@ Dependencies
 ------------
 
 * [Ruby](http://ruby-lang.org/) (>= 1.8.7) or (>= 1.8.1 with [Backports][])
+* [FFI](http://rubygems.org/gems/ffi) (>= 1.0.0)
 
 Installation
 ------------
