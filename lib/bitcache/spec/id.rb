@@ -57,6 +57,28 @@ share_as :Bitcache_Identifier do
     end
   end
 
+  describe "Identifier#clone" do
+    it "returns an Identifier" do
+      @id.clone.should be_an Identifier
+    end
+
+    it "returns an identical copy of the identifier" do
+      copy = @id.clone
+      copy.should_not equal @id
+      copy.should eql @id
+    end
+
+    it "duplicates the digest data in full" do
+      id1, id2 = @id.clear!, @id.clone
+      id2.should eql id1
+
+      id1.fill!(0xff)
+      id2.should_not eql id1 # digest data is not shared after copy
+      id1.each_byte.all? { |byte| byte.eql?(0xff) }
+      id2.each_byte.all? { |byte| byte.eql?(0x00) }
+    end
+  end
+
   describe "Identifier#dup" do
     it "returns an Identifier" do
       @id.dup.should be_an Identifier
@@ -152,6 +174,10 @@ share_as :Bitcache_Identifier do
       @id = @class.parse('d41d8cd98f00b204e9800998ecf8427e')
     end
 
+    it "raises a TypeError if the identifier is frozen" do
+      lambda { @id.freeze.clear! }.should raise_error TypeError
+    end
+
     it "fills the identifier with the byte value 0x00" do
       @id.clear!
       @id.should be_zero
@@ -171,6 +197,10 @@ share_as :Bitcache_Identifier do
   describe "Identifier#fill!" do
     before :each do
       @id = @class.parse('d41d8cd98f00b204e9800998ecf8427e')
+    end
+
+    it "raises a TypeError if the identifier is frozen" do
+      lambda { @id.freeze.fill!(0xff) }.should raise_error TypeError
     end
 
     it "fills the identifier with the given byte value" do
@@ -214,6 +244,10 @@ share_as :Bitcache_Identifier do
   describe "Identifier#[]=" do
     before :each do
       @id = @class.parse('d41d8cd98f00b204e9800998ecf8427e')
+    end
+
+    it "raises a TypeError if the identifier is frozen" do
+      lambda { @id.freeze[0] = 0xff }.should raise_error TypeError
     end
 
     it "raises an IndexError if the index is out of bounds" do

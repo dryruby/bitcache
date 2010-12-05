@@ -226,3 +226,8 @@ module Bitcache
     #attach_function :bitcache_set_inspect, [:bitcache_set], :void
   end # FFI
 end # Bitcache
+
+class FFI::Struct
+  alias_method :aref, :[]
+  alias_method :aset, :[]=
+end

@@ -1,5 +1,6 @@
 require 'bitcache'
 require 'bitcache/spec'
+require 'openssl'
 
 Spec::Runner.configure do |config|
   config.include(Bitcache::Spec::Matchers)

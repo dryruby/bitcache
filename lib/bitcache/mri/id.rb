@@ -1,7 +1,7 @@
 module Bitcache
   ##
   # A Bitcache identifier.
-  class Identifier
+  class Identifier < Struct
     include Comparable
     include Inspectable
 
@@ -66,7 +66,7 @@ module Bitcache
     #
     # @return [void] `self`
     def freeze
-      @digest.freeze
+      digest.freeze
       super
     end
 
@@ -102,7 +102,7 @@ module Bitcache
     # @return [Boolean] `true` or `false`
     # @see    #nonzero?
     def zero?
-      digest.each_byte.all? { |byte| byte.zero? }
+      digest.each_byte.all? { |byte| byte.zero? } # TODO: optimize
     end
     alias_method :blank?, :zero?
 
@@ -111,6 +111,7 @@ module Bitcache
     #
     # @return [void] `self`
     def clear!
+      raise TypeError, "can't modify frozen identifier" if frozen?
       digest.gsub!(/./, "\0")
       self
     end
@@ -123,14 +124,8 @@ module Bitcache
     #   a byte value, `(0..255)`
     # @return [void] `self`
     def fill!(byte)
-      byte = case byte
-        when String
-          byte = byte[0]
-          byte.force_encoding(Encoding::BINARY) if byte.respond_to?(:force_encoding) # for Ruby 1.9+
-          byte.ord
-        else byte.ord & 0xff
-      end
-      digest.gsub!(/./, byte.chr)
+      raise TypeError, "can't modify frozen identifier" if frozen?
+      digest.gsub!(/./, byte(byte).chr)
       self
     end
     alias_method :fill, :fill!
@@ -162,15 +157,8 @@ module Bitcache
     def []=(index, byte)
       index = index.to_i
       raise IndexError, "index #{index} is out of bounds" unless index >= 0 && index < size
-      byte = case byte
-        when String
-          byte = byte[0]
-          byte.force_encoding(Encoding::BINARY) if byte.respond_to?(:force_encoding) # for Ruby 1.9+
-          byte.ord
-        else byte.ord & 0xff
-      end
-      digest[index] = byte.chr
-      byte
+      raise TypeError, "can't modify frozen identifier" if frozen?
+      digest[index] = byte(byte).chr
     end
 
     ##
@@ -302,6 +290,23 @@ module Bitcache
     # @return [String]
     def inspect
       super
+    end
+
+    # Load optimized method implementations when available:
+    include Bitcache::FFI::Identifier if defined?(Bitcache::FFI::Identifier)
+
+  protected
+
+    ##
+    # @private
+    def byte(byte)
+      case byte
+        when String
+          byte = byte[0]
+          byte.force_encoding(Encoding::BINARY) if byte.respond_to?(:force_encoding) # for Ruby 1.9+
+          byte.ord
+        else byte.ord & 0xff
+      end
     end
   end # Identifier
 end # Bitcache

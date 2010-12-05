@@ -10,10 +10,13 @@ module Bitcache
   autoload :Inspectable, 'bitcache/inspectable'
   autoload :Repository,  'bitcache/repository'
 
-  # Optimized FFI data structure
-  autoload :FFI,         'bitcache/ffi'
+  begin
+    require 'bitcache/ffi'
+    Struct = FFI::ManagedStruct
+  rescue LoadError
+    Struct = Object
+  end
 
-  # Pure-Ruby data structures
   autoload :Filter,      'bitcache/mri/filter'
   autoload :Identifier,  'bitcache/mri/id'
   autoload :Index,       'bitcache/mri/index'
