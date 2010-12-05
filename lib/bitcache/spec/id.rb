@@ -240,6 +240,17 @@ share_as :Bitcache_Identifier do
     # TODO
   end
 
+  describe "Identifier#to_i" do
+    it "returns an Integer" do
+      @id.to_i.should be_an Integer
+    end
+
+    it "returns the integer representation of the identifier" do
+      @id = @class.parse(s = 'd41d8cd98f00b204e9800998ecf8427e')
+      @id.to_i.should eql 0xd41d8cd98f00b204e9800998ecf8427e
+    end
+  end
+
   describe "Identifier#to_a" do
     it "returns an Array" do
       @id.to_a.should be_an Array

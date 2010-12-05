@@ -175,6 +175,14 @@ module Bitcache
     end
 
     ##
+    # Returns the integer representation of this identifier.
+    #
+    # @return [Integer]
+    def to_i
+      to_s.hex
+    end
+
+    ##
     # Returns the byte array representation of this identifier.
     #
     # @return [Array<Integer>] a byte array
