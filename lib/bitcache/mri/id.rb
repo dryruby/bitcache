@@ -78,6 +78,44 @@ module Bitcache
     alias_method :blank?, :zero?
 
     ##
+    # Returns the byte at offset `index`.
+    #
+    # Returns `nil` if `index` is out of bounds.
+    #
+    # @param  [Integer, #to_i] index
+    #   a byte offset in the range `(0...size)`
+    # @return [Integer] `(0..255)`, or `nil`
+    def [](index)
+      index = index.to_i
+      index >= 0 && index < size ? digest[index].ord : nil
+    end
+
+    ##
+    # Replaces the byte at offset `index` with the given `byte` value.
+    #
+    # Raises an error if `index` is out of bounds.
+    #
+    # @param  [Integer, #to_i] index
+    #   a byte offset in the range `(0...size)`
+    # @param  [Integer, #ord]  byte
+    #   the new byte value, `(0..255)`
+    # @return [Integer] `byte`
+    # @raise  [IndexError] if `index` is out of bounds
+    def []=(index, byte)
+      index = index.to_i
+      raise IndexError, "index #{index} is out of bounds" unless index >= 0 && index < size
+      byte = case byte
+        when String
+          byte = byte[0]
+          byte.force_encoding(Encoding::BINARY) if byte.respond_to?(:force_encoding) # for Ruby 1.9+
+          byte.ord
+        else byte.ord & 0xff
+      end
+      digest[index] = byte.chr
+      byte
+    end
+
+    ##
     # Compares this identifier to the given `other` identifier.
     #
     # @param  [Object] other

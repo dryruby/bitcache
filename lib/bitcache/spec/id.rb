@@ -95,6 +95,63 @@ share_as :Bitcache_Identifier do
     end
   end
 
+  describe "Identifier#[]" do
+    before :each do
+      @id = @class.parse('d41d8cd98f00b204e9800998ecf8427e')
+    end
+
+    it "returns an Integer" do
+      @id[0].should be_an Integer
+    end
+
+    it "returns the byte at the given index" do
+      @id[0].should  eql 0xd4
+      @id[7].should  eql 0x04
+      @id[15].should eql 0x7e
+    end
+
+    it "returns nil if the index is out of bounds" do
+      @id[100].should be_nil
+    end
+  end
+
+  describe "Identifier#[]=" do
+    before :each do
+      @id = @class.parse('d41d8cd98f00b204e9800998ecf8427e')
+    end
+
+    it "raises an IndexError if the index is out of bounds" do
+      lambda { (@id[100] = 0xff) }.should raise_error IndexError
+    end
+
+    it "replaces the byte at the given index" do
+      @id[0].should eql 0xd4
+      @id[0] = 0xff
+      @id[0].should eql 0xff
+    end
+
+    it "returns an Integer" do
+      (@id[0] = 0xff).should be_an Integer
+    end
+
+    it "returns the new byte at the given index" do
+      @id[0].should eql 0xd4
+      (@id[0] = 0xff).should eql 0xff
+    end
+  end
+
+  describe "Identifier#[]=(index, String)" do
+    before :each do
+      @id = @class.parse('d41d8cd98f00b204e9800998ecf8427e')
+    end
+
+    it "replaces the byte at the given index" do
+      @id[0].should eql 0xd4
+      @id[0] = ?b.chr
+      @id[0].should eql ?b.ord
+    end
+  end
+
   describe "Identifier#<=>" do
     it "returns an Integer" do
       (@id <=> @id).should be_an Integer
@@ -118,14 +175,6 @@ share_as :Bitcache_Identifier do
   end
 
   describe "Identifier#each_byte" do
-    # TODO
-  end
-
-  describe "Identifier#[]" do
-    # TODO
-  end
-
-  describe "Identifier#[]=" do
     # TODO
   end
 
