@@ -140,11 +140,23 @@ share_as :Bitcache_Identifier do
   end
 
   describe "Identifier#to_str" do
-    # TODO
+    it "returns a String" do
+      @id.to_str.should be_a String
+    end
+
+    it "returns the binary string representation of the identifier" do
+      @class.parse(s = 'd41d8cd98f00b204e9800998ecf8427e').to_str.should eql "\xd4\x1d\x8c\xd9\x8f\x00\xb2\x04\xe9\x80\x09\x98\xec\xf8\x42\x7e"
+    end
   end
 
   describe "Identifier#to_s" do
-    # TODO
+    it "returns a String" do
+      @id.to_s.should be_a String
+    end
+
+    it "returns the hexadecimal string representation of the identifier" do
+      @class.parse(s = 'd41d8cd98f00b204e9800998ecf8427e').to_s.should eql s
+    end
   end
 
   describe "Identifier#inspect" do

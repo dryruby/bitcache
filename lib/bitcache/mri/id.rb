@@ -41,7 +41,7 @@ module Bitcache
     # If no `digest` argument is provided, the identifier will be
     # initialized to all zeroes.
     #
-    # @example
+    # @example Constructing an MD5 identifier
     #   id = Identifier.new("\xd4\x1d\x8c\xd9\x8f\x00\xb2\x04\xe9\x80\x09\x98e\xcf8\x42\x7e")
     #
     # @param  [String, #to_str] digest
@@ -81,6 +81,22 @@ module Bitcache
           size.eql?(other.size) ? digest <=> other : nil
         else nil
       end
+    end
+
+    ##
+    # Returns the binary string representation of this identifier.
+    #
+    # @return [String]
+    def to_str
+      digest.dup
+    end
+
+    ##
+    # Returns the hexadecimal string representation of this identifier.
+    #
+    # @return [String]
+    def to_s
+      digest.unpack('H*').first
     end
   end # Identifier
 end # Bitcache
