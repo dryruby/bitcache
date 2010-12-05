@@ -349,7 +349,7 @@ share_as :Bitcache_Identifier do
       @id.to_str.should be_a String
     end
 
-    it "returns the binary string representation of the identifier" do
+    it "returns the byte string representation of the identifier" do
       @id = @class.parse(s = 'd41d8cd98f00b204e9800998ecf8427e')
       @id.to_str.should eql "\xd4\x1d\x8c\xd9\x8f\x00\xb2\x04\xe9\x80\x09\x98\xec\xf8\x42\x7e"
     end
@@ -363,6 +363,50 @@ share_as :Bitcache_Identifier do
     it "returns the hexadecimal string representation of the identifier" do
       @id = @class.parse(s = 'd41d8cd98f00b204e9800998ecf8427e')
       @id.to_s.should eql s
+    end
+  end
+
+  describe "Identifier#to_s(2)" do
+    it "returns a String" do
+      @id.to_s(2).should be_a String
+    end
+
+    it "returns the binary string representation of the identifier" do
+      @id = @class.parse('d41d8cd98f00b204e9800998ecf8427e')
+      @id.to_s(2).should eql 0xd41d8cd98f00b204e9800998ecf8427e.to_s(2)
+    end
+  end
+
+  describe "Identifier#to_s(8)" do
+    it "returns a String" do
+      @id.to_s(8).should be_a String
+    end
+
+    it "returns the octal string representation of the identifier" do
+      @id = @class.parse('d41d8cd98f00b204e9800998ecf8427e')
+      @id.to_s(8).should eql 0xd41d8cd98f00b204e9800998ecf8427e.to_s(8)
+    end
+  end
+
+  describe "Identifier#to_s(10)" do
+    it "returns a String" do
+      @id.to_s(10).should be_a String
+    end
+
+    it "returns the decimal string representation of the identifier" do
+      @id = @class.parse('d41d8cd98f00b204e9800998ecf8427e')
+      @id.to_s(10).should eql 0xd41d8cd98f00b204e9800998ecf8427e.to_s(10)
+    end
+  end
+
+  describe "Identifier#to_s(16)" do
+    it "returns a String" do
+      @id.to_s(16).should be_a String
+    end
+
+    it "returns the hexadecimal string representation of the identifier" do
+      @id = @class.parse('d41d8cd98f00b204e9800998ecf8427e')
+      @id.to_s(16).should eql 0xd41d8cd98f00b204e9800998ecf8427e.to_s(16)
     end
   end
 

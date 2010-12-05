@@ -198,6 +198,8 @@ module Bitcache
     # Returns `true` if this identifier is equal to the given `other`
     # identifier.
     #
+    # Two identifiers are equal if they have the same size and digest.
+    #
     # @return [Boolean] `true` or `false`
     def eql?(other)
       return true if self.equal?(other)
@@ -234,14 +236,17 @@ module Bitcache
     # Returns the byte array representation of this identifier.
     #
     # @return [Array<Integer>] a byte array
-    def to_a
-      digest.each_byte.to_a
+    def to_a(base = 256)
+      case base
+        when 256 then digest.each_byte.to_a
+        else raise ArgumentError, "invalid radix #{base}"
+      end
     end
 
     ##
-    # Returns the binary string representation of this identifier.
+    # Returns the byte string representation of this identifier.
     #
-    # @return [String]
+    # @return [String] a byte string
     def to_str
       digest.dup
     end
@@ -249,9 +254,18 @@ module Bitcache
     ##
     # Returns the hexadecimal string representation of this identifier.
     #
+    # @param  [Integer] base
+    #   the numeric base to convert to: `2`, `8`, `10`, or `16`
     # @return [String]
-    def to_s
-      digest.unpack('H*').first
+    # @raise  [ArgumentError] if `base` is invalid
+    def to_s(base = 16)
+      case base
+        when 16 then digest.unpack('H*').first
+        when 10 then to_i.to_s(10).ljust((size * Math.log10(256)).ceil, '0')
+        when 8  then to_i.to_s(8).ljust((size * Math.log(256, 8)).ceil, '0')
+        when 2  then to_i.to_s(2).ljust(size * 8, '0') # TODO: optimize
+        else raise ArgumentError, "invalid radix #{base}"
+      end
     end
 
     ##
