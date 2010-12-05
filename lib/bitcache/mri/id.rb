@@ -3,6 +3,7 @@ module Bitcache
   # A Bitcache identifier.
   class Identifier
     include Comparable
+    include Inspectable
 
     MD5_SIZE    = 16 # bytes
     SHA1_SIZE   = 20 # bytes
@@ -97,6 +98,14 @@ module Bitcache
     # @return [String]
     def to_s
       digest.unpack('H*').first
+    end
+
+    ##
+    # Returns a developer-friendly representation of this identifier.
+    #
+    # @return [String]
+    def inspect
+      super
     end
   end # Identifier
 end # Bitcache
