@@ -48,6 +48,7 @@ module Bitcache
     #   the identifier message digest
     def initialize(digest = nil)
       @digest = digest ? digest.to_str : "\0" * 20
+      @digest.force_encoding(Encoding::BINARY) if @digest.respond_to?(:force_encoding) # for Ruby 1.9+
     end
 
     ##
@@ -55,6 +56,16 @@ module Bitcache
     #
     # @return [String]
     attr_reader :digest
+
+    ##
+    # Returns the byte size of this identifier.
+    #
+    # @return [Integer]
+    def size
+      digest.bytesize
+    end
+    alias_method :bytesize, :size
+    alias_method :length,   :size
 
     ##
     # Compares this identifier to the given `other` identifier.
@@ -65,9 +76,9 @@ module Bitcache
     def <=>(other)
       case other
         when Identifier
-          digest <=> other.digest
+          size.eql?(other.size) ? digest <=> other.digest : nil
         when String
-          digest <=> other
+          size.eql?(other.size) ? digest <=> other : nil
         else nil
       end
     end

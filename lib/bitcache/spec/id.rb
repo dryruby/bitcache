@@ -63,6 +63,24 @@ share_as :Bitcache_Identifier do
     end
   end
 
+  describe "Identifier#size" do
+    it "returns an Integer" do
+      @id.size.should be_an Integer
+    end
+
+    it "returns 16 for MD5 identifiers" do
+      @class.parse('d41d8cd98f00b204e9800998ecf8427e').size.should eql 16
+    end
+
+    it "returns 20 for SHA-1 identifiers" do
+      @class.parse('da39a3ee5e6b4b0d3255bfef95601890afd80709').size.should eql 20
+    end
+
+    it "returns 32 for SHA-256 identifiers" do
+      @class.parse('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855').size.should eql 32
+    end
+  end
+
   describe "Identifier#<=>" do
     it "returns an Integer" do
       (@id <=> @id).should be_an Integer
@@ -86,10 +104,6 @@ share_as :Bitcache_Identifier do
   end
 
   describe "Identifier#zero?" do
-    # TODO
-  end
-
-  describe "Identifier#size" do
     # TODO
   end
 
