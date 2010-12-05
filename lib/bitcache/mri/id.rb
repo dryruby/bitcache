@@ -2,6 +2,8 @@ module Bitcache
   ##
   # A Bitcache identifier.
   class Identifier
+    include Comparable
+
     MD5_SIZE    = 16 # bytes
     SHA1_SIZE   = 20 # bytes
     SHA256_SIZE = 32 # bytes
@@ -53,5 +55,21 @@ module Bitcache
     #
     # @return [String]
     attr_reader :digest
+
+    ##
+    # Compares this identifier to the given `other` identifier.
+    #
+    # @param  [Object] other
+    # @return [Integer] `-1`, `0`, or `1`
+    # @see    Comparable#<=>
+    def <=>(other)
+      case other
+        when Identifier
+          digest <=> other.digest
+        when String
+          digest <=> other
+        else nil
+      end
+    end
   end # Identifier
 end # Bitcache

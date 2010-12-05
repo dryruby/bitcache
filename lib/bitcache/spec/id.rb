@@ -63,6 +63,28 @@ share_as :Bitcache_Identifier do
     end
   end
 
+  describe "Identifier#<=>" do
+    it "returns an Integer" do
+      (@id <=> @id).should be_an Integer
+    end
+
+    it "returns zero if the identifiers are equal" do
+      (@id <=> @id).should eql 0
+    end
+
+    it "returns -1 or 1 if the identifiers are not equal" do
+      id1, id2 = @class.new("\1" * 16), @class.new("\2" * 16)
+      (id1 <=> id2).should eql -1
+      (id2 <=> id1).should eql 1
+    end
+
+    it "returns nil if the identifiers are incompatible" do
+      md5  = @class.parse('d41d8cd98f00b204e9800998ecf8427e')
+      sha1 = @class.parse('da39a3ee5e6b4b0d3255bfef95601890afd80709')
+      (md5 <=> sha1).should be_nil
+    end
+  end
+
   describe "Identifier#zero?" do
     # TODO
   end
@@ -96,10 +118,6 @@ share_as :Bitcache_Identifier do
   end
 
   describe "Identifier#eql?" do
-    # TODO
-  end
-
-  describe "Identifier#<=>" do
     # TODO
   end
 
