@@ -233,6 +233,16 @@ module Bitcache
     end
 
     ##
+    # Returns the `OpenSSL::BN` representation of this identifier.
+    #
+    # @return [OpenSSL::BN]
+    # @see    http://ruby-doc.org/stdlib/libdoc/openssl/rdoc/classes/OpenSSL/BN.html
+    def to_bn
+      require 'openssl' unless defined?(OpenSSL::BN)
+      OpenSSL::BN.new(to_i.to_s)
+    end
+
+    ##
     # Returns the byte array representation of this identifier.
     #
     # @return [Array<Integer>] a byte array

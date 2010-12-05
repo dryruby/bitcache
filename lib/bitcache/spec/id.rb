@@ -333,6 +333,17 @@ share_as :Bitcache_Identifier do
     end
   end
 
+  describe "Identifier#to_bn" do
+    it "returns an OpenSSL::BN instance" do
+      @id.to_bn.should be_an OpenSSL::BN
+    end
+
+    it "returns the OpenSSL representation of the identifier" do
+      @id = @class.parse(s = 'd41d8cd98f00b204e9800998ecf8427e')
+      @id.to_bn.should eql 0xd41d8cd98f00b204e9800998ecf8427e
+    end
+  end
+
   describe "Identifier#to_a" do
     it "returns an Array" do
       @id.to_a.should be_an Array
