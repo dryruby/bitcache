@@ -48,7 +48,7 @@ module Bitcache
     # @param  [String, #to_str] digest
     #   the identifier message digest
     def initialize(digest = nil)
-      @digest = digest ? digest.to_str : "\0" * 20
+      @digest = digest ? digest.to_str : "\0" * 16
       @digest.force_encoding(Encoding::BINARY) if @digest.respond_to?(:force_encoding) # for Ruby 1.9+
     end
 
