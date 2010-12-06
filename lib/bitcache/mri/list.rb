@@ -195,6 +195,7 @@ module Bitcache
     #
     # @param  [Identifier, #to_id] id
     # @return [void] `self`
+    # @raise  [TypeError] if the list is frozen
     def insert(id)
       raise TypeError, "can't modify frozen list" if frozen?
       elements.unshift(id.to_id)
@@ -208,6 +209,7 @@ module Bitcache
     #
     # @param  [Identifier, #to_id] id
     # @return [void] `self`
+    # @raise  [TypeError] if the list is frozen
     def delete(id)
       raise TypeError, "can't modify frozen list" if frozen?
       elements.delete(id.to_id) # FIXME: only delete the first occurrence
@@ -219,6 +221,7 @@ module Bitcache
     # Removes all elements from this list.
     #
     # @return [void] `self`
+    # @raise  [TypeError] if the list is frozen
     def clear!
       raise TypeError, "can't modify frozen list" if frozen?
       elements.clear
@@ -231,6 +234,7 @@ module Bitcache
     #
     # @param  [Identifier, #to_id] id
     # @return [void] `self`
+    # @raise  [TypeError] if the list is frozen
     def prepend(id)
       insert(id)
     end
@@ -240,6 +244,7 @@ module Bitcache
     #
     # @param  [Identifier, #to_id] id
     # @return [void] `self`
+    # @raise  [TypeError] if the list is frozen
     def append(id)
       raise TypeError, "can't modify frozen list" if frozen?
       elements.push(id.to_id)
@@ -259,6 +264,7 @@ module Bitcache
     # Reverses the element order of this list in place.
     #
     # @return [void] `self`
+    # @raise  [TypeError] if the list is frozen
     def reverse!
       raise TypeError, "can't modify frozen list" if frozen?
       elements.reverse!

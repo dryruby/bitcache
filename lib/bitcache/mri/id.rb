@@ -126,6 +126,7 @@ module Bitcache
     # Fills this identifier with the byte value `0x00`.
     #
     # @return [void] `self`
+    # @raise  [TypeError] if the identifier is frozen
     def clear!
       raise TypeError, "can't modify frozen identifier" if frozen?
       digest.gsub!(/./, "\0")
@@ -139,6 +140,7 @@ module Bitcache
     # @param  [Integer, #ord] byte
     #   a byte value, `(0..255)`
     # @return [void] `self`
+    # @raise  [TypeError] if the identifier is frozen
     def fill!(byte)
       raise TypeError, "can't modify frozen identifier" if frozen?
       digest.gsub!(/./, byte(byte).chr)
@@ -170,6 +172,7 @@ module Bitcache
     #   the new byte value, `(0..255)`
     # @return [Integer] `byte`
     # @raise  [IndexError] if `index` is out of bounds
+    # @raise  [TypeError] if the identifier is frozen
     def []=(index, byte)
       index = index.to_i
       raise IndexError, "index #{index} is out of bounds" unless index >= 0 && index < size

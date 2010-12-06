@@ -197,6 +197,7 @@ module Bitcache
     #
     # @param  [Identifier, #to_id] id
     # @return [void] `self`
+    # @raise  [TypeError] if the set is frozen
     def insert(id)
       raise TypeError, "can't modify frozen set" if frozen?
       elements[id.to_id] ||= true
@@ -210,6 +211,7 @@ module Bitcache
     #
     # @param  [Identifier, #to_id] id
     # @return [void] `self`
+    # @raise  [TypeError] if the set is frozen
     def delete(id)
       raise TypeError, "can't modify frozen set" if frozen?
       elements.delete(id.to_id)
@@ -221,6 +223,7 @@ module Bitcache
     # Removes all elements from this set.
     #
     # @return [void] `self`
+    # @raise  [TypeError] if the set is frozen
     def clear!
       raise TypeError, "can't modify frozen set" if frozen?
       elements.clear
@@ -243,6 +246,7 @@ module Bitcache
     #
     # @param  [Set, #each] other
     # @return [void] `self`
+    # @raise  [TypeError] if the set is frozen
     def merge!(other)
       raise TypeError, "can't modify frozen set" if frozen?
       case other
