@@ -215,7 +215,7 @@ module Bitcache
       elements.delete(id.to_id)
       self
     end
-    alias_method :remove, :insert
+    alias_method :remove, :delete
 
     ##
     # Removes all elements from this set.

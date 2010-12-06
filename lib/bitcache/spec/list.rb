@@ -197,6 +197,41 @@ share_as :Bitcache_List do
     #end
   end
 
+  describe "List#insert" do
+    it "raises a TypeError if the list is frozen" do
+      lambda { @list.freeze.insert(@id0) }.should raise_error TypeError
+    end
+
+    it "inserts the given identifier as the first element of the list" do
+      id = @id0.dup.fill(0xff)
+      @list.should_not include id
+      @list.insert(id)
+      @list.should include id
+      # TODO: verify that it was inserted as the first element.
+    end
+
+    it "returns self" do
+      @list.insert(@id0).should equal @list
+    end
+  end
+
+  describe "List#delete" do
+    it "raises a TypeError if the list is frozen" do
+      lambda { @list.freeze.delete(@id0) }.should raise_error TypeError
+    end
+
+    it "removes the first occurrence of the given identifier from the list" do
+      @list.should include @id0
+      @list.delete(@id0)
+      @list.should_not include @id0
+      # TODO: verify that only the first occurrence was removed.
+    end
+
+    it "returns self" do
+      @list.delete(@id0).should equal @list
+    end
+  end
+
   describe "List#to_list" do
     it "returns self" do
       @list.to_list.should equal @list

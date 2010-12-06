@@ -189,6 +189,33 @@ module Bitcache
     end
 
     ##
+    # Inserts the given identifier `id` into this list.
+    #
+    # The identifier is inserted as the first element of the list.
+    #
+    # @param  [Identifier, #to_id] id
+    # @return [void] `self`
+    def insert(id)
+      raise TypeError, "can't modify frozen list" if frozen?
+      elements.unshift(id.to_id)
+      self
+    end
+    alias_method :add, :insert
+    alias_method :<<, :insert
+
+    ##
+    # Removes the given identifier `id` from this list.
+    #
+    # @param  [Identifier, #to_id] id
+    # @return [void] `self`
+    def delete(id)
+      raise TypeError, "can't modify frozen list" if frozen?
+      elements.delete(id.to_id) # FIXME: only delete the first occurrence
+      self
+    end
+    alias_method :remove, :delete
+
+    ##
     # Returns `self`.
     #
     # @return [List] `self`
