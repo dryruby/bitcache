@@ -282,6 +282,6 @@ module Bitcache
     end
 
     # Load optimized method implementations when available:
-    include Bitcache::FFI::Set if defined?(Bitcache::FFI::Set)
+    send(:include, Bitcache::FFI::Set) if defined?(Bitcache::FFI::Set)
   end # Set
 end # Bitcache

@@ -104,6 +104,6 @@ module Bitcache
     end
 
     # Load optimized method implementations when available:
-    include Bitcache::FFI::Stream if defined?(Bitcache::FFI::Stream)
+    send(:include, Bitcache::FFI::Stream) if defined?(Bitcache::FFI::Stream)
   end # Stream
 end # Bitcache

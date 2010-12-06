@@ -7,7 +7,6 @@ module Bitcache
   # @see https://github.com/ffi/ffi
   module FFI
     extend  ::FFI::Library
-    include ::FFI
     ffi_lib const_defined?(:LIBBITCACHE) ? LIBBITCACHE : 'libbitcache'
 
     autoload :Filter,     'bitcache/ffi/filter'
@@ -17,6 +16,8 @@ module Bitcache
     autoload :Queue,      'bitcache/ffi/queue'
     autoload :Set,        'bitcache/ffi/set'
     autoload :Stream,     'bitcache/ffi/stream'
+
+    send(:include, ::FFI) # roundabout, so as to avoid confusing YARD
 
     ##
     # Returns the installed `libbitcache` version number.

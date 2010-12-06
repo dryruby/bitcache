@@ -317,7 +317,7 @@ module Bitcache
     end
 
     # Load optimized method implementations when available:
-    include Bitcache::FFI::Identifier if defined?(Bitcache::FFI::Identifier)
+    send(:include, Bitcache::FFI::Identifier) if defined?(Bitcache::FFI::Identifier)
 
   protected
 
