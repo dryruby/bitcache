@@ -3,7 +3,8 @@ require 'bitcache/spec/stream'
 
 describe Bitcache::FFI::Stream do
   before :all do
-    @class = Bitcache::FFI::Stream
+    @class = Bitcache::Stream
+    @class.send(:include, Bitcache::FFI::Stream)
   end
 
   it_should_behave_like Bitcache_Stream

@@ -3,7 +3,8 @@ require 'bitcache/spec/queue'
 
 describe Bitcache::FFI::Queue do
   before :all do
-    @class = Bitcache::FFI::Queue
+    @class = Bitcache::Queue
+    @class.send(:include, Bitcache::FFI::Queue)
   end
 
   it_should_behave_like Bitcache_Queue

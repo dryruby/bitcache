@@ -1,7 +1,7 @@
 module Bitcache
   ##
   # A Bitcache byte stream.
-  class Stream
+  class Stream #< Struct
     include Comparable
     include Inspectable
 
@@ -102,5 +102,8 @@ module Bitcache
     def to_hash
       {:id => id, :size => size, :data => data}
     end
+
+    # Load optimized method implementations when available:
+    include Bitcache::FFI::Stream if defined?(Bitcache::FFI::Stream)
   end # Stream
 end # Bitcache

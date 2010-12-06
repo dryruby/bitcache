@@ -3,7 +3,8 @@ require 'bitcache/spec/list'
 
 describe Bitcache::FFI::List do
   before :all do
-    @class = Bitcache::FFI::List
+    @class = Bitcache::List
+    @class.send(:include, Bitcache::FFI::List)
   end
 
   it_should_behave_like Bitcache_List

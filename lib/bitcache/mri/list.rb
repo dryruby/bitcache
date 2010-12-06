@@ -1,7 +1,10 @@
 module Bitcache
   ##
   # A Bitcache list.
-  class List
+  class List < Struct
     # TODO
+
+    # Load optimized method implementations when available:
+    include Bitcache::FFI::List if defined?(Bitcache::FFI::List)
   end # List
 end # Bitcache
