@@ -13,11 +13,16 @@ module Bitcache::FFI
       struct.send(:include, Bitcache::FFI)
       struct.layout(*LAYOUT)
 
-      struct.send(:define_method, :initialize, instance_method(:initialize))
       self.instance_methods(false).each do |method|
-        (struct.send(:remove_method, method) if struct.method_defined?(method)) rescue nil
+        if struct.method_defined?(method)
+          begin
+            struct.send(:remove_method, method)
+          rescue NameError
+          end
+        end
       end
 
+      struct.send(:define_method, :initialize) { |*args| super(initialize_from(*args)) }
       def struct.release(ptr)
         bitcache_id_free(pre) # TODO: implement reference counting
       end
@@ -25,14 +30,20 @@ module Bitcache::FFI
 
     ##
     # @private
-    def initialize(ptr = nil)
-      case ptr
-        when FFI::Pointer then super(ptr)
+    def initialize(digest = nil)
+      super(initialize_from(digest))
+    end
+
+    ##
+    # @private
+    def initialize_from(digest = nil)
+      case digest
+        when FFI::Pointer then digest
         when nil
-          super(bitcache_id_new(BITCACHE_SHA1, nil))
+          bitcache_id_new(BITCACHE_SHA1, nil)
         when String
-          super(bitcache_id_new(ptr.size, FFI::MemoryPointer.from_string(ptr)))
-        else raise ArgumentError, "expected an FFI::Pointer, but got #{ptr.inspect}"
+          bitcache_id_new(digest.bytesize, FFI::MemoryPointer.from_string(digest))
+        else raise ArgumentError, "expected an FFI::Pointer, but got #{digest.inspect}"
       end
     end
 
@@ -159,7 +170,7 @@ module Bitcache::FFI
       case base
         when 16 then bitcache_id_to_hex_string(self, nil)
         when 10 then to_i.to_s(10).ljust((size * Math.log10(256)).ceil, '0')
-        when 8  then to_i.to_s(8).ljust((size * Math.log(256, 8)).ceil, '0')
+        when 8  then to_i.to_s(8).ljust((size * (Math.log(256) / Math.log(8))).ceil, '0')
         when 2  then to_i.to_s(2).ljust(size * 8, '0') # TODO: optimize
         else raise ArgumentError, "invalid radix #{base}"
       end

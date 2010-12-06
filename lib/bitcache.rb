@@ -1,10 +1,27 @@
-require 'digest/sha1'
+require 'digest'
+require 'enumerator'
 require 'pathname'
 require 'stringio'
 
-module Bitcache
-  autoload :VERSION,     'bitcache/version'
+if RUBY_VERSION < '1.8.7'
+  # @see http://rubygems.org/gems/backports
+  begin
+    require 'backports/1.8.7'
+  rescue LoadError
+    begin
+      require 'rubygems'
+      require 'backports/1.8.7'
+    rescue LoadError
+      abort "Bitcache requires Ruby 1.8.7 or the Backports gem (hint: `gem install backports')."
+    end
+  end
+end
 
+module Bitcache
+  # For compatibility with both Ruby 1.8.x and Ruby 1.9.x:
+  Enumerator = defined?(::Enumerator) ? ::Enumerator : ::Enumerable::Enumerator
+
+  autoload :VERSION,     'bitcache/version'
   autoload :Adapter,     'bitcache/adapter'
   autoload :Encoder,     'bitcache/encoder'
   autoload :Inspectable, 'bitcache/inspectable'

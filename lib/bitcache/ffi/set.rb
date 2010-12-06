@@ -5,7 +5,15 @@ module Bitcache::FFI
   # @see Bitcache::Set
   module Set
     LAYOUT = [:root, :pointer,
-              :filter, :bitcache_filter]
+              :filter, :pointer]
+
+    ##
+    # @private
+    def self.included(struct)
+      struct.send(:include, Bitcache::FFI)
+      struct.layout(*LAYOUT)
+    end
+
     # TODO: wrap the `bitcache_set` data structure.
   end # Set
 end # Bitcache::FFI
