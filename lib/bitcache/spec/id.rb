@@ -370,6 +370,12 @@ share_as :Bitcache_Identifier do
     end
   end
 
+  describe "Identifier#to_id" do
+    it "returns self" do
+      @id.to_id.should equal @id
+    end
+  end
+
   describe "Identifier#to_i" do
     it "returns an Integer" do
       @id.to_i.should be_an Integer

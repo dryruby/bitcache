@@ -223,6 +223,14 @@ module Bitcache
     end
 
     ##
+    # Returns `self`.
+    #
+    # @return [void] `self`
+    def to_id
+      self
+    end
+
+    ##
     # Returns the integer representation of this identifier.
     #
     # @return [Integer]
