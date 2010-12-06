@@ -248,6 +248,31 @@ share_as :Bitcache_List do
     end
   end
 
+  describe "List#reverse" do
+    it "returns a new List" do
+      @list.reverse.should be_a @class
+      @list.reverse.should_not equal @list
+    end
+
+    it "returns a new List containing the elements in reverse order" do
+      @class[@id0, @id1, @id2].reverse.should eql @class[@id2, @id1, @id0]
+    end
+  end
+
+  describe "List#reverse!" do
+    it "raises a TypeError if the list is frozen" do
+      lambda { @list.freeze.reverse! }.should raise_error TypeError
+    end
+
+    it "reverses the element order of the list in place" do
+      @class[@id0, @id1, @id2].reverse!.should eql @class[@id2, @id1, @id0]
+    end
+
+    it "returns self" do
+      @list.reverse!.should equal @list
+    end
+  end
+
   describe "List#first" do
     it "returns the first element if the list isn't empty" do
       @class[@id0, @id1, @id2].first.should eql @id0

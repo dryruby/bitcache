@@ -227,6 +227,25 @@ module Bitcache
     alias_method :clear, :clear!
 
     ##
+    # Returns a new list containing the elements of this list in reverse
+    # order.
+    #
+    # @return [List] a new list
+    def reverse
+      dup.reverse!
+    end
+
+    ##
+    # Reverses the element order of this list in place.
+    #
+    # @return [void] `self`
+    def reverse!
+      raise TypeError, "can't modify frozen list" if frozen?
+      elements.reverse!
+      self
+    end
+
+    ##
     # Returns the first identifier in this list, or `nil` if the list is
     # empty.
     #
