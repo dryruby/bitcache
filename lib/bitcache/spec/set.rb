@@ -155,6 +155,16 @@ share_as :Bitcache_Set do
     end
   end
 
+  describe "Set#hash" do
+    it "returns a Fixnum" do
+      @set.hash.should be_a Fixnum
+    end
+
+    #it "returns the same hash code for equal sets" do
+    #  Set[@id1].hash.should eql Set[@id1].hash
+    #end
+  end
+
   describe "Set#insert" do
     it "raises a TypeError if the set is frozen" do
       lambda { @set.freeze.insert(@id0) }.should raise_error TypeError

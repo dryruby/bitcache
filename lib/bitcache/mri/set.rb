@@ -149,6 +149,14 @@ module Bitcache
     end
 
     ##
+    # Returns the hash code for this set.
+    #
+    # @return [Fixnum] `(0..0xffffffff)`
+    def hash
+      elements.hash
+    end
+
+    ##
     # Inserts the given identifier `id` into this set.
     #
     # @param  [Identifier, #to_id] id
