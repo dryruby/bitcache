@@ -82,7 +82,43 @@ module Bitcache
     end
     alias_method :cardinality, :size
     alias_method :length, :size
-    alias_method :count, :size
+
+    ##
+    # Counts elements in this set.
+    #
+    # @overload count
+    #   Returns the number of elements in this set.
+    #   
+    #   @return [Integer]
+    #
+    # @overload count(id)
+    #   Returns `1` if this set contains the identifier `id`, and `0`
+    #   otherwise.
+    #   
+    #   @param  [Identifier, #to_id] id
+    #   @return [Integer]
+    #
+    # @overload count(&block)
+    #   Returns the number of matching identifiers as determined by the
+    #   given `block`.
+    #   
+    #   @yield  [id]
+    #     each identifier in this set
+    #   @yieldparam  [Identifier] id
+    #   @yieldreturn [Boolean] `true` or `false`
+    #   @return [Integer]
+    #
+    # @return [Integer]
+    def count(*args, &block)
+      case args.size
+        when 0 then super
+        when 1 then case
+          when block_given? then super
+          else has_identifier?((id = args.first).to_id) ? 1 : 0
+        end
+        else raise ArgumentError, "wrong number of arguments (#{args.size} for 1)"
+      end
+    end
 
     ##
     # Returns `true` if this set contains the identifier `id`.

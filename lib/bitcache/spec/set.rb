@@ -77,6 +77,41 @@ share_as :Bitcache_Set do
     end
   end
 
+  describe "Set#count" do
+    it "returns an Integer" do
+      @set.count.should be_an Integer
+    end
+
+    it "returns the cardinality of the set" do
+      @set.count.should eql 3
+    end
+  end
+
+  describe "Set#count(id)" do
+    it "returns an Integer" do
+      @set.count(@id1).should be_an Integer
+    end
+
+    it "returns 1 if the set contains the identifier" do
+      @set.count(@id1).should eql 1
+    end
+
+    it "returns 0 if the set doesn't contain the identifier" do
+      @set.count(Identifier.new("\xff" * 16)).should eql 0
+    end
+  end
+
+  describe "Set#count(&block)" do
+    it "returns an Integer" do
+      @set.count { |id| }.should be_an Integer
+    end
+
+    it "returns the number of matching identifiers" do
+      @set.count { |id| }.should be_zero
+      @set.count { |id| id == @id1 }.should eql 1
+    end
+  end
+
   describe "Set#has_identifier?" do
     it "returns a Boolean" do
       @set.has_identifier?(@id0).should be_a_boolean
