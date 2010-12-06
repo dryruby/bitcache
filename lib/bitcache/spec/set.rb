@@ -71,6 +71,20 @@ share_as :Bitcache_Set do
     end
   end
 
+  describe "Set#has_identifier?" do
+    it "returns a Boolean" do
+      @set.has_identifier?(@id0).should be_a_boolean
+    end
+
+    it "returns true if the set contains the identifier" do
+      @set.should include @id1
+    end
+
+    it "returns false if the set doesn't contain the identifier" do
+      @set.should_not include Identifier.new("\xff" * 16)
+    end
+  end
+
   describe "Set#insert" do
     it "raises a TypeError if the set is frozen" do
       lambda { @set.freeze.insert(@id0) }.should raise_error TypeError
@@ -78,9 +92,9 @@ share_as :Bitcache_Set do
 
     it "inserts the given identifier into the set" do
       id = Identifier.new("\xff" * 16)
-      @set.to_a.should_not include id
+      @set.should_not include id
       @set.insert(id)
-      @set.to_a.should include id
+      @set.should include id
     end
 
     it "returns self" do
@@ -94,9 +108,9 @@ share_as :Bitcache_Set do
     end
 
     it "removes the given identifier from the set" do
-      @set.to_a.should include @id0
+      @set.should include @id0
       @set.delete(@id0)
-      @set.to_a.should_not include @id0
+      @set.should_not include @id0
     end
 
     it "returns self" do

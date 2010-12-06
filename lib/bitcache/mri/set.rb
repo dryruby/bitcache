@@ -62,6 +62,19 @@ module Bitcache
     alias_method :count, :size
 
     ##
+    # Returns `true` if this set contains the identifier `id`.
+    #
+    # @param  [Identifier, #to_id] id
+    # @return [Boolean] `true` or `false`
+    def has_identifier?(id)
+      elements.has_key?(id.to_id)
+    end
+    alias_method :has_id?,  :has_identifier?
+    alias_method :has_key?, :has_identifier?
+    alias_method :include?, :has_identifier?
+    alias_method :member?,  :has_identifier?
+
+    ##
     # Inserts the given identifier `id` into this set.
     #
     # @param  [Identifier, #to_id] id
