@@ -85,6 +85,16 @@ module Bitcache
     end
 
     ##
+    # Returns an array of the elements in this list.
+    #
+    # Element order is preserved.
+    #
+    # @return [Array]
+    def to_a
+      elements.dup
+    end
+
+    ##
     # Returns a developer-friendly representation of this list.
     #
     # @return [String]

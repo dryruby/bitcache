@@ -80,6 +80,20 @@ share_as :Bitcache_List do
     end
   end
 
+  describe "List#to_a" do
+    it "returns an Array" do
+      @list.to_a.should be_an Array
+    end
+
+    it "returns an Array of equal size" do
+      @list.to_a.size.should eql @list.size
+    end
+
+    it "preserves element order" do
+      # TODO
+    end
+  end
+
   describe "List#inspect" do
     it "returns a String" do
       @list.inspect.should be_a String
