@@ -98,6 +98,27 @@ module Bitcache
     alias_method :member?,  :has_identifier?
 
     ##
+    # Enumerates each identifier in this set.
+    #
+    # The identifiers are yielded in lexical order.
+    #
+    # @example
+    #   set.each_identifier do |id|
+    #     puts id.to_s
+    #   end
+    #
+    # @yield  [id]
+    #   each identifier in this set
+    # @yieldparam  [Identifier] id
+    # @yieldreturn [void] ignored
+    # @return [Enumerator]
+    def each_identifier(&block)
+      elements.keys.sort.each(&block) if block_given?
+      enum_for(:each_identifier)
+    end
+    alias_method :each, :each_identifier
+
+    ##
     # Inserts the given identifier `id` into this set.
     #
     # @param  [Identifier, #to_id] id

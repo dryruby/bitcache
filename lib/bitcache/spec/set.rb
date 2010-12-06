@@ -91,6 +91,20 @@ share_as :Bitcache_Set do
     end
   end
 
+  describe "Set#each_identifier" do
+    it "returns an Enumerator" do
+      @set.each_identifier.should be_an Enumerator
+    end
+
+    it "yields each identifier in the set" do
+      @set.each_identifier.to_a.should eql [@id0, @id1, @id2]
+    end
+
+    it "yields identifiers in lexical order" do
+      # TODO
+    end
+  end
+
   describe "Set#insert" do
     it "raises a TypeError if the set is frozen" do
       lambda { @set.freeze.insert(@id0) }.should raise_error TypeError
