@@ -49,6 +49,34 @@ share_as :Bitcache_List do
     end
   end
 
+  describe "List#empty?" do
+    it "returns a Boolean" do
+      @list.empty?.should be_a_boolean
+    end
+
+    it "returns true if the list contains no elements" do
+      @class[].should be_empty
+    end
+
+    it "returns false if the list contains any elements" do
+      @class[@id1].should_not be_empty
+    end
+  end
+
+  describe "List#size" do
+    it "returns an Integer" do
+      @list.size.should be_an Integer
+    end
+
+    it "returns the length of the list" do
+      @list.size.should eql 3
+    end
+
+    it "returns zero if the list is empty" do
+      @class[].size.should be_zero
+    end
+  end
+
   describe "List#to_list" do
     it "returns self" do
       @list.to_list.should equal @list

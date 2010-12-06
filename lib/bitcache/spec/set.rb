@@ -54,11 +54,11 @@ share_as :Bitcache_Set do
       @set.empty?.should be_a_boolean
     end
 
-    it "returns true if the set is empty" do
+    it "returns true if the set contains no elements" do
       @class[].should be_empty
     end
 
-    it "returns false if the set is not empty" do
+    it "returns false if the set contains any elements" do
       @class[@id1].should_not be_empty
     end
   end

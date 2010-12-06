@@ -67,6 +67,23 @@ module Bitcache
     attr_reader :elements
 
     ##
+    # Returns `true` if this list contains no elements.
+    #
+    # @return [Boolean] `true` or `false`
+    def empty?
+      elements.empty?
+    end
+
+    ##
+    # Returns the number of elements in this list.
+    #
+    # @return [Integer] a positive integer
+    def size
+      elements.size
+    end
+    alias_method :length, :size
+
+    ##
     # Returns `self`.
     #
     # @return [List] `self`
