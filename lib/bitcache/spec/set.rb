@@ -17,7 +17,7 @@ share_as :Bitcache_Set do
     end
 
     it "returns an identical copy of the set" do
-      # TODO
+      @set.clone.to_a.should eql @set.to_a
     end
   end
 
@@ -27,7 +27,7 @@ share_as :Bitcache_Set do
     end
 
     it "returns an identical copy of the set" do
-      # TODO
+      @set.dup.to_a.should eql @set.to_a
     end
   end
 
@@ -59,6 +59,31 @@ share_as :Bitcache_Set do
     end
   end
 
+  describe "Set#insert" do
+    it "inserts the given identifier into the set" do
+      id = Identifier.new("\xff" * 16)
+      @set.to_a.should_not include id
+      @set.insert(id)
+      @set.to_a.should include id
+    end
+
+    it "returns self" do
+      @set.insert(@id0).should equal @set
+    end
+  end
+
+  describe "Set#delete" do
+    it "removes the given identifier from the set" do
+      @set.to_a.should include @id0
+      @set.delete(@id0)
+      @set.to_a.should_not include @id0
+    end
+
+    it "returns self" do
+      @set.delete(@id0).should equal @set
+    end
+  end
+
   describe "Set#to_set" do
     it "returns self" do
       @set.to_set.should equal @set
@@ -71,7 +96,7 @@ share_as :Bitcache_Set do
     end
 
     it "returns an Array of equal cardinality" do
-      # TODO
+      @set.to_a.size.should eql @set.size
     end
 
     it "returns elements in lexical order" do

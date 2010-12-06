@@ -53,6 +53,29 @@ module Bitcache
     alias_method :count, :size
 
     ##
+    # Inserts the given identifier `id` into this set.
+    #
+    # @param  [Identifier, #to_id] id
+    # @return [void] `self`
+    def insert(id)
+      elements[id.to_id] ||= true
+      self
+    end
+    alias_method :add, :insert
+    alias_method :<<, :insert
+
+    ##
+    # Removes the given identifier `id` from this set.
+    #
+    # @param  [Identifier, #to_id] id
+    # @return [void] `self`
+    def delete(id)
+      elements.delete(id.to_id)
+      self
+    end
+    alias_method :remove, :insert
+
+    ##
     # Returns `self`.
     #
     # @return [Set] `self`
