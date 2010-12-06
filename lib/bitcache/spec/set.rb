@@ -12,7 +12,7 @@ share_as :Bitcache_Set do
   end
 
   describe "Set[]" do
-    it "returns a set" do
+    it "returns a Set" do
       @class[@id0, @id1, @id2].should be_a Set
     end
   end
