@@ -76,7 +76,7 @@ module Bitcache
     ##
     # Returns the number of elements in this set.
     #
-    # @return [Integer] a positive integer
+    # @return [Integer] zero or a positive integer
     def size
       elements.size
     end
@@ -89,14 +89,14 @@ module Bitcache
     # @overload count
     #   Returns the number of elements in this set.
     #   
-    #   @return [Integer] a positive integer
+    #   @return [Integer] zero or a positive integer
     #
     # @overload count(id)
     #   Returns `1` if this set contains the identifier `id`, and `0`
     #   otherwise.
     #   
     #   @param  [Identifier, #to_id] id
-    #   @return [Integer] a positive integer
+    #   @return [Integer] zero or a positive integer
     #
     # @overload count(&block)
     #   Returns the number of matching identifiers as determined by the
@@ -106,9 +106,9 @@ module Bitcache
     #     each identifier in this set
     #   @yieldparam  [Identifier] id
     #   @yieldreturn [Boolean] `true` or `false`
-    #   @return [Integer] a positive integer
+    #   @return [Integer] zero or a positive integer
     #
-    # @return [Integer] a positive integer
+    # @return [Integer] zero or a positive integer
     def count(*args, &block)
       case args.size
         when 0 then super

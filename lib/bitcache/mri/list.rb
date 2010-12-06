@@ -77,11 +77,45 @@ module Bitcache
     ##
     # Returns the number of elements in this list.
     #
-    # @return [Integer] a positive integer
-    def size
+    # @return [Integer] zero or a positive integer
+    def length
       elements.size
     end
-    alias_method :length, :size
+    alias_method :size, :length
+
+    ##
+    # Counts elements in this list.
+    #
+    # @overload count
+    #   Returns the number of elements in this list.
+    #   
+    #   @return [Integer] zero or a positive integer
+    #
+    # @overload count(id)
+    #   Returns the number of occurrences of the identifier `id` as an
+    #   element of this list.
+    #   
+    #   @param  [Identifier, #to_id] id
+    #   @return [Integer] zero or a positive integer
+    #
+    # @overload count(&block)
+    #   Returns the number of matching identifiers as determined by the
+    #   given `block`.
+    #   
+    #   @yield  [id]
+    #     each identifier in this list
+    #   @yieldparam  [Identifier] id
+    #   @yieldreturn [Boolean] `true` or `false`
+    #   @return [Integer] zero or a positive integer
+    #
+    # @return [Integer] zero or a positive integer
+    def count(*args, &block)
+      case args.size
+        when 0 then super
+        when 1 then super(args.first.to_id, &block)
+        else raise ArgumentError, "wrong number of arguments (#{args.size} for 1)"
+      end
+    end
 
     ##
     # Returns `self`.

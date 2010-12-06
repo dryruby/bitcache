@@ -63,17 +63,53 @@ share_as :Bitcache_List do
     end
   end
 
-  describe "List#size" do
+  describe "List#length" do
     it "returns an Integer" do
-      @list.size.should be_an Integer
+      @list.length.should be_an Integer
     end
 
     it "returns the length of the list" do
-      @list.size.should eql 3
+      @list.length.should eql 3
     end
 
     it "returns zero if the list is empty" do
-      @class[].size.should be_zero
+      @class[].length.should be_zero
+    end
+  end
+
+  describe "List#count" do
+    it "returns an Integer" do
+      @list.count.should be_an Integer
+    end
+
+    it "returns the length of the list" do
+      @list.count.should eql 3
+    end
+  end
+
+  describe "List#count(id)" do
+    it "returns an Integer" do
+      @list.count(@id1).should be_an Integer
+    end
+
+    it "returns >= 1 if the list contains the identifier" do
+      List[@id1, @id2].count(@id1).should eql 1
+      List[@id1, @id1].count(@id1).should eql 2
+    end
+
+    it "returns 0 if the list doesn't contain the identifier" do
+      @list.count(@id0.fill(0xff)).should eql 0
+    end
+  end
+
+  describe "List#count(&block)" do
+    it "returns an Integer" do
+      @list.count { |id| }.should be_an Integer
+    end
+
+    it "returns the number of matching identifiers" do
+      @list.count { |id| }.should be_zero
+      @list.count { |id| id == @id1 }.should eql 1
     end
   end
 
