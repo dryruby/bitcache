@@ -248,6 +248,34 @@ share_as :Bitcache_List do
     end
   end
 
+  describe "List#prepend" do
+    it "raises a TypeError if the list is frozen" do
+      lambda { @list.freeze.prepend(@id0) }.should raise_error TypeError
+    end
+
+    it "prepends the given identifier as the first element of the list" do
+      @class[@id0, @id1].prepend(@id2).should eql @class[@id2, @id0, @id1]
+    end
+
+    it "returns self" do
+      @list.prepend(@id0).should equal @list
+    end
+  end
+
+  describe "List#append" do
+    it "raises a TypeError if the list is frozen" do
+      lambda { @list.freeze.append(@id0) }.should raise_error TypeError
+    end
+
+    it "appends the given identifier as the last element of the list" do
+      @class[@id0, @id1].append(@id2).should eql @class[@id0, @id1, @id2]
+    end
+
+    it "returns self" do
+      @list.append(@id0).should equal @list
+    end
+  end
+
   describe "List#reverse" do
     it "returns a new List" do
       @list.reverse.should be_a @class

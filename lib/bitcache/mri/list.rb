@@ -227,6 +227,26 @@ module Bitcache
     alias_method :clear, :clear!
 
     ##
+    # Prepends the given identifier `id` as the first element of this list.
+    #
+    # @param  [Identifier, #to_id] id
+    # @return [void] `self`
+    def prepend(id)
+      insert(id)
+    end
+
+    ##
+    # Appends the given identifier `id` as the last element of this list.
+    #
+    # @param  [Identifier, #to_id] id
+    # @return [void] `self`
+    def append(id)
+      raise TypeError, "can't modify frozen list" if frozen?
+      elements.push(id.to_id)
+      self
+    end
+
+    ##
     # Returns a new list containing the elements of this list in reverse
     # order.
     #
