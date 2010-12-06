@@ -93,8 +93,8 @@ share_as :Bitcache_List do
     end
 
     it "returns >= 1 if the list contains the identifier" do
-      List[@id1, @id2].count(@id1).should eql 1
-      List[@id1, @id1].count(@id1).should eql 2
+      @class[@id1, @id2].count(@id1).should eql 1
+      @class[@id1, @id1].count(@id1).should eql 2
     end
 
     it "returns 0 if the list doesn't contain the identifier" do
@@ -248,6 +248,26 @@ share_as :Bitcache_List do
     end
   end
 
+  describe "List#first" do
+    it "returns the first element if the list isn't empty" do
+      @class[@id0, @id1, @id2].first.should eql @id0
+    end
+
+    it "returns nil if the list is empty" do
+      @class[].first.should be_nil
+    end
+  end
+
+  describe "List#last" do
+    it "returns the last element if the list isn't empty" do
+      @class[@id0, @id1, @id2].last.should eql @id2
+    end
+
+    it "returns nil if the list is empty" do
+      @class[].last.should be_nil
+    end
+  end
+
   describe "List#to_list" do
     it "returns self" do
       @list.to_list.should equal @list
@@ -256,11 +276,11 @@ share_as :Bitcache_List do
 
   describe "List#to_set" do
     it "returns a Set" do
-      @list.to_set.should be_a Set
+      @list.to_set.should be_a Bitcache::Set
     end
 
     it "returns an empty Set if the list is empty" do
-      List[].to_set.should eql Set[]
+      @class[].to_set.should eql Bitcache::Set[]
     end
 
     it "returns a Set containing all elements in the list" do
@@ -271,11 +291,11 @@ share_as :Bitcache_List do
     end
 
     it "returns a Set of equal cardinality if the list has no duplicate elements" do
-      List[@id1, @id2].to_set.size.should eql 2
+      @class[@id1, @id2].to_set.size.should eql 2
     end
 
     it "returns a Set of lesser cardinality if the list has duplicate elements" do
-      List[@id1, @id2, @id1, @id2].to_set.size.should eql 2
+      @class[@id1, @id2, @id1, @id2].to_set.size.should eql 2
     end
   end
 

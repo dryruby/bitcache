@@ -227,6 +227,24 @@ module Bitcache
     alias_method :clear, :clear!
 
     ##
+    # Returns the first identifier in this list, or `nil` if the list is
+    # empty.
+    #
+    # @return [Identifier] an identifier or `nil`
+    def first
+      elements.first
+    end
+
+    ##
+    # Returns the last identifier in this list, or `nil` if the list is
+    # empty.
+    #
+    # @return [Identifier] an identifier or `nil`
+    def last
+      elements.last
+    end
+
+    ##
     # Returns `self`.
     #
     # @return [List] `self`
