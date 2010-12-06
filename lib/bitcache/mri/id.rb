@@ -37,7 +37,7 @@ module Bitcache
     end
 
     ##
-    # Initializes an identifier with the given `digest`.
+    # Initializes a new identifier with the given `digest`.
     #
     # If no `digest` argument is provided, the identifier will be
     # initialized to all zeroes.
