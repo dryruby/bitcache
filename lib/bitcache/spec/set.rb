@@ -122,7 +122,7 @@ share_as :Bitcache_Set do
     end
 
     it "returns false if the set doesn't contain the identifier" do
-      @set.should_not include @id0.fill(0xff)
+      @set.should_not include @id0.dup.fill(0xff)
     end
   end
 

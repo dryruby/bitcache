@@ -113,6 +113,20 @@ share_as :Bitcache_List do
     end
   end
 
+  describe "List#has_identifier?" do
+    it "returns a Boolean" do
+      @list.has_identifier?(@id0).should be_a_boolean
+    end
+
+    it "returns true if the list contains the identifier" do
+      @list.should include @id1
+    end
+
+    it "returns false if the list doesn't contain the identifier" do
+      @list.should_not include @id0.dup.fill(0xff)
+    end
+  end
+
   describe "List#to_list" do
     it "returns self" do
       @list.to_list.should equal @list

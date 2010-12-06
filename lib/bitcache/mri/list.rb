@@ -118,6 +118,18 @@ module Bitcache
     end
 
     ##
+    # Returns `true` if this list contains the identifier `id`.
+    #
+    # @param  [Identifier, #to_id] id
+    # @return [Boolean] `true` or `false`
+    def has_identifier?(id)
+      elements.include?(id.to_id)
+    end
+    alias_method :has_id?,  :has_identifier?
+    alias_method :include?, :has_identifier?
+    alias_method :member?,  :has_identifier?
+
+    ##
     # Returns `self`.
     #
     # @return [List] `self`
