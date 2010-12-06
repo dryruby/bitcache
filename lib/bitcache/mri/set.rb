@@ -76,6 +76,16 @@ module Bitcache
     alias_method :remove, :insert
 
     ##
+    # Removes all elements from this set.
+    #
+    # @return [void] `self`
+    def clear
+      elements.clear
+      self
+    end
+    alias_method :clear!, :clear
+
+    ##
     # Returns `self`.
     #
     # @return [Set] `self`
