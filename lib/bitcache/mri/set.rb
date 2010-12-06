@@ -6,17 +6,40 @@ module Bitcache
     include Inspectable
 
     ##
-    # Initializes a new set with the given `elements`.
+    # Constructs a new set containing the given `elements`.
     #
-    # @example Constructing a set
+    # @example Constructing a new set
+    #   Set[id1, id2, id3]
+    #
+    # @param  [Array<Identifier, #to_id>] elements
+    #   the initial elements in the set
+    # @return [Set]
+    def self.[](*elements)
+      self.new(elements)
+    end
+
+    ##
+    # Initializes a new set containing the given `elements`.
+    #
+    # @example Constructing a new set
     #   Set.new([id1, id2, id3])
     #
-    # @param  [Enumerable] elements
+    # @param  [Enumerable<Identifier, #to_id>] elements
     #   the initial elements in the set
-    def initialize(elements = [])
+    # @yield  [set]
+    # @yieldparam  [Set] `self`
+    # @yieldreturn [void] ignored
+    def initialize(elements = [], &block)
       @elements = {}
       elements.each do |element|
-        @elements[element] ||= true
+        @elements[element.to_id] ||= true
+      end
+
+      if block_given?
+        case block.arity
+          when 0 then instance_eval(&block)
+          else block.call(self)
+        end
       end
     end
 

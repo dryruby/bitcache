@@ -11,6 +11,12 @@ share_as :Bitcache_Set do
     @set = @class.new([@id0, @id1, @id2])
   end
 
+  describe "Set[]" do
+    it "returns a set" do
+      Set[@id0, @id1, @id2].should be_a Set
+    end
+  end
+
   describe "Set#clone" do
     it "returns a Set" do
       @set.clone.should be_a Set
