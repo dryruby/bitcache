@@ -98,7 +98,7 @@ share_as :Bitcache_List do
     end
 
     it "returns 0 if the list doesn't contain the identifier" do
-      @list.count(@id0.fill(0xff)).should eql 0
+      @list.count(@id0.dup.fill(0xff)).should eql 0
     end
   end
 
@@ -124,6 +124,16 @@ share_as :Bitcache_List do
 
     it "returns false if the list doesn't contain the identifier" do
       @list.should_not include @id0.dup.fill(0xff)
+    end
+  end
+
+  describe "List#each_identifier" do
+    it "returns an Enumerator" do
+      @list.each_identifier.should be_an Enumerator
+    end
+
+    it "yields each identifier in the list" do
+      @list.each_identifier.to_a.should eql [@id0, @id1, @id2]
     end
   end
 

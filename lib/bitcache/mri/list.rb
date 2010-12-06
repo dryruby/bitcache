@@ -130,6 +130,25 @@ module Bitcache
     alias_method :member?,  :has_identifier?
 
     ##
+    # Enumerates each identifier in this list.
+    #
+    # @example
+    #   list.each_identifier do |id|
+    #     puts id.to_s
+    #   end
+    #
+    # @yield  [id]
+    #   each identifier in this list
+    # @yieldparam  [Identifier] id
+    # @yieldreturn [void] ignored
+    # @return [Enumerator]
+    def each_identifier(&block)
+      elements.each(&block) if block_given?
+      enum_for(:each_identifier)
+    end
+    alias_method :each, :each_identifier
+
+    ##
     # Returns `self`.
     #
     # @return [List] `self`
