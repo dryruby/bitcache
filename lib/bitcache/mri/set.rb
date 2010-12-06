@@ -221,12 +221,39 @@ module Bitcache
     # Removes all elements from this set.
     #
     # @return [void] `self`
-    def clear
+    def clear!
       raise TypeError, "can't modify frozen set" if frozen?
       elements.clear
       self
     end
-    alias_method :clear!, :clear
+    alias_method :clear, :clear!
+
+    ##
+    # Returns a new set containing all identifiers from both this set and
+    # the given `other` set.
+    #
+    # @param  [Set, #each] other
+    # @return [Set]
+    def merge(other)
+      dup.merge!(other)
+    end
+
+    ##
+    # Merges all the identifiers from the given `other` set into this set.
+    #
+    # @param  [Set, #each] other
+    # @return [void] `self`
+    def merge!(other)
+      raise TypeError, "can't modify frozen set" if frozen?
+      case other
+        when Set
+          elements.merge!(other.elements)
+        when Enumerable
+          other.each { |id| insert(id) }
+        else raise ArgumentError, "expected Enumerable, but got #{other.inspect}"
+      end
+      self
+    end
 
     ##
     # Returns `self`.

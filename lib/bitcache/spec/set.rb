@@ -249,6 +249,31 @@ share_as :Bitcache_Set do
     end
   end
 
+  describe "Set#merge" do
+    it "returns a new Set" do
+      @set.merge(Set[]).should be_a Set
+      @set.merge(Set[]).should_not equal @set
+    end
+
+    it "returns a new Set containing all identifiers from both sets" do
+      Set[@id1].merge(Set[@id2]).should eql Set[@id1, @id2]
+    end
+  end
+
+  describe "Set#merge!" do
+    it "raises a TypeError if the set is frozen" do
+      lambda { @set.freeze.merge!(Set[]) }.should raise_error TypeError
+    end
+
+    it "merges in all identifiers from the other set" do
+      Set[@id1].merge!(Set[@id2]).should eql Set[@id1, @id2]
+    end
+
+    it "returns self" do
+      @set.merge!(Set[]).should equal @set
+    end
+  end
+
   describe "Set#to_set" do
     it "returns self" do
       @set.to_set.should equal @set
