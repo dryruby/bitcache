@@ -280,6 +280,20 @@ share_as :Bitcache_Set do
     end
   end
 
+  describe "Set#to_list" do
+    it "returns a List" do
+      @set.to_list.should be_a List
+    end
+
+    it "returns a List of equal cardinality" do
+      @set.to_list.size.should eql @set.size
+    end
+
+    it "returns elements in lexical order" do
+      # TODO
+    end
+  end
+
   describe "Set#to_a" do
     it "returns an Array" do
       @set.to_a.should be_an Array

@@ -67,6 +67,24 @@ module Bitcache
     attr_reader :elements
 
     ##
+    # Returns `self`.
+    #
+    # @return [List] `self`
+    def to_list
+      self
+    end
+
+    ##
+    # Returns a set of the unique elements in this list.
+    #
+    # Duplicate elements are discarded.
+    #
+    # @return [Set]
+    def to_set
+      Set.new(elements)
+    end
+
+    ##
     # Returns a developer-friendly representation of this list.
     #
     # @return [String]

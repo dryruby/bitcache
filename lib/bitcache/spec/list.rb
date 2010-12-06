@@ -49,6 +49,37 @@ share_as :Bitcache_List do
     end
   end
 
+  describe "List#to_list" do
+    it "returns self" do
+      @list.to_list.should equal @list
+    end
+  end
+
+  describe "List#to_set" do
+    it "returns a Set" do
+      @list.to_set.should be_a Set
+    end
+
+    it "returns an empty Set if the list is empty" do
+      List[].to_set.should eql Set[]
+    end
+
+    it "returns a Set containing all elements in the list" do
+      set = @list.to_set
+      set.should include @id0
+      set.should include @id1
+      set.should include @id2
+    end
+
+    it "returns a Set of equal cardinality if the list has no duplicate elements" do
+      List[@id1, @id2].to_set.size.should eql 2
+    end
+
+    it "returns a Set of lesser cardinality if the list has duplicate elements" do
+      List[@id1, @id2, @id1, @id2].to_set.size.should eql 2
+    end
+  end
+
   describe "List#inspect" do
     it "returns a String" do
       @list.inspect.should be_a String

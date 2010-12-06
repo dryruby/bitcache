@@ -264,9 +264,19 @@ module Bitcache
     end
 
     ##
+    # Returns a list of the elements in this set.
+    #
+    # Elements are returned in lexical order.
+    #
+    # @return [List]
+    def to_list
+      List.new(to_a)
+    end
+
+    ##
     # Returns an array of the elements in this set.
     #
-    # The array elements are returned in lexical order.
+    # Elements are returned in lexical order.
     #
     # @return [Array]
     def to_a
