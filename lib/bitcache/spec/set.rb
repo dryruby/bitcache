@@ -63,17 +63,17 @@ share_as :Bitcache_Set do
     end
   end
 
-  describe "Set#size" do
+  describe "Set#cardinality" do
     it "returns an Integer" do
-      @set.size.should be_an Integer
+      @set.cardinality.should be_an Integer
     end
 
-    it "returns the cardinality of the set" do
-      @set.size.should eql 3
+    it "returns the number of elements in the set" do
+      @set.cardinality.should eql 3
     end
 
-    it "returns zero if the set is empty" do
-      @class[].size.should be_zero
+    it "returns zero if the set contains no elements" do
+      @class[].cardinality.should be_zero
     end
   end
 

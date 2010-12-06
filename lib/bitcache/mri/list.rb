@@ -1,6 +1,10 @@
 module Bitcache
   ##
   # An ordered list of Bitcache identifiers.
+  #
+  # Note: all time complexity information given for methods refers to the
+  # `libbitcache` implementation. The pure-Ruby method implementations may
+  # perform differently.
   class List < Struct
     include Enumerable
     include Inspectable
@@ -69,6 +73,8 @@ module Bitcache
     ##
     # Returns `true` if this list contains no elements.
     #
+    # The time complexity of this operation is `O(1)`.
+    #
     # @return [Boolean] `true` or `false`
     def empty?
       elements.empty?
@@ -76,6 +82,9 @@ module Bitcache
 
     ##
     # Returns the number of elements in this list.
+    #
+    # The time complexity of this operation is `O(n)`, with `n` being the
+    # length of the list.
     #
     # @return [Integer] zero or a positive integer
     def length
@@ -89,11 +98,17 @@ module Bitcache
     # @overload count
     #   Returns the number of elements in this list.
     #   
+    #   The time complexity of this operation is `O(n)`, with `n` being the
+    #   length of the list.
+    #   
     #   @return [Integer] zero or a positive integer
     #
     # @overload count(id)
     #   Returns the number of occurrences of the identifier `id` as an
     #   element of this list.
+    #   
+    #   The time complexity of this operation is `O(n)`, with `n` being the
+    #   length of the list.
     #   
     #   @param  [Identifier, #to_id] id
     #   @return [Integer] zero or a positive integer
@@ -101,6 +116,9 @@ module Bitcache
     # @overload count(&block)
     #   Returns the number of matching identifiers as determined by the
     #   given `block`.
+    #   
+    #   The time complexity of this operation is `O(n)`, with `n` being the
+    #   length of the list.
     #   
     #   @yield  [id]
     #     each identifier in this list
@@ -111,7 +129,7 @@ module Bitcache
     # @return [Integer] zero or a positive integer
     def count(*args, &block)
       case args.size
-        when 0 then super
+        when 0 then block_given? ? super : length
         when 1 then super(args.first.to_id, &block)
         else raise ArgumentError, "wrong number of arguments (#{args.size} for 1)"
       end
@@ -119,6 +137,9 @@ module Bitcache
 
     ##
     # Returns `true` if this list contains the identifier `id`.
+    #
+    # The time complexity of this operation is `O(n)` in the worst case,
+    # with `n` being the length of the list.
     #
     # @param  [Identifier, #to_id] id
     # @return [Boolean] `true` or `false`
@@ -131,6 +152,9 @@ module Bitcache
 
     ##
     # Enumerates each identifier in this list.
+    #
+    # The time complexity of this operation is `O(n)`, with `n` being the
+    # length of the list.
     #
     # @example
     #   list.each_identifier do |id|
@@ -193,6 +217,8 @@ module Bitcache
     #
     # The identifier is inserted as the first element of the list.
     #
+    # The time complexity of this operation is `O(1)`.
+    #
     # @param  [Identifier, #to_id] id
     # @return [void] `self`
     # @raise  [TypeError] if the list is frozen
@@ -207,6 +233,9 @@ module Bitcache
     ##
     # Removes the given identifier `id` from this list.
     #
+    # The time complexity of this operation is `O(n)` in the worst case,
+    # with `n` being the length of the list.
+    #
     # @param  [Identifier, #to_id] id
     # @return [void] `self`
     # @raise  [TypeError] if the list is frozen
@@ -220,6 +249,9 @@ module Bitcache
     ##
     # Removes all elements from this list.
     #
+    # The time complexity of this operation is `O(n)`, with `n` being the
+    # length of the list.
+    #
     # @return [void] `self`
     # @raise  [TypeError] if the list is frozen
     def clear!
@@ -232,6 +264,8 @@ module Bitcache
     ##
     # Prepends the given identifier `id` as the first element of this list.
     #
+    # The time complexity of this operation is `O(1)`.
+    #
     # @param  [Identifier, #to_id] id
     # @return [void] `self`
     # @raise  [TypeError] if the list is frozen
@@ -241,6 +275,9 @@ module Bitcache
 
     ##
     # Appends the given identifier `id` as the last element of this list.
+    #
+    # The time complexity of this operation is `O(n)`, with `n` being the
+    # length of the list.
     #
     # @param  [Identifier, #to_id] id
     # @return [void] `self`
@@ -255,6 +292,9 @@ module Bitcache
     # Returns a new list containing the elements of this list in reverse
     # order.
     #
+    # The time complexity of this operation is `O(2n)`, with `n` being the
+    # length of the list.
+    #
     # @return [List] a new list
     def reverse
       dup.reverse!
@@ -262,6 +302,9 @@ module Bitcache
 
     ##
     # Reverses the element order of this list in place.
+    #
+    # The time complexity of this operation is `O(n)`, with `n` being the
+    # length of the list.
     #
     # @return [void] `self`
     # @raise  [TypeError] if the list is frozen
@@ -275,6 +318,8 @@ module Bitcache
     # Returns the first identifier in this list, or `nil` if the list is
     # empty.
     #
+    # The time complexity of this operation is `O(1)`.
+    #
     # @return [Identifier] an identifier or `nil`
     def first
       elements.first
@@ -283,6 +328,9 @@ module Bitcache
     ##
     # Returns the last identifier in this list, or `nil` if the list is
     # empty.
+    #
+    # The time complexity of this operation is `O(n)`, with `n` being the
+    # length of the list.
     #
     # @return [Identifier] an identifier or `nil`
     def last

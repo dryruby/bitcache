@@ -1,6 +1,10 @@
 module Bitcache
   ##
   # A set of Bitcache identifiers.
+  #
+  # Note: all time complexity information given for methods refers to the
+  # `libbitcache` implementation. The pure-Ruby method implementations may
+  # perform differently.
   class Set < Struct
     include Enumerable
     include Inspectable
@@ -68,6 +72,8 @@ module Bitcache
     ##
     # Returns `true` if this set contains no elements.
     #
+    # The time complexity of this operation is `O(1)`.
+    #
     # @return [Boolean] `true` or `false`
     def empty?
       elements.empty?
@@ -76,18 +82,22 @@ module Bitcache
     ##
     # Returns the number of elements in this set.
     #
+    # The time complexity of this operation is `O(1)`.
+    #
     # @return [Integer] zero or a positive integer
-    def size
+    def cardinality
       elements.size
     end
-    alias_method :cardinality, :size
-    alias_method :length, :size
+    alias_method :size,   :cardinality
+    alias_method :length, :cardinality
 
     ##
     # Counts elements in this set.
     #
     # @overload count
     #   Returns the number of elements in this set.
+    #   
+    #   The time complexity of this operation is `O(1)`.
     #   
     #   @return [Integer] zero or a positive integer
     #
@@ -102,6 +112,9 @@ module Bitcache
     #   Returns the number of matching identifiers as determined by the
     #   given `block`.
     #   
+    #   The time complexity of this operation is `O(n)`, with `n` being the
+    #   cardinality of the set.
+    #   
     #   @yield  [id]
     #     each identifier in this set
     #   @yieldparam  [Identifier] id
@@ -111,7 +124,7 @@ module Bitcache
     # @return [Integer] zero or a positive integer
     def count(*args, &block)
       case args.size
-        when 0 then super
+        when 0 then block_given? ? super : cardinality
         when 1 then case
           when block_given? then super
           else has_identifier?((id = args.first).to_id) ? 1 : 0
@@ -163,9 +176,9 @@ module Bitcache
       return true if self.equal?(other)
       case other
         when Set
-          size.eql?(other.size) && elements.eql?(other.elements)
+          cardinality.eql?(other.cardinality) && elements.eql?(other.elements)
         when Enumerable
-          size.eql?(other.count) && other.all? { |id| has_identifier?(id) }
+          cardinality.eql?(other.count) && other.all? { |id| has_identifier?(id) }
         else false
       end
     end
