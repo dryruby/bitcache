@@ -33,6 +33,24 @@ module Bitcache
     # @private
     attr_reader :elements
 
+    ##
+    # Returns `self`.
+    #
+    # @return [Set] `self`
+    def to_set
+      self
+    end
+
+    ##
+    # Returns an array of the elements in this set.
+    #
+    # The array elements are returned in lexical order.
+    #
+    # @return [Array]
+    def to_a
+      elements.keys.sort
+    end
+
     # Load optimized method implementations when available:
     include Bitcache::FFI::Set if defined?(Bitcache::FFI::Set)
   end # Set

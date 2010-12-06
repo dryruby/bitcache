@@ -30,4 +30,24 @@ share_as :Bitcache_Set do
       # TODO
     end
   end
+
+  describe "Set#to_set" do
+    it "returns self" do
+      @set.to_set.should equal @set
+    end
+  end
+
+  describe "Set#to_a" do
+    it "returns an Array" do
+      @set.to_a.should be_an Array
+    end
+
+    it "returns an Array of equal cardinality" do
+      # TODO
+    end
+
+    it "returns elements in lexical order" do
+      # TODO
+    end
+  end
 end
