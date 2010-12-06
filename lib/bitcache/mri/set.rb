@@ -119,6 +119,36 @@ module Bitcache
     alias_method :each, :each_identifier
 
     ##
+    # Returns `true` if this set is equal to the given `other` set.
+    #
+    # @param  [Object] other
+    # @return [Boolean] `true` or `false`
+    def ==(other)
+      return true if self.equal?(other)
+      case other
+        when Set
+          size.eql?(other.size) && elements.eql?(other.elements)
+        when Enumerable
+          size.eql?(other.count) && other.all? { |id| has_identifier?(id) }
+        else false
+      end
+    end
+
+    ##
+    # Returns `true` if this set is identical to the given `other` set.
+    #
+    # @param  [Object] other
+    # @return [Boolean] `true` or `false`
+    def eql?(other)
+      return true if self.equal?(other)
+      case other
+        when Set
+          self == other
+        else false
+      end
+    end
+
+    ##
     # Inserts the given identifier `id` into this set.
     #
     # @param  [Identifier, #to_id] id

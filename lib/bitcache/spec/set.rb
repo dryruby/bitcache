@@ -55,11 +55,11 @@ share_as :Bitcache_Set do
     end
 
     it "returns true if the set is empty" do
-      Set.new.should be_empty
+      Set[].should be_empty
     end
 
     it "returns false if the set is not empty" do
-      Set.new([@id1]).should_not be_empty
+      Set[@id1].should_not be_empty
     end
   end
 
@@ -73,7 +73,7 @@ share_as :Bitcache_Set do
     end
 
     it "returns zero if the set is empty" do
-      Set.new.size.should be_zero
+      Set[].size.should be_zero
     end
   end
 
@@ -102,6 +102,56 @@ share_as :Bitcache_Set do
 
     it "yields identifiers in lexical order" do
       # TODO
+    end
+  end
+
+  describe "Set#==" do
+    it "returns a Boolean" do
+      (@set == @set).should be_a_boolean
+    end
+
+    it "returns true if the sets are the same object" do
+      @set.should == @set
+    end
+
+    it "returns true if the sets are both empty" do
+      set1, set2 = Set[], Set[]
+      set1.should == set2
+    end
+
+    it "returns true if the sets are equal" do
+      set1, set2 = Set[@id1, @id2], Set[@id2, @id1, @id1]
+      set1.should == set2
+    end
+
+    it "returns false if the sets are not equal" do
+      set1, set2 = Set[@id1, @id2], Set[@id2]
+      set1.should_not == set2
+    end
+  end
+
+  describe "Set#eql?" do
+    it "returns a Boolean" do
+      @set.eql?(@set).should be_a_boolean
+    end
+
+    it "returns true if the sets are the same object" do
+      @set.should eql @set
+    end
+
+    it "returns true if the sets are both empty" do
+      set1, set2 = Set[], Set[]
+      set1.should eql set2
+    end
+
+    it "returns true if the sets are equal" do
+      set1, set2 = Set[@id1, @id2], Set[@id2, @id1, @id1]
+      set1.should eql set2
+    end
+
+    it "returns false if the sets are not equal" do
+      set1, set2 = Set[@id1, @id2], Set[@id2]
+      set1.should_not eql set2
     end
   end
 
