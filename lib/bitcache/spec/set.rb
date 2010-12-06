@@ -159,4 +159,10 @@ share_as :Bitcache_Set do
       # TODO
     end
   end
+
+  describe "Set#inspect" do
+    it "returns a String" do
+      @set.inspect.should be_a String
+    end
+  end
 end

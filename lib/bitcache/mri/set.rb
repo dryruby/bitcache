@@ -151,6 +151,14 @@ module Bitcache
       elements.keys.sort
     end
 
+    ##
+    # Returns a developer-friendly representation of this set.
+    #
+    # @return [String]
+    def inspect
+      sprintf("#<%s:%#0x>", self.class.name, __id__) # TODO: improve this
+    end
+
     # Load optimized method implementations when available:
     include Bitcache::FFI::Set if defined?(Bitcache::FFI::Set)
   end # Set
