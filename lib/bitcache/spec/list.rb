@@ -232,6 +232,22 @@ share_as :Bitcache_List do
     end
   end
 
+  describe "List#clear" do
+    it "raises a TypeError if the list is frozen" do
+      lambda { @list.freeze.clear }.should raise_error TypeError
+    end
+
+    it "removes all elements from the list" do
+      @list.should_not be_empty
+      @list.clear
+      @list.should be_empty
+    end
+
+    it "returns self" do
+      @list.clear.should equal @list
+    end
+  end
+
   describe "List#to_list" do
     it "returns self" do
       @list.to_list.should equal @list

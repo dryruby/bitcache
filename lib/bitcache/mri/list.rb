@@ -216,6 +216,17 @@ module Bitcache
     alias_method :remove, :delete
 
     ##
+    # Removes all elements from this list.
+    #
+    # @return [void] `self`
+    def clear!
+      raise TypeError, "can't modify frozen list" if frozen?
+      elements.clear
+      self
+    end
+    alias_method :clear, :clear!
+
+    ##
     # Returns `self`.
     #
     # @return [List] `self`
