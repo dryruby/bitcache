@@ -29,7 +29,7 @@ module Bitcache::FFI
       case ptr
         when FFI::Pointer then super(ptr)
         when nil
-          super(bitcache_id_new(BITCACHE_MD5, nil))
+          super(bitcache_id_new(BITCACHE_SHA1, nil))
         when String
           super(bitcache_id_new(ptr.size, FFI::MemoryPointer.from_string(ptr)))
         else raise ArgumentError, "expected an FFI::Pointer, but got #{ptr.inspect}"

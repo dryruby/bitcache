@@ -29,10 +29,12 @@ module Bitcache
   # Returns the Bitcache identifier for `input`.
   #
   # @param  [Stream, Proc, #read, #to_str] input
+  #   the input data
   # @param  [Hash{Symbol => Object} options
-  # @return [String]
+  #   any additional options
+  # @return [Identifier]
   def self.identify(input, options = {})
-    Digest::SHA1.hexdigest(Bitcache.read(input))
+    Identifier.for(Bitcache.read(input), options)
   end
 
   ##

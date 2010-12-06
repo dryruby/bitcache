@@ -12,6 +12,22 @@ module Bitcache
     MAX_SIZE    = SHA256_SIZE
 
     ##
+    # Returns the Bitcache identifier for the given `data`.
+    #
+    # @example Computing a content identifier
+    #   id = Identifier.for("Hello, world!\n")
+    #
+    # @param  [String, #to_str] data
+    #   a byte string of arbitrary length
+    # @param  [Hash{Symbol => Objec}] options
+    #   any additional options
+    # @return [Identifier]
+    # @raise  [ArgumentError] if the input is invalid
+    def self.for(data, options = {})
+      self.new(Digest::SHA1.digest(data.to_str)) # FIXME
+    end
+
+    ##
     # Parses an identifier string representation, returning the
     # corresponding identifier.
     #
@@ -48,7 +64,7 @@ module Bitcache
     # @param  [String, #to_str] digest
     #   the identifier message digest
     def initialize(digest = nil)
-      @digest = digest ? digest.to_str : "\0" * 16
+      @digest = digest ? digest.to_str : "\0" * 20
       @digest.force_encoding(Encoding::BINARY) if @digest.respond_to?(:force_encoding) # for Ruby 1.9+
     end
 
