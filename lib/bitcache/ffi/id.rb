@@ -24,7 +24,7 @@ module Bitcache::FFI
 
       struct.send(:define_method, :initialize) { |*args| super(initialize_from(*args)) }
       def struct.release(ptr)
-        bitcache_id_free(pre) # TODO: implement reference counting
+        Bitcache::FFI.bitcache_id_free(ptr) # TODO: implement reference counting
       end
     end
 
