@@ -5,15 +5,15 @@ share_as :Bitcache_Set do
 
   before :each do
     raise '+@class+ must be defined in a before(:all) block' unless instance_variable_get(:@class)
-    @id0 = Identifier.new("\x00" * 16)
-    @id1 = Identifier.new("\x01" * 16)
-    @id2 = Identifier.new("\x02" * 16)
+    @id0 = Bitcache::Identifier.new("\x00" * 16)
+    @id1 = Bitcache::Identifier.new("\x01" * 16)
+    @id2 = Bitcache::Identifier.new("\x02" * 16)
     @set = @class.new([@id0, @id1, @id2])
   end
 
   describe "Set[]" do
     it "returns a set" do
-      Set[@id0, @id1, @id2].should be_a Set
+      @class[@id0, @id1, @id2].should be_a Set
     end
   end
 
@@ -55,11 +55,11 @@ share_as :Bitcache_Set do
     end
 
     it "returns true if the set is empty" do
-      Set[].should be_empty
+      @class[].should be_empty
     end
 
     it "returns false if the set is not empty" do
-      Set[@id1].should_not be_empty
+      @class[@id1].should_not be_empty
     end
   end
 
@@ -73,7 +73,7 @@ share_as :Bitcache_Set do
     end
 
     it "returns zero if the set is empty" do
-      Set[].size.should be_zero
+      @class[].size.should be_zero
     end
   end
 
@@ -97,7 +97,7 @@ share_as :Bitcache_Set do
     end
 
     it "returns 0 if the set doesn't contain the identifier" do
-      @set.count(Identifier.new("\xff" * 16)).should eql 0
+      @set.count(@id0.fill(0xff)).should eql 0
     end
   end
 
@@ -122,7 +122,7 @@ share_as :Bitcache_Set do
     end
 
     it "returns false if the set doesn't contain the identifier" do
-      @set.should_not include Identifier.new("\xff" * 16)
+      @set.should_not include @id0.fill(0xff)
     end
   end
 
@@ -150,17 +150,17 @@ share_as :Bitcache_Set do
     end
 
     it "returns true if the sets are both empty" do
-      set1, set2 = Set[], Set[]
+      set1, set2 = @class[], @class[]
       set1.should == set2
     end
 
     it "returns true if the sets are equal" do
-      set1, set2 = Set[@id1, @id2], Set[@id2, @id1, @id1]
+      set1, set2 = @class[@id1, @id2], @class[@id2, @id1, @id1]
       set1.should == set2
     end
 
     it "returns false if the sets are not equal" do
-      set1, set2 = Set[@id1, @id2], Set[@id2]
+      set1, set2 = @class[@id1, @id2], @class[@id2]
       set1.should_not == set2
     end
   end
@@ -175,17 +175,17 @@ share_as :Bitcache_Set do
     end
 
     it "returns true if the sets are both empty" do
-      set1, set2 = Set[], Set[]
+      set1, set2 = @class[], @class[]
       set1.should eql set2
     end
 
     it "returns true if the sets are equal" do
-      set1, set2 = Set[@id1, @id2], Set[@id2, @id1, @id1]
+      set1, set2 = @class[@id1, @id2], @class[@id2, @id1, @id1]
       set1.should eql set2
     end
 
     it "returns false if the sets are not equal" do
-      set1, set2 = Set[@id1, @id2], Set[@id2]
+      set1, set2 = @class[@id1, @id2], @class[@id2]
       set1.should_not eql set2
     end
   end
@@ -196,7 +196,7 @@ share_as :Bitcache_Set do
     end
 
     #it "returns the same hash code for equal sets" do
-    #  Set[@id1].hash.should eql Set[@id1].hash
+    #  @class[@id1].hash.should eql @class[@id1].hash
     #end
   end
 
@@ -206,7 +206,7 @@ share_as :Bitcache_Set do
     end
 
     it "inserts the given identifier into the set" do
-      id = Identifier.new("\xff" * 16)
+      id = @id0.fill(0xff)
       @set.should_not include id
       @set.insert(id)
       @set.should include id
@@ -251,26 +251,26 @@ share_as :Bitcache_Set do
 
   describe "Set#merge" do
     it "returns a new Set" do
-      @set.merge(Set[]).should be_a Set
-      @set.merge(Set[]).should_not equal @set
+      @set.merge(@class[]).should be_a Set
+      @set.merge(@class[]).should_not equal @set
     end
 
     it "returns a new Set containing all identifiers from both sets" do
-      Set[@id1].merge(Set[@id2]).should eql Set[@id1, @id2]
+      @class[@id1].merge(@class[@id2]).should eql @class[@id1, @id2]
     end
   end
 
   describe "Set#merge!" do
     it "raises a TypeError if the set is frozen" do
-      lambda { @set.freeze.merge!(Set[]) }.should raise_error TypeError
+      lambda { @set.freeze.merge!(@class[]) }.should raise_error TypeError
     end
 
     it "merges in all identifiers from the other set" do
-      Set[@id1].merge!(Set[@id2]).should eql Set[@id1, @id2]
+      @class[@id1].merge!(@class[@id2]).should eql @class[@id1, @id2]
     end
 
     it "returns self" do
-      @set.merge!(Set[]).should equal @set
+      @set.merge!(@class[]).should equal @set
     end
   end
 
