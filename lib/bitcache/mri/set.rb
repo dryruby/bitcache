@@ -34,6 +34,25 @@ module Bitcache
     attr_reader :elements
 
     ##
+    # Returns `true` if this set contains no elements.
+    #
+    # @return [Boolean] `true` or `false`
+    def empty?
+      elements.empty?
+    end
+
+    ##
+    # Returns the number of elements in this set.
+    #
+    # @return [Integer]
+    def size
+      elements.size
+    end
+    alias_method :cardinality, :size
+    alias_method :length, :size
+    alias_method :count, :size
+
+    ##
     # Returns `self`.
     #
     # @return [Set] `self`

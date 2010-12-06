@@ -31,6 +31,34 @@ share_as :Bitcache_Set do
     end
   end
 
+  describe "Set#empty?" do
+    it "returns a Boolean" do
+      @set.empty?.should be_a_boolean
+    end
+
+    it "returns true if the set is empty" do
+      Set.new.should be_empty
+    end
+
+    it "returns false if the set is not empty" do
+      Set.new([@id1]).should_not be_empty
+    end
+  end
+
+  describe "Set#size" do
+    it "returns an Integer" do
+      @set.size.should be_an Integer
+    end
+
+    it "returns the cardinality of the set" do
+      @set.size.should eql 3
+    end
+
+    it "returns zero if the set is empty" do
+      Set.new.size.should be_zero
+    end
+  end
+
   describe "Set#to_set" do
     it "returns self" do
       @set.to_set.should equal @set
