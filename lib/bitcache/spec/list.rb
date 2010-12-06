@@ -137,6 +137,66 @@ share_as :Bitcache_List do
     end
   end
 
+  describe "List#==" do
+    it "returns a Boolean" do
+      (@list == @list).should be_a_boolean
+    end
+
+    it "returns true if the lists are the same object" do
+      @list.should == @list
+    end
+
+    it "returns true if the lists are both empty" do
+      list1, list2 = @class[], @class[]
+      list1.should == list2
+    end
+
+    it "returns true if the lists are equal" do
+      list1, list2 = @class[@id1, @id2], @class[@id1, @id2]
+      list1.should == list2
+    end
+
+    it "returns false if the lists are not equal" do
+      list1, list2 = @class[@id1, @id2], @class[@id2, @id1]
+      list1.should_not == list2
+    end
+  end
+
+  describe "List#eql?" do
+    it "returns a Boolean" do
+      @list.eql?(@list).should be_a_boolean
+    end
+
+    it "returns true if the lists are the same object" do
+      @list.should eql @list
+    end
+
+    it "returns true if the lists are both empty" do
+      list1, list2 = @class[], @class[]
+      list1.should eql list2
+    end
+
+    it "returns true if the lists are equal" do
+      list1, list2 = @class[@id1, @id2], @class[@id1, @id2]
+      list1.should eql list2
+    end
+
+    it "returns false if the lists are not equal" do
+      list1, list2 = @class[@id1, @id2], @class[@id2, @id1]
+      list1.should_not eql list2
+    end
+  end
+
+  describe "List#hash" do
+    it "returns a Fixnum" do
+      @list.hash.should be_a Fixnum
+    end
+
+    #it "returns the same hash code for equal lists" do
+    #  @class[@id1].hash.should eql @class[@id1].hash
+    #end
+  end
+
   describe "List#to_list" do
     it "returns self" do
       @list.to_list.should equal @list

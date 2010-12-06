@@ -187,7 +187,7 @@ module Bitcache
     ##
     # Returns the hash code for this set.
     #
-    # @return [Fixnum] `(0..0xffffffff)`
+    # @return [Fixnum]
     def hash
       elements.hash
     end

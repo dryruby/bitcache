@@ -149,6 +149,46 @@ module Bitcache
     alias_method :each, :each_identifier
 
     ##
+    # Returns `true` if this list is equal to the given `other` list.
+    #
+    # @param  [Object] other
+    # @return [Boolean] `true` or `false`
+    def ==(other)
+      return true if self.equal?(other)
+      case other
+        when List
+          length.eql?(other.length) && elements.eql?(other.elements)
+        when Array
+          length.eql?(other.length) && elements.eql?(other)
+        when Enumerable
+          length.eql?(other.count) && elements.eql?(other.to_a)
+        else false
+      end
+    end
+
+    ##
+    # Returns `true` if this list is identical to the given `other` list.
+    #
+    # @param  [Object] other
+    # @return [Boolean] `true` or `false`
+    def eql?(other)
+      return true if self.equal?(other)
+      case other
+        when List
+          self == other
+        else false
+      end
+    end
+
+    ##
+    # Returns the hash code for this list.
+    #
+    # @return [Fixnum]
+    def hash
+      elements.hash
+    end
+
+    ##
     # Returns `self`.
     #
     # @return [List] `self`
