@@ -30,6 +30,15 @@ module Bitcache
     end
 
     ##
+    # Prevents further modifications to this set.
+    #
+    # @return [void] `self`
+    def freeze
+      elements.freeze
+      super
+    end
+
+    ##
     # @private
     attr_reader :elements
 
@@ -58,6 +67,7 @@ module Bitcache
     # @param  [Identifier, #to_id] id
     # @return [void] `self`
     def insert(id)
+      raise TypeError, "can't modify frozen set" if frozen?
       elements[id.to_id] ||= true
       self
     end
@@ -70,6 +80,7 @@ module Bitcache
     # @param  [Identifier, #to_id] id
     # @return [void] `self`
     def delete(id)
+      raise TypeError, "can't modify frozen set" if frozen?
       elements.delete(id.to_id)
       self
     end
@@ -80,6 +91,7 @@ module Bitcache
     #
     # @return [void] `self`
     def clear
+      raise TypeError, "can't modify frozen set" if frozen?
       elements.clear
       self
     end

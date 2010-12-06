@@ -31,6 +31,18 @@ share_as :Bitcache_Set do
     end
   end
 
+  describe "Set#freeze" do
+    it "freezes the set" do
+      @set.should_not be_frozen
+      @set.freeze
+      @set.should be_frozen
+    end
+
+    it "returns self" do
+      @set.freeze.should equal @set
+    end
+  end
+
   describe "Set#empty?" do
     it "returns a Boolean" do
       @set.empty?.should be_a_boolean
@@ -60,6 +72,10 @@ share_as :Bitcache_Set do
   end
 
   describe "Set#insert" do
+    it "raises a TypeError if the set is frozen" do
+      lambda { @set.freeze.insert(@id0) }.should raise_error TypeError
+    end
+
     it "inserts the given identifier into the set" do
       id = Identifier.new("\xff" * 16)
       @set.to_a.should_not include id
@@ -73,6 +89,10 @@ share_as :Bitcache_Set do
   end
 
   describe "Set#delete" do
+    it "raises a TypeError if the set is frozen" do
+      lambda { @set.freeze.delete(@id0) }.should raise_error TypeError
+    end
+
     it "removes the given identifier from the set" do
       @set.to_a.should include @id0
       @set.delete(@id0)
@@ -85,6 +105,10 @@ share_as :Bitcache_Set do
   end
 
   describe "Set#clear" do
+    it "raises a TypeError if the set is frozen" do
+      lambda { @set.freeze.clear }.should raise_error TypeError
+    end
+
     it "removes all elements from the set" do
       @set.should_not be_empty
       @set.clear

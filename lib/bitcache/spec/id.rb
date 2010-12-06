@@ -103,6 +103,7 @@ share_as :Bitcache_Identifier do
 
   describe "Identifier#freeze" do
     it "freezes the identifier" do
+      @id.should_not be_frozen
       @id.freeze
       @id.should be_frozen
     end
