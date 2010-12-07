@@ -38,11 +38,12 @@ module Bitcache::FFI
     # @private
     def initialize_from(digest = nil)
       case digest
-        when FFI::Pointer then digest
-        when nil
-          bitcache_id_new(BITCACHE_SHA1, nil)
         when String
           bitcache_id_new(digest.bytesize, FFI::MemoryPointer.from_string(digest))
+        when nil
+          bitcache_id_new(BITCACHE_SHA1, nil)
+        when FFI::Pointer
+          digest
         else raise ArgumentError, "expected an FFI::Pointer, but got #{digest.inspect}"
       end
     end
@@ -156,6 +157,12 @@ module Bitcache::FFI
     # @private
     def hash
       bitcache_id_get_hash(self)
+    end
+
+    ##
+    # @private
+    def hashes
+      aref(:digest).to_ptr.get_array_of_uint32(0, size.div(4))
     end
 
     ##

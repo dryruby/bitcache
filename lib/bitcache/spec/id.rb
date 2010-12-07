@@ -365,9 +365,32 @@ share_as :Bitcache_Identifier do
       @id.hash.should eql 0xffffffff
     end
 
-    it "returns the 32 most-significant bits in big-endian order" do
+    it "returns the first 4 bytes as a native integer" do
       @id = @class.parse('d41d8cd98f00b204e9800998ecf8427e')
-      @id.hash.should eql 0xd41d8cd9
+      @id.hash.should eql 0xd98c1dd4 # 0xd41d8cd9 in big-endian order
+    end
+  end
+
+  describe "Identifier#hashes" do
+    it "returns an Array of Fixnums" do
+      @id.hashes.should be_an Array
+      @id.hashes.each { |hash| hash.should be_a Fixnum }
+    end
+
+    it "returns 4 hashes for MD5 identifiers" do
+      md5 = @class.parse('d41d8cd98f00b204e9800998ecf8427e')
+      md5.hashes.should have(4).hashes
+      md5.hashes.first.should eql md5.hash
+    end
+
+    it "returns 5 hashes for SHA-1 identifiers" do
+      sha1 = @class.parse('da39a3ee5e6b4b0d3255bfef95601890afd80709')
+      sha1.hashes.should have(5).hashes
+      sha1.hashes.first.should eql sha1.hash
+    end
+
+    it "returns 8 hashes for SHA-256 identifiers" do
+      # TODO
     end
   end
 

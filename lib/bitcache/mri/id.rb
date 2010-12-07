@@ -230,15 +230,28 @@ module Bitcache
     ##
     # Returns the hash code for this identifier.
     #
-    # The hash code is defined as equal to the 32 most-significant
-    # bits of the identifier, in big-endian order.
+    # The hash code is defined as equal to the first four bytes of the
+    # identifier, interpreted as an unsigned 32-bit integer in native byte
+    # order.
     #
     # @return [Fixnum] `(0..0xffffffff)`
     def hash
-      digest[3].ord +
-        (digest[2].ord << 8) +
-        (digest[1].ord << 16) +
-        (digest[0].ord << 24)
+      digest.unpack('L').first
+    end
+
+    ##
+    # Returns an array of hash codes for this identifier.
+    #
+    # The hash codes are produced by dividing the identifier into successive
+    # four-byte segments and interpreting each as an unsigned 32-bit integer
+    # in native byte order.
+    #
+    # Four hash codes are returned for MD5 identifiers, five for SHA-1
+    # identifiers, and eight for SHA-256 identifiers.
+    #
+    # @return [Array<Fixnum>] an array of `size / 4` integers
+    def hashes
+      digest.unpack('L*')
     end
 
     ##
