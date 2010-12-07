@@ -26,6 +26,7 @@ module Bitcache
         else raise ArgumentError, "expected a String or Integer, but got #{bitmap.inspect}"
       end
       @bitmap.force_encoding(Encoding::BINARY) if @bitmap.respond_to?(:force_encoding) # for Ruby 1.9+
+      @bitsize = @bitmap.size * 8
 
       if block_given?
         case block.arity
@@ -104,6 +105,22 @@ module Bitcache
         (byte.ord | (1 << r)).chr :
         (byte.ord & (0xff ^ (1 << r))).chr
     end
+
+    ##
+    # Inserts the given identifier `id` into this filter.
+    #
+    # @param  [Identifier, #to_id] id
+    # @return [void] `self`
+    # @raise  [TypeError] if the filter is frozen
+    def insert(id)
+      raise TypeError, "can't modify frozen filter" if frozen?
+      id.to_id.hashes.each do |hash|
+        self[hash % @bitsize] = true
+      end
+      self
+    end
+    alias_method :add, :insert
+    alias_method :<<, :insert
 
     # Load optimized method implementations when available:
     send(:include, Bitcache::FFI::Filter) if defined?(Bitcache::FFI::Filter)

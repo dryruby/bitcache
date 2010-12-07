@@ -130,4 +130,25 @@ share_as :Bitcache_Filter do
       @filter[0].should eql false
     end
   end
+
+  describe "Filter#insert" do
+    before :each do
+      @filter = @class.new
+      @md5    = Bitcache::Identifier.parse('d41d8cd98f00b204e9800998ecf8427e')
+    end
+
+    it "raises a TypeError if the filter is frozen" do
+      lambda { @filter.freeze.insert(@md5) }.should raise_error TypeError
+    end
+
+    it "inserts the given identifier into the filter" do
+      @filter.should be_empty
+      @filter.insert(@md5)
+      @filter.should_not be_empty
+    end
+
+    it "returns self" do
+      @filter.insert(@md5).should equal @filter
+    end
+  end
 end
