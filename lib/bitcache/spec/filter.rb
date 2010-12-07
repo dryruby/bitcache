@@ -65,4 +65,18 @@ share_as :Bitcache_Filter do
       @filter.freeze.should equal @filter
     end
   end
+
+  describe "Filter#empty?" do
+    it "returns a Boolean" do
+      @filter.empty?.should be_a_boolean
+    end
+
+    it "returns true if no elements have been inserted into the filter" do
+      @class.new.should be_empty
+    end
+
+    it "returns false if any elements have been inserted into the filter" do
+      # TODO
+    end
+  end
 end

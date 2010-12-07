@@ -57,6 +57,15 @@ module Bitcache
     # @private
     attr_reader :bitmap
 
+    ##
+    # Returns `true` if no elements have been inserted into this filter.
+    #
+    # @return [Boolean] `true` or `false`
+    def empty?
+      /\A\x00+\z/ === bitmap
+    end
+    alias_method :zero?, :empty?
+
     # Load optimized method implementations when available:
     send(:include, Bitcache::FFI::Filter) if defined?(Bitcache::FFI::Filter)
   end # Filter
