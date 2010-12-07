@@ -182,6 +182,10 @@ share_as :Bitcache_Identifier do
     it "fills the identifier with the byte value 0x00" do
       @id.clear!
       @id.should be_zero
+
+      @id = @class.new("\r\n" * 8)
+      @id.clear!
+      @id.should be_zero
     end
 
     it "retains the identifier size unchanged" do

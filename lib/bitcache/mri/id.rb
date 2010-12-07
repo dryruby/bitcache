@@ -129,7 +129,7 @@ module Bitcache
     # @raise  [TypeError] if the identifier is frozen
     def clear!
       raise TypeError, "can't modify frozen identifier" if frozen?
-      digest.gsub!(/./, "\0")
+      digest.gsub!(/./m, "\0")
       self
     end
     alias_method :clear, :clear!
@@ -143,7 +143,7 @@ module Bitcache
     # @raise  [TypeError] if the identifier is frozen
     def fill!(byte)
       raise TypeError, "can't modify frozen identifier" if frozen?
-      digest.gsub!(/./, byte(byte).chr)
+      digest.gsub!(/./m, byte(byte).chr)
       self
     end
     alias_method :fill, :fill!
