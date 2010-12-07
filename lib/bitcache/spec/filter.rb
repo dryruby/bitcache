@@ -131,6 +131,31 @@ share_as :Bitcache_Filter do
     end
   end
 
+  describe "Filter#has_identifier?" do
+    before :each do
+      @filter = @class.new
+      @md5    = Bitcache::Identifier.parse('d41d8cd98f00b204e9800998ecf8427e')
+    end
+
+    it "returns a Boolean" do
+      @filter.has_identifier?(@md5).should be_a_boolean
+    end
+
+    it "returns true if the filter contains the identifier" do
+      @filter.should_not include @md5
+      @filter.insert(@md5)
+      @filter.should include @md5
+    end
+
+    it "returns false if the filter doesn't contain the identifier" do
+      @filter.should_not include @md5.dup.fill(0xff)
+    end
+
+    it "returns false positives occasionally, but never false negatives" do
+      # TODO
+    end
+  end
+
   describe "Filter#insert" do
     before :each do
       @filter = @class.new

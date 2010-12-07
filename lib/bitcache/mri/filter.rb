@@ -107,6 +107,24 @@ module Bitcache
     end
 
     ##
+    # Returns `true` if this filter contains the identifier `id`.
+    #
+    # This method may return a false positive, but it will never return a
+    # false negative.
+    #
+    # @param  [Identifier, #to_id] id
+    # @return [Boolean] `true` or `false`
+    def has_identifier?(id)
+      id.to_id.hashes.each do |hash|
+        return false unless self[hash % @bitsize]
+      end
+      return true # may return a false positive
+    end
+    alias_method :has_id?,  :has_identifier?
+    alias_method :include?, :has_identifier?
+    alias_method :member?,  :has_identifier?
+
+    ##
     # Inserts the given identifier `id` into this filter.
     #
     # @param  [Identifier, #to_id] id
@@ -117,7 +135,7 @@ module Bitcache
       id.to_id.hashes.each do |hash|
         self[hash % @bitsize] = true
       end
-      self
+      return self
     end
     alias_method :add, :insert
     alias_method :<<, :insert
