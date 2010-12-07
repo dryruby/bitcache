@@ -66,6 +66,45 @@ module Bitcache
     end
     alias_method :zero?, :empty?
 
+    ##
+    # Returns the bit at the given `index`.
+    #
+    # @example Checking the state of a given bit
+    #   filter[42]          #=> true or false
+    #
+    # @param  [Integer, #to_i] index
+    #   a bit offset
+    # @return [Boolean] `true` or `false`; `nil` if `index` is out of bounds
+    def [](index)
+      q, r = index.to_i.divmod(8)
+      byte = bitmap[q]
+      byte ? !((byte.ord & (1 << r)).zero?) : nil
+    end
+
+    ##
+    # Updates the bit at the given `index` to `value`.
+    #
+    # @example Toggling the state of a given bit
+    #   filter[42] = true   # sets the bit at position 42
+    #   filter[42] = false  # clears the bit at position 42
+    #
+    # @param  [Integer] index
+    #   a bit offset
+    # @param  [Boolean] value
+    #   `true` or `false`
+    # @return [Boolean] `value`
+    # @raise  [IndexError] if `index` is out of bounds
+    # @raise  [TypeError] if the filter is frozen
+    def []=(index, value)
+      q, r = index.to_i.divmod(8)
+      byte = bitmap[q]
+      raise IndexError, "index #{index} is out of bounds" unless byte
+      raise TypeError, "can't modify frozen filter" if frozen?
+      bitmap[q] = value ?
+        (byte.ord | (1 << r)).chr :
+        (byte.ord & (0xff ^ (1 << r))).chr
+    end
+
     # Load optimized method implementations when available:
     send(:include, Bitcache::FFI::Filter) if defined?(Bitcache::FFI::Filter)
   end # Filter
