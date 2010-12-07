@@ -80,6 +80,23 @@ share_as :Bitcache_Filter do
     end
   end
 
+  describe "Filter#space" do
+    it "returns a Float" do
+      @filter.space.should be_a Float
+    end
+
+    it "returns 1.0 if the filter is empty" do
+      @filter.space.should eql 1.0
+    end
+
+    it "returns < 1.0 if the filter is not empty" do
+      1000.times do |n|
+        @filter.insert(Bitcache::Identifier.for(n.to_s))
+      end
+      @filter.space.should < 1.0
+    end
+  end
+
   describe "Filter#[]" do
     before :each do
       @filter = @class.new(0b10101010.chr)

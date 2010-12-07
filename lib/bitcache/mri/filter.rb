@@ -68,6 +68,24 @@ module Bitcache
     alias_method :zero?, :empty?
 
     ##
+    # Returns the percentage of unused space in this filter.
+    #
+    # @return [Float] `(0.0..1.0)`
+    def space
+      space = 0
+      bitmap.each_byte do |byte|
+        if byte.zero?
+          space += 8
+        else
+          0.upto(7) do |r|
+            space += 1 if (byte & (1 << r)).zero?
+          end
+        end
+      end
+      space / @bitsize.to_f
+    end
+
+    ##
     # Returns the bit at the given `index`.
     #
     # @example Checking the state of a given bit
