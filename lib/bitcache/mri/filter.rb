@@ -140,6 +140,20 @@ module Bitcache
     alias_method :add, :insert
     alias_method :<<, :insert
 
+    ##
+    # Resets this filter, removing any and all information about inserted
+    # elements.
+    #
+    # @return [void] `self`
+    # @raise  [TypeError] if the filter is frozen
+    def clear
+      raise TypeError, "can't modify frozen filter" if frozen?
+      bitmap.gsub!(/./m, "\0")
+      return self
+    end
+    alias_method :clear!, :clear
+    alias_method :reset!, :clear
+
     # Load optimized method implementations when available:
     send(:include, Bitcache::FFI::Filter) if defined?(Bitcache::FFI::Filter)
   end # Filter

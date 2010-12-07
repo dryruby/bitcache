@@ -176,4 +176,23 @@ share_as :Bitcache_Filter do
       @filter.insert(@md5).should equal @filter
     end
   end
+
+  describe "Filter#clear" do
+    it "raises a TypeError if the filter is frozen" do
+      lambda { @filter.freeze.clear }.should raise_error TypeError
+    end
+
+    it "resets the filter back to the empty state" do
+      1000.times do |n|
+        @filter.insert(Bitcache::Identifier.for(n.to_s))
+      end
+      @filter.should_not be_empty
+      @filter.clear
+      @filter.should be_empty
+    end
+
+    it "returns self" do
+      @filter.clear.should equal @filter
+    end
+  end
 end
