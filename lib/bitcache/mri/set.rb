@@ -301,6 +301,16 @@ module Bitcache
     end
 
     ##
+    # Returns a filter for recognizing the elements in this set.
+    #
+    # The filter capacity will be set equal to the set cardinality.
+    #
+    # @return [Filter]
+    def to_filter
+      Filter.for(elements.keys)
+    end
+
+    ##
     # Returns an array of the elements in this set.
     #
     # Elements are returned in lexical order.

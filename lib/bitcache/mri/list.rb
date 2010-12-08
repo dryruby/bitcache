@@ -369,6 +369,16 @@ module Bitcache
     end
 
     ##
+    # Returns a filter for recognizing the elements in this list.
+    #
+    # The filter capacity will be set equal to the list length.
+    #
+    # @return [Filter]
+    def to_filter
+      Filter.for(elements)
+    end
+
+    ##
     # Returns an array of the elements in this list.
     #
     # Element order is preserved.

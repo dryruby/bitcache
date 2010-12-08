@@ -13,13 +13,13 @@ share_as :Bitcache_Set do
 
   describe "Set[]" do
     it "returns a Set" do
-      @class[@id0, @id1, @id2].should be_a Set
+      @class[@id0, @id1, @id2].should be_a @class
     end
   end
 
   describe "Set#clone" do
     it "returns a Set" do
-      @set.clone.should be_a Set
+      @set.clone.should be_a @class
     end
 
     it "returns an identical copy of the set" do
@@ -29,7 +29,7 @@ share_as :Bitcache_Set do
 
   describe "Set#dup" do
     it "returns a Set" do
-      @set.dup.should be_a Set
+      @set.dup.should be_a @class
     end
 
     it "returns an identical copy of the set" do
@@ -251,7 +251,7 @@ share_as :Bitcache_Set do
 
   describe "Set#merge" do
     it "returns a new Set" do
-      @set.merge(@class[]).should be_a Set
+      @set.merge(@class[]).should be_a @class
       @set.merge(@class[]).should_not equal @set
     end
 
@@ -285,12 +285,32 @@ share_as :Bitcache_Set do
       @set.to_list.should be_a List
     end
 
-    it "returns a List of equal cardinality" do
-      @set.to_list.size.should eql @set.size
+    it "returns a List of equal length to the cardinality of the set" do
+      @set.to_list.length.should eql @set.cardinality
+    end
+
+    it "inserts all set elements into the list" do
+      list = @set.to_list
+      list.should include @id0, @id1, @id2
     end
 
     it "returns elements in lexical order" do
       # TODO
+    end
+  end
+
+  describe "Set#to_filter" do
+    it "returns a Filter" do
+      @set.to_filter.should be_a Filter
+    end
+
+    it "returns a Filter of equal capacity to the cardinality of the set" do
+      @set.to_filter.capacity.should eql @set.cardinality
+    end
+
+    it "inserts all set elements into the filter" do
+      filter = @set.to_filter
+      filter.should include @id0, @id1, @id2
     end
   end
 
@@ -299,8 +319,13 @@ share_as :Bitcache_Set do
       @set.to_a.should be_an Array
     end
 
-    it "returns an Array of equal cardinality" do
-      @set.to_a.size.should eql @set.size
+    it "returns an Array of equal length to the cardinality of the set" do
+      @set.to_a.length.should eql @set.cardinality
+    end
+
+    it "inserts all set elements into the array" do
+      array = @set.to_a
+      array.should include @id0, @id1, @id2
     end
 
     it "returns elements in lexical order" do

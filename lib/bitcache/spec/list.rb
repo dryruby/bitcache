@@ -13,13 +13,13 @@ share_as :Bitcache_List do
 
   describe "List[]" do
     it "returns a List" do
-      @class[@id0, @id1, @id2].should be_a List
+      @class[@id0, @id1, @id2].should be_a @class
     end
   end
 
   describe "List#clone" do
     it "returns a List" do
-      @list.clone.should be_a List
+      @list.clone.should be_a @class
     end
 
     it "returns an identical copy of the list" do
@@ -29,7 +29,7 @@ share_as :Bitcache_List do
 
   describe "List#dup" do
     it "returns a List" do
-      @list.dup.should be_a List
+      @list.dup.should be_a @class
     end
 
     it "returns an identical copy of the list" do
@@ -329,18 +329,16 @@ share_as :Bitcache_List do
 
   describe "List#to_set" do
     it "returns a Set" do
-      @list.to_set.should be_a Bitcache::Set
+      @list.to_set.should be_a Set
     end
 
     it "returns an empty Set if the list is empty" do
-      @class[].to_set.should eql Bitcache::Set[]
+      @class[].to_set.should eql Set[]
     end
 
-    it "returns a Set containing all elements in the list" do
+    it "inserts all list elements into the set" do
       set = @list.to_set
-      set.should include @id0
-      set.should include @id1
-      set.should include @id2
+      set.should include @id0, @id1, @id2
     end
 
     it "returns a Set of equal cardinality if the list has no duplicate elements" do
@@ -352,6 +350,21 @@ share_as :Bitcache_List do
     end
   end
 
+  describe "List#to_filter" do
+    it "returns a Filter" do
+      @list.to_filter.should be_a Filter
+    end
+
+    it "returns a Filter of equal capacity to the length of the list" do
+      @list.to_filter.capacity.should eql @list.length
+    end
+
+    it "inserts all list elements into the filter" do
+      filter = @list.to_filter
+      filter.should include @id0, @id1, @id2
+    end
+  end
+
   describe "List#to_a" do
     it "returns an Array" do
       @list.to_a.should be_an Array
@@ -359,6 +372,11 @@ share_as :Bitcache_List do
 
     it "returns an Array of equal size" do
       @list.to_a.size.should eql @list.size
+    end
+
+    it "inserts all list elements into the array" do
+      array = @list.to_filter
+      array.should include @id0, @id1, @id2
     end
 
     it "preserves element order" do
