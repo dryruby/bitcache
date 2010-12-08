@@ -388,6 +388,14 @@ module Bitcache
       end
     end
 
+    ##
+    # Returns a developer-friendly representation of this filter.
+    #
+    # @return [String]
+    def inspect
+      super
+    end
+
   protected
 
     ##
