@@ -311,7 +311,7 @@ module Bitcache
         when 16 then digest.unpack('H*').first
         when 10 then to_i.to_s(10).ljust((size * Math.log10(256)).ceil, '0')
         when 8  then to_i.to_s(8).ljust((size * (Math.log(256) / Math.log(8))).ceil, '0')
-        when 2  then to_i.to_s(2).ljust(size * 8, '0') # TODO: optimize
+        when 2  then digest.unpack('B*').first
         else raise ArgumentError, "invalid radix #{base}"
       end
     end
