@@ -98,42 +98,16 @@ module Bitcache
     end
 
     ##
-    # Returns the bit at the given `index`.
+    # Returns `1` if this filter contains the identifier `id`, and `0`
+    # otherwise.
     #
-    # @example Checking the state of a given bit
-    #   filter[42]          #=> true or false
+    # This method may return a false positive, but it will never return a
+    # false negative.
     #
-    # @param  [Integer, #to_i] index
-    #   a bit offset
-    # @return [Boolean] `true` or `false`; `nil` if `index` is out of bounds
-    def [](index)
-      q, r = index.to_i.divmod(8)
-      byte = bitmap[q]
-      byte ? !((byte.ord & (1 << r)).zero?) : nil
-    end
-
-    ##
-    # Updates the bit at the given `index` to `value`.
-    #
-    # @example Toggling the state of a given bit
-    #   filter[42] = true   # sets the bit at position 42
-    #   filter[42] = false  # clears the bit at position 42
-    #
-    # @param  [Integer] index
-    #   a bit offset
-    # @param  [Boolean] value
-    #   `true` or `false`
-    # @return [Boolean] `value`
-    # @raise  [IndexError] if `index` is out of bounds
-    # @raise  [TypeError] if the filter is frozen
-    def []=(index, value)
-      q, r = index.to_i.divmod(8)
-      byte = bitmap[q]
-      raise IndexError, "index #{index} is out of bounds" unless byte
-      raise TypeError, "can't modify frozen filter" if frozen?
-      bitmap[q] = value ?
-        (byte.ord | (1 << r)).chr :
-        (byte.ord & (0xff ^ (1 << r))).chr
+    # @param  [Identifier, #to_id] id
+    # @return [Integer] `1` or `0`
+    def count(id)
+      has_identifier?(id) ? 1 : 0
     end
 
     ##
@@ -192,6 +166,45 @@ module Bitcache
     # @return [Fixnum]
     def hash
       bitmap.hash
+    end
+
+    ##
+    # Returns the bit at the given `index`.
+    #
+    # @example Checking the state of a given bit
+    #   filter[42]          #=> true or false
+    #
+    # @param  [Integer, #to_i] index
+    #   a bit offset
+    # @return [Boolean] `true` or `false`; `nil` if `index` is out of bounds
+    def [](index)
+      q, r = index.to_i.divmod(8)
+      byte = bitmap[q]
+      byte ? !((byte.ord & (1 << r)).zero?) : nil
+    end
+
+    ##
+    # Updates the bit at the given `index` to `value`.
+    #
+    # @example Toggling the state of a given bit
+    #   filter[42] = true   # sets the bit at position 42
+    #   filter[42] = false  # clears the bit at position 42
+    #
+    # @param  [Integer] index
+    #   a bit offset
+    # @param  [Boolean] value
+    #   `true` or `false`
+    # @return [Boolean] `value`
+    # @raise  [IndexError] if `index` is out of bounds
+    # @raise  [TypeError] if the filter is frozen
+    def []=(index, value)
+      q, r = index.to_i.divmod(8)
+      byte = bitmap[q]
+      raise IndexError, "index #{index} is out of bounds" unless byte
+      raise TypeError, "can't modify frozen filter" if frozen?
+      bitmap[q] = value ?
+        (byte.ord | (1 << r)).chr :
+        (byte.ord & (0xff ^ (1 << r))).chr
     end
 
     ##
