@@ -334,6 +334,30 @@ module Bitcache
     end
 
     ##
+    # Returns the difference of this filter and the given `other` filter
+    # or byte string.
+    #
+    # @param  [Filter, #to_str] other
+    #   a filter or byte string of equal size
+    # @return [Filter] a new filter
+    def xor(other)
+      merge(other, :^)
+    end
+    alias_method :^, :xor
+
+    ##
+    # Merges the given `other` filter or byte string into this filter using
+    # a bitwise `XOR` operation.
+    #
+    # @param  [Filter, #to_str] other
+    #   a filter or byte string of equal size
+    # @return [void] `self`
+    # @raise  [TypeError] if the filter is frozen
+    def xor!(other)
+      merge!(other, :^)
+    end
+
+    ##
     # Returns the byte string representation of this filter.
     #
     # @return [String]
