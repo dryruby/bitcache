@@ -521,4 +521,32 @@ share_as :Bitcache_Identifier do
       @id.inspect.should be_a String
     end
   end
+
+  describe "Identifier#dump" do
+    it "returns self" do
+      @id.dump(StringIO.new).should equal @id
+    end
+  end
+
+  describe "Identifier#dump(StringIO)" do
+    it "writes the identifier to the given output buffer" do
+      StringIO.open do |buffer|
+        id = @class.new('Z' * 16)
+        id.dump(buffer)
+        buffer.string.should eql "\x10\x00ZZZZZZZZZZZZZZZZ" # dependent on native byte order
+      end
+    end
+  end
+
+  describe "Identifier#dump(IO)" do
+    it "writes the identifier to the given output stream" do
+      # TODO
+    end
+  end
+
+  describe "Identifier#dump(File)" do
+    it "writes the identifier to the given output file" do
+      # TODO
+    end
+  end
 end

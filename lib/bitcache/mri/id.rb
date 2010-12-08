@@ -332,8 +332,22 @@ module Bitcache
       super
     end
 
-    # Load optimized method implementations when available:
-    send(:include, Bitcache::FFI::Identifier) if defined?(Bitcache::FFI::Identifier)
+    ##
+    # Serializes the identifier to the given `output` stream or file.
+    #
+    # @param  [File, IO, StringIO] output
+    #   the output stream to write to
+    # @param  [Hash{Symbol => Object}] options
+    #   any additional options
+    # @option options [Boolean] :header (false)
+    #   whether to write an initial Bitcache header
+    # @return [void] `self`
+    def dump(output, options = {})
+      output.write([MAGIC].pack('S')) if options[:header]
+      output.write([bytesize].pack('S')) # uint16 in native byte order
+      output.write(digest)
+      return self
+    end
 
   protected
 
@@ -348,5 +362,8 @@ module Bitcache
         else byte.ord & 0xff
       end
     end
+
+    # Load optimized method implementations when available:
+    send(:include, Bitcache::FFI::Identifier) if defined?(Bitcache::FFI::Identifier)
   end # Identifier
 end # Bitcache
