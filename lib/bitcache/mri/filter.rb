@@ -147,16 +147,17 @@ module Bitcache
     attr_reader :bitmap
 
     ##
-    # Returns the byte size of this filter.
+    # Returns the capacity of this filter.
     #
     # The time complexity of this operation is `O(1)`.
     #
     # @return [Integer] a positive integer
-    def size
+    def capacity
       bitmap.bytesize
     end
-    alias_method :bytesize, :size
-    alias_method :length,   :size
+    alias_method :size,     :capacity
+    alias_method :bytesize, :capacity
+    alias_method :length,   :capacity
 
     ##
     # Returns `true` if no elements have been inserted into this filter.

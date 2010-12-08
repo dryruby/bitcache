@@ -86,6 +86,12 @@ share_as :Bitcache_Filter do
     end
   end
 
+  describe "Filter#capacity" do
+    it "returns an Integer" do
+      @filter.capacity.should be_an Integer
+    end
+  end
+
   describe "Filter#size" do
     it "returns an Integer" do
       @filter.size.should be_an Integer

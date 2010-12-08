@@ -333,7 +333,7 @@ share_as :Bitcache_List do
     end
 
     it "returns an empty Set if the list is empty" do
-      @class[].to_set.should eql Set[]
+      @class[].to_set.should eql Bitcache::Set[]
     end
 
     it "inserts all list elements into the set" do
