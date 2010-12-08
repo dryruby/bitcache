@@ -16,25 +16,25 @@ share_as :Bitcache_Filter do
 
   describe "Filter.new" do
     it "returns a Filter" do
-      @class.new.should be_a Filter
+      @class.new.should be_a @class
     end
   end
 
   describe "Filter.new(Integer)" do
     it "returns a Filter" do
-      @class.new(1024).should be_a Filter
+      @class.new(1024).should be_a @class
     end
   end
 
   describe "Filter.new(String)" do
     it "returns a Filter" do
-      @class.new("\0" * 128).should be_a Filter
+      @class.new("\0" * 128).should be_a @class
     end
   end
 
   describe "Filter#clone" do
     it "returns a Filter" do
-      @filter.clone.should be_a Filter
+      @filter.clone.should be_a @class
     end
 
     it "returns an identical copy of the filter" do
@@ -45,7 +45,7 @@ share_as :Bitcache_Filter do
 
   describe "Filter#dup" do
     it "returns a Filter" do
-      @filter.dup.should be_a Filter
+      @filter.dup.should be_a @class
     end
 
     it "returns an identical copy of the filter" do
@@ -290,6 +290,27 @@ share_as :Bitcache_Filter do
 
     it "returns self" do
       @filter.clear.should equal @filter
+    end
+  end
+
+  describe "Filter#merge" do
+    it "returns a new Filter" do
+      @filter.merge(@filter.dup).should be_a @class
+      @filter.merge(@filter.dup).should_not equal @filter
+    end
+  end
+
+  describe "Filter#merge!" do
+    it "raises a TypeError if the filter is frozen" do
+      lambda { @filter.freeze.merge!(@filter.dup) }.should raise_error TypeError
+    end
+
+    it "raises an ArgumentError if the filters have incompatible sizes" do
+      lambda { @class.new(32).merge!(@class.new(16)) }.should raise_error ArgumentError
+    end
+
+    it "returns self" do
+      @filter.merge!(@filter.dup).should equal @filter
     end
   end
 

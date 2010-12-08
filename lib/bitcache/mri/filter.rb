@@ -238,6 +238,45 @@ module Bitcache
     alias_method :reset!, :clear
 
     ##
+    # Returns a new filter resulting from merging this filter and the given
+    # `other` filter or byte string.
+    #
+    # @param  [Filter, #to_str] other
+    #   the filter to merge with this one
+    # @param  [Symbol, #to_sym] op
+    #   the bitwise operation to use: `:|`, `:&`, or `:^`
+    # @return [void] `self`
+    def merge(other, op = :|)
+      dup.merge!(other, op)
+    end
+
+    ##
+    # Merges the given `other` filter or byte string into this filter.
+    #
+    # @param  [Filter, #to_str] other
+    #   the filter to merge with this one
+    # @param  [Symbol, #to_sym] op
+    #   the bitwise operation to use: `:|`, `:&`, or `:^`
+    # @return [void] `self`
+    # @raise  [TypeError] if the filter is frozen
+    def merge!(other, op = :|)
+      raise TypeError, "can't modify frozen filter" if frozen?
+
+      other = other.is_a?(Filter) ? other.bitmap : other.to_str
+      raise ArgumentError, "incompatible filter sizes" unless bytesize.eql?(other.bytesize)
+
+      if bitmap.respond_to?(fast_method = :"#{op}!")
+        bitmap.send(fast_method, other)
+      else
+        bitmap.each_byte.with_index do |byte, index|
+          bitmap[index] = byte.send(op, other[index].ord).chr
+        end
+      end
+
+      return self
+    end
+
+    ##
     # Returns the byte string representation of this filter.
     #
     # @return [String]
