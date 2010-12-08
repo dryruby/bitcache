@@ -155,6 +155,38 @@ module Bitcache
     alias_method :member?,  :has_identifier?
 
     ##
+    # Returns `true` if this filter is equal to the given `other` filter or
+    # byte string.
+    #
+    # @param  [Object] other
+    # @return [Boolean] `true` or `false`
+    def ==(other)
+      return true if self.equal?(other)
+      case other
+        when Filter
+          bytesize.eql?(other.bytesize) && bitmap.eql?(other.bitmap)
+        when String
+          bytesize.eql?(other.bytesize) && bitmap.eql?(other)
+        else false
+      end
+    end
+
+    ##
+    # Returns `true` if this filter is identical to the given `other`
+    # filter.
+    #
+    # @param  [Object] other
+    # @return [Boolean] `true` or `false`
+    def eql?(other)
+      return true if self.equal?(other)
+      case other
+        when Filter
+          self == other
+        else false
+      end
+    end
+
+    ##
     # Inserts the given identifier `id` into this filter.
     #
     # @param  [Identifier, #to_id] id

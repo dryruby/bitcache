@@ -183,6 +183,50 @@ share_as :Bitcache_Filter do
     end
   end
 
+  describe "Filter#==" do
+    it "returns a Boolean" do
+      (@filter == @filter).should be_a_boolean
+    end
+
+    it "returns true if the filters are the same object" do
+      @filter.should eql @filter
+    end
+
+    it "returns true if the filters are equal" do
+      filter1, filter2 = @class.new("\1" * 16), @class.new("\1" * 16)
+      filter1.should == filter2
+    end
+
+    it "returns false if the filters are not equal" do
+      filter1, filter2 = @class.new("\1" * 16), @class.new("\2" * 16)
+      filter1.should_not eql filter2
+    end
+
+    it "returns true if a given byte string is equal to the filter" do
+      @class.new("\1" * 16).should == "\1" * 16
+    end
+  end
+
+  describe "Filter#eql?" do
+    it "returns a Boolean" do
+      @filter.eql?(@filter).should be_a_boolean
+    end
+
+    it "returns true if the filters are the same object" do
+      @filter.should eql @filter
+    end
+
+    it "returns true if the filters are equal" do
+      filter1, filter2 = @class.new("\1" * 16), @class.new("\1" * 16)
+      filter1.should eql filter2
+    end
+
+    it "returns false if the filters are not equal" do
+      filter1, filter2 = @class.new("\1" * 16), @class.new("\2" * 16)
+      filter1.should_not eql filter2
+    end
+  end
+
   describe "Filter#insert" do
     before :each do
       @filter = @class.new
