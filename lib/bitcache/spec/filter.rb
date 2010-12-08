@@ -19,7 +19,18 @@ share_as :Bitcache_Filter do
 
   describe "Filter.for(enum)" do
     it "returns a Filter" do
-      # TODO
+      @class.for([]).should be_a @class
+    end
+
+    it "returns a Filter containing all elements from enum" do
+      id1 = Bitcache::Identifier.for('1')
+      id2 = Bitcache::Identifier.for('2')
+      id3 = Bitcache::Identifier.for('3')
+      filter = @class.for([id1, id2, id3])
+      filter.size.should eql 3
+      filter.should include id1
+      filter.should include id2
+      filter.should include id3
     end
   end
 

@@ -25,6 +25,41 @@ module Bitcache
     end
 
     ##
+    # Constructs a filter from the identifiers yielded by `enum`.
+    #
+    # Unless explicitly otherwise specified, the filter will have a capacity
+    # that matches the number of elements in `enum`.
+    #
+    # @example Constructing a filter from an array
+    #   Filter.for([id1, id2, id3])
+    #
+    # @example Constructing a filter from a list
+    #   Filter.for(List[id1, id2, id3])
+    #
+    # @example Constructing a filter from a set
+    #   Filter.for(Set[id1, id2, id3])
+    #
+    # @example Rounding up the capacity to the nearest power of two
+    #   Filter.for(enum, :capacity => (1 << enum.count.to_s(2).length))
+    #
+    # @param  [Enumerable<Identifier, #to_id>] enum
+    #   an enumerable that yields identifiers
+    # @param  [Hash{Symbol => Object}] options
+    #   any additional options
+    # @option options [Integer] :capacity (enum.count)
+    #   the capacity to create the filter with
+    # @return [Filter] a new filter
+    def self.for(enum, options = {})
+      if enum.respond_to?(:to_filter)
+        enum.to_filter
+      else
+        self.new(options[:capacity] || enum.count) do |filter|
+          enum.each { |element| filter.insert(element.to_id) }
+        end
+      end
+    end
+
+    ##
     # Initializes a new filter from the given `bitmap`.
     #
     # @example Constructing a new filter
