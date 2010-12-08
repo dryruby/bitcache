@@ -66,6 +66,16 @@ share_as :Bitcache_Filter do
     end
   end
 
+  describe "Filter#size" do
+    it "returns an Integer" do
+      @filter.size.should be_an Integer
+    end
+
+    it "returns the byte size of the filter" do
+      @class.new(128).size.should eql 128
+    end
+  end
+
   describe "Filter#empty?" do
     it "returns a Boolean" do
       @filter.empty?.should be_a_boolean

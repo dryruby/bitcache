@@ -61,6 +61,16 @@ module Bitcache
     attr_reader :bitmap
 
     ##
+    # Returns the byte size of this filter.
+    #
+    # @return [Integer] a positive integer
+    def size
+      bitmap.bytesize
+    end
+    alias_method :bytesize, :size
+    alias_method :length,   :size
+
+    ##
     # Returns `true` if no elements have been inserted into this filter.
     #
     # @return [Boolean] `true` or `false`
