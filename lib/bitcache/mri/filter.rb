@@ -2,6 +2,24 @@ module Bitcache
   ##
   # A Bloom filter for Bitcache identifiers.
   #
+  # Bloom filters are space-efficient probabilistic data structures used to
+  # test whether an element is a member of a set. False positives are
+  # possible, but false negatives are not. Elements can be added to the set,
+  # but not removed. The more elements that are added to the set, the larger
+  # the probability of false positives.
+  #
+  # The time needed to either add an identifier or to check whether an
+  # identifier is a member of the set is a fixed constant, `O(k)`,
+  # completely independent of the number of identifiers already in the set.
+  #
+  # The constant `k` is proportional to the length of the specific type of
+  # identifier used; `k=4` for MD5 identifiers, `k=5` for SHA-1 identifiers,
+  # and `k=8` for SHA-256 identifiers.
+  #
+  # Note: all time complexity information given for methods refers to the
+  # `libbitcache` implementation. The pure-Ruby method implementations may
+  # perform differently.
+  #
   # @see http://en.wikipedia.org/wiki/Bloom_filter
   class Filter < Struct
     include Inspectable
@@ -113,6 +131,8 @@ module Bitcache
     ##
     # Returns the byte size of this filter.
     #
+    # The time complexity of this operation is `O(1)`.
+    #
     # @return [Integer] a positive integer
     def size
       bitmap.bytesize
@@ -123,6 +143,9 @@ module Bitcache
     ##
     # Returns `true` if no elements have been inserted into this filter.
     #
+    # The time complexity of this operation is `O(n)`, with `n` being the
+    # octet length of the filter.
+    #
     # @return [Boolean] `true` or `false`
     def empty?
       /\A\x00+\z/ === bitmap
@@ -131,6 +154,9 @@ module Bitcache
 
     ##
     # Returns the percentage of unused space in this filter.
+    #
+    # The time complexity of this operation is `O(n)`, with `n` being the
+    # octet length of the filter.
     #
     # @return [Float] `(0.0..1.0)`
     def space
@@ -154,6 +180,9 @@ module Bitcache
     # This method may return a false positive, but it will never return a
     # false negative.
     #
+    # The time complexity of this operation is `O(k)`, with `k` being a
+    # constant proportional to the length of the identifier.
+    #
     # @param  [Identifier, #to_id] id
     # @return [Integer] `1` or `0`
     def count(id)
@@ -165,6 +194,9 @@ module Bitcache
     #
     # This method may return a false positive, but it will never return a
     # false negative.
+    #
+    # The time complexity of this operation is `O(k)`, with `k` being a
+    # constant proportional to the length of the identifier.
     #
     # @param  [Identifier, #to_id] id
     # @return [Boolean] `true` or `false`
@@ -221,6 +253,8 @@ module Bitcache
     ##
     # Returns the bit at the given `index`.
     #
+    # The time complexity of this operation is `O(1)`.
+    #
     # @example Checking the state of a given bit
     #   filter[42]          #=> true or false
     #
@@ -235,6 +269,8 @@ module Bitcache
 
     ##
     # Updates the bit at the given `index` to `value`.
+    #
+    # The time complexity of this operation is `O(1)`.
     #
     # @example Toggling the state of a given bit
     #   filter[42] = true   # sets the bit at position 42
@@ -260,6 +296,9 @@ module Bitcache
     ##
     # Inserts the given identifier `id` into this filter.
     #
+    # The time complexity of this operation is `O(k)`, with `k` being a
+    # constant proportional to the length of the identifier.
+    #
     # @param  [Identifier, #to_id] id
     # @return [void] `self`
     # @raise  [TypeError] if the filter is frozen
@@ -276,6 +315,9 @@ module Bitcache
     ##
     # Resets this filter, removing any and all information about inserted
     # elements.
+    #
+    # The time complexity of this operation is `O(n)`, with `n` being the
+    # octet length of the filter.
     #
     # @return [void] `self`
     # @raise  [TypeError] if the filter is frozen
