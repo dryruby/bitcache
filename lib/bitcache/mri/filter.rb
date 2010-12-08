@@ -305,6 +305,35 @@ module Bitcache
     end
 
     ##
+    # Returns the intersection of this filter and the given `other` filter
+    # or byte string.
+    #
+    # The false-positive probability in the resulting filter is at most the
+    # false-positive probability of one of the constituent filters, and may
+    # be larger than the false-positive probability in a filter created from
+    # scratch using the intersection of the two sets of identifiers.
+    #
+    # @param  [Filter, #to_str] other
+    #   a filter or byte string of equal size
+    # @return [Filter] a new filter
+    def and(other)
+      merge(other, :&)
+    end
+    alias_method :&, :and
+
+    ##
+    # Merges the given `other` filter or byte string into this filter using
+    # a bitwise `AND` operation.
+    #
+    # @param  [Filter, #to_str] other
+    #   a filter or byte string of equal size
+    # @return [void] `self`
+    # @raise  [TypeError] if the filter is frozen
+    def and!(other)
+      merge!(other, :&)
+    end
+
+    ##
     # Returns the byte string representation of this filter.
     #
     # @return [String]
