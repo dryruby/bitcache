@@ -23,6 +23,7 @@ module Bitcache
 
   autoload :VERSION,     'bitcache/version'
   autoload :Adapter,     'bitcache/adapter'
+  autoload :Archive,     'bitcache/archive'
   autoload :Encoder,     'bitcache/encoder'
   autoload :Inspectable, 'bitcache/inspectable'
   autoload :Repository,  'bitcache/repository'
