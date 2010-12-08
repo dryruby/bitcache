@@ -6,7 +6,7 @@ module Bitcache
   class Filter < Struct
     include Inspectable
 
-    DEFAULT_CAPACITY = 1024 # elements
+    DEFAULT_CAPACITY = 4096 # elements
     BITS_PER_ELEMENT = 8    # bits
 
     ##

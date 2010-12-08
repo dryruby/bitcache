@@ -118,7 +118,8 @@ extern byte* bitcache_id_to_mpi(const bitcache_id* id, byte* buffer);
 //////////////////////////////////////////////////////////////////////////////
 // Filter API
 
-#define BITCACHE_FILTER_DEFAULT_SIZE 1024
+#define BITCACHE_FILTER_DEFAULT_CAPACITY 4096 // elements
+#define BITCACHE_FILTER_BITS_PER_ELEMENT 8    // bits
 
 typedef struct {
   size_t bitsize;
