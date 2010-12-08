@@ -1,6 +1,12 @@
 module Bitcache
   ##
   # A Bitcache identifier.
+  #
+  # Space Requirements
+  # ------------------
+  #
+  # TODO
+  #
   class Identifier < Struct
     include Comparable
     include Inspectable

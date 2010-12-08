@@ -2,9 +2,19 @@ module Bitcache
   ##
   # A set of Bitcache identifiers.
   #
+  # Time Complexity
+  # ---------------
+  #
   # Note: all time complexity information given for methods refers to the
   # `libbitcache` implementation. The pure-Ruby method implementations may
   # perform differently.
+  #
+  # Space Requirements
+  # ------------------
+  #
+  # TODO
+  #
+  # http://en.wikipedia.org/wiki/Set_(computer_science)
   class Set < Struct
     include Enumerable
     include Inspectable

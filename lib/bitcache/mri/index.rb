@@ -1,6 +1,17 @@
 module Bitcache
   ##
-  # A Bitcache index.
+  # An index of Bitcache identifiers.
+  #
+  # Time Complexity
+  # ---------------
+  #
+  # TODO
+  #
+  # Space Requirements
+  # ------------------
+  #
+  # TODO
+  #
   class Index < Struct
     # TODO
 

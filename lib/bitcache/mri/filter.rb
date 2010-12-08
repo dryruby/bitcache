@@ -8,6 +8,9 @@ module Bitcache
   # but not removed. The more elements that are added to the set, the larger
   # the probability of false positives.
   #
+  # Time Complexity
+  # ---------------
+  #
   # The time needed to either add an identifier or to check whether an
   # identifier is a member of the set is a fixed constant, `O(k)`,
   # completely independent of the number of identifiers already in the set.
@@ -19,6 +22,21 @@ module Bitcache
   # Note: all time complexity information given for methods refers to the
   # `libbitcache` implementation. The pure-Ruby method implementations may
   # perform differently.
+  #
+  # Space Requirements
+  # ------------------
+  #
+  # The Bitcache implementation of Bloom filters is tuned to by default use
+  # 8 bits per element, giving a false positive probability of around ~2%.
+  #
+  # Limitations
+  # -----------
+  #
+  # Identifiers can't be removed from a filter except by recreating the
+  # filter afresh. This could be addressed by implementing a counting Bloom
+  # filter, but that would add complexity as well as quadruple the space
+  # requirements of filters. Still, counting filters may be provided as an
+  # option in the future if there is demand for the feature.
   #
   # @see http://en.wikipedia.org/wiki/Bloom_filter
   class Filter < Struct

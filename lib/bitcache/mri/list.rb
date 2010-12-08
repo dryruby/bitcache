@@ -2,9 +2,22 @@ module Bitcache
   ##
   # An ordered list of Bitcache identifiers.
   #
+  # Time Complexity
+  # ---------------
+  #
   # Note: all time complexity information given for methods refers to the
   # `libbitcache` implementation. The pure-Ruby method implementations may
   # perform differently.
+  #
+  # Space Requirements
+  # ------------------
+  #
+  # Bitcache lists are implemented as singly-linked lists. Hence the space
+  # requirements for lists include two pointers (of machine-dependent size)
+  # per element in addition to the element data (i.e., the identifier)
+  # itself.
+  #
+  # @see http://en.wikipedia.org/wiki/Linked_list
   class List < Struct
     include Enumerable
     include Inspectable

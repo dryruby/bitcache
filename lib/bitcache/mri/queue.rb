@@ -1,6 +1,18 @@
 module Bitcache
   ##
-  # A Bitcache queue.
+  # A queue of Bitcache identifiers.
+  #
+  # Time Complexity
+  # ---------------
+  #
+  # TODO
+  #
+  # Space Requirements
+  # ------------------
+  #
+  # TODO
+  #
+  # @see http://en.wikipedia.org/wiki/Queue_(data_structure)
   class Queue < Struct
     # TODO
 
