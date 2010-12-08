@@ -10,6 +10,21 @@ module Bitcache
     BITS_PER_ELEMENT = 8    # bits
 
     ##
+    # Deserializes a filter from the given `input` stream or file.
+    #
+    # @param  [File, IO, StringIO] input
+    #   the input stream to read from
+    # @param  [Hash{Symbol => Object}] options
+    #   any additional options
+    # @return [Filter] a new filter
+    def self.load(input, options = {})
+      input = StringIO.new(input) if input.is_a?(String)
+      read = input.respond_to?(:readbytes) ? :readbytes : :read
+      bytesize = input.send(read, 8).unpack('Q').first # uint64 in native byte order
+      self.new(input.send(read, bytesize))
+    end
+
+    ##
     # Initializes a new filter from the given `bitmap`.
     #
     # @example Constructing a new filter

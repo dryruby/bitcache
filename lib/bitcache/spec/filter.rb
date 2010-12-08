@@ -8,6 +8,15 @@ share_as :Bitcache_Filter do
     @filter = @class.new
   end
 
+  describe "Filter.load(input)" do
+    it "returns a Filter" do
+      filter = @class.load("\x08\x00\x00\x00\x00\x00\x00\x00ZZZZZZZZ")
+      filter.should be_a @class
+      filter.size.should eql 8
+      filter.to_str.should eql 'Z' * 8
+    end
+  end
+
   describe "Filter.for(enum)" do
     it "returns a Filter" do
       # TODO
@@ -432,7 +441,7 @@ share_as :Bitcache_Filter do
   end
 
   describe "Filter#dump(StringIO)" do
-    it "writes the filter to the given buffer" do
+    it "writes the filter to the given output buffer" do
       StringIO.open do |buffer|
         filter = @class.new('Z' * 8)
         filter.dump(buffer)
