@@ -396,6 +396,23 @@ module Bitcache
       super
     end
 
+    ##
+    # Serializes the filter to the given `output` stream or file.
+    #
+    # @param  [File, IO, StringIO] output
+    #   the output stream to write to
+    # @param  [Hash{Symbol => Object}] options
+    #   any additional options
+    # @option options [Boolean] :header (false)
+    #   whether to write an initial Bitcache header
+    # @return [void] `self`
+    def dump(output, options = {})
+      output.write([MAGIC].pack('S')) if options[:header]
+      output.write([bytesize].pack('Q')) # uint64 in native byte order
+      output.write(bitmap)
+      return self
+    end
+
   protected
 
     ##

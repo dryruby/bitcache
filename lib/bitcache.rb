@@ -43,6 +43,10 @@ module Bitcache
   autoload :Stream,      'bitcache/mri/stream'
 
   ##
+  # The magic number for Bitcache file headers.
+  MAGIC = 0xBCBC
+
+  ##
   # Returns the Bitcache identifier for `input`.
   #
   # @param  [Stream, Proc, #read, #to_str] input

@@ -425,6 +425,34 @@ share_as :Bitcache_Filter do
     end
   end
 
+  describe "Filter#dump" do
+    it "returns self" do
+      @filter.dump(StringIO.new).should equal @filter
+    end
+  end
+
+  describe "Filter#dump(StringIO)" do
+    it "writes the filter to the given buffer" do
+      StringIO.open do |buffer|
+        filter = @class.new('Z' * 8)
+        filter.dump(buffer)
+        buffer.string.should eql "\x08\x00\x00\x00\x00\x00\x00\x00ZZZZZZZZ" # dependent on native byte order
+      end
+    end
+  end
+
+  describe "Filter#dump(IO)" do
+    it "writes the filter to the given output stream" do
+      # TODO
+    end
+  end
+
+  describe "Filter#dump(File)" do
+    it "writes the filter to the given output file" do
+      # TODO
+    end
+  end
+
   describe "Filter#marshal_dump" do
     it "serializes the filter for Marshal.dump" do
       lambda { Marshal.dump(@filter) }.should_not raise_error
