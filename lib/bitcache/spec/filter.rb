@@ -212,4 +212,46 @@ share_as :Bitcache_Filter do
       @filter.clear.should equal @filter
     end
   end
+
+  describe "Filter#to_str" do
+    it "returns a String" do
+      @filter.to_str.should be_a String
+    end
+  end
+
+  describe "Filter#to_s" do
+    it "returns a String" do
+      @filter.to_s.should be_a String
+    end
+  end
+
+  describe "Filter#to_s(2)" do
+    it "returns a String" do
+      @filter.to_s(2).should be_a String
+    end
+
+    it "returns the binary string representation of the filter" do
+      @filter = @class.new(n = 16)
+      @filter.to_s(2).should have(n * 8).digits
+      @filter.to_s(2).should eql ('0' * n * 8)
+    end
+  end
+
+  describe "Filter#to_s(16)" do
+    it "returns a String" do
+      @filter.to_s(16).should be_a String
+    end
+
+    it "returns the hexadecimal string representation of the filter" do
+      @filter = @class.new(n = 16)
+      @filter.to_s(16).should have(n * 2).digits
+      @filter.to_s(16).should eql ('0' * n * 2)
+    end
+  end
+
+  describe "Filter#inspect" do
+    it "returns a String" do
+      @filter.inspect.should be_a String
+    end
+  end
 end

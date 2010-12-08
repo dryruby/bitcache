@@ -4,6 +4,8 @@ module Bitcache
   #
   # @see http://en.wikipedia.org/wiki/Bloom_filter
   class Filter < Struct
+    include Inspectable
+
     DEFAULT_CAPACITY = 1024 # elements
     BITS_PER_ELEMENT = 8    # bits
 
@@ -171,6 +173,29 @@ module Bitcache
     end
     alias_method :clear!, :clear
     alias_method :reset!, :clear
+
+    ##
+    # Returns the byte string representation of this filter.
+    #
+    # @return [String]
+    def to_str
+      bitmap.dup
+    end
+
+    ##
+    # Returns the hexadecimal string representation of this filter.
+    #
+    # @param  [Integer] base
+    #   the numeric base to convert to: `2` or `16`
+    # @return [String]
+    # @raise  [ArgumentError] if `base` is invalid
+    def to_s(base = 16)
+      case base
+        when 16 then bitmap.unpack('H*').first
+        when 2  then bitmap.unpack('B*').first
+        else raise ArgumentError, "invalid radix #{base}"
+      end
+    end
 
     # Load optimized method implementations when available:
     send(:include, Bitcache::FFI::Filter) if defined?(Bitcache::FFI::Filter)
