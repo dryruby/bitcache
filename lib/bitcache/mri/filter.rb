@@ -187,6 +187,14 @@ module Bitcache
     end
 
     ##
+    # Returns the hash code for this filter.
+    #
+    # @return [Fixnum]
+    def hash
+      bitmap.hash
+    end
+
+    ##
     # Inserts the given identifier `id` into this filter.
     #
     # @param  [Identifier, #to_id] id

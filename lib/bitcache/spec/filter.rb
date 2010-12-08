@@ -227,6 +227,12 @@ share_as :Bitcache_Filter do
     end
   end
 
+  describe "Filter#hash" do
+    it "returns a Fixnum" do
+      @filter.hash.should be_a Fixnum
+    end
+  end
+
   describe "Filter#insert" do
     before :each do
       @filter = @class.new
