@@ -418,4 +418,24 @@ share_as :Bitcache_Filter do
       @filter.inspect.should be_a String
     end
   end
+
+  describe "Filter#marshal_dump" do
+    it "serializes the filter for Marshal.dump" do
+      lambda { Marshal.dump(@filter) }.should_not raise_error
+    end
+  end
+
+  describe "Filter#marshal_load(data)" do
+    it "deserializes the filter for Marshal.load" do
+      lambda { Marshal.load(Marshal.dump(@filter)) }.should_not raise_error
+    end
+
+    it "reconstitutes the filter from the supplied data" do
+      @filter = @class.new("\xAB" * 128)
+      @filter = Marshal.load(Marshal.dump(@filter))
+      @filter.should_not be_empty
+      @filter.size.should eql 128
+      @filter.to_str.should eql "\xAB" * 128
+    end
+  end
 end

@@ -380,6 +380,26 @@ module Bitcache
       end
     end
 
+  protected
+
+    ##
+    # @private
+    # @return [Array]
+    # @see    Marshal.dump
+    def marshal_dump
+      [@bitmap]
+    end
+
+    ##
+    # @private
+    # @param  [Array] data
+    # @return [void]
+    # @see    Marshal.load
+    def marshal_load(data)
+      @bitmap  = data.first
+      @bitsize = @bitmap.size * 8
+    end
+
     # Load optimized method implementations when available:
     send(:include, Bitcache::FFI::Filter) if defined?(Bitcache::FFI::Filter)
   end # Filter
