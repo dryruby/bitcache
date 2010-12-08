@@ -242,10 +242,10 @@ module Bitcache
     # `other` filter or byte string.
     #
     # @param  [Filter, #to_str] other
-    #   the filter to merge with this one
+    #   a filter or byte string of equal size
     # @param  [Symbol, #to_sym] op
     #   the bitwise operation to use: `:|`, `:&`, or `:^`
-    # @return [void] `self`
+    # @return [Filter] a new filter
     def merge(other, op = :|)
       dup.merge!(other, op)
     end
@@ -254,7 +254,7 @@ module Bitcache
     # Merges the given `other` filter or byte string into this filter.
     #
     # @param  [Filter, #to_str] other
-    #   the filter to merge with this one
+    #   a filter or byte string of equal size
     # @param  [Symbol, #to_sym] op
     #   the bitwise operation to use: `:|`, `:&`, or `:^`
     # @return [void] `self`
@@ -274,6 +274,34 @@ module Bitcache
       end
 
       return self
+    end
+
+    ##
+    # Returns the union of this filter and the given `other` filter or byte
+    # string.
+    #
+    # This operation is loss-less in the sense that the resulting filter is
+    # equal to a filter created from scratch using the union of the two sets
+    # of identifiers.
+    #
+    # @param  [Filter, #to_str] other
+    #   a filter or byte string of equal size
+    # @return [Filter] a new filter
+    def or(other)
+      merge(other, :|)
+    end
+    alias_method :|, :or
+
+    ##
+    # Merges the given `other` filter or byte string into this filter using
+    # a bitwise `OR` operation.
+    #
+    # @param  [Filter, #to_str] other
+    #   a filter or byte string of equal size
+    # @return [void] `self`
+    # @raise  [TypeError] if the filter is frozen
+    def or!(other)
+      merge!(other, :|)
     end
 
     ##

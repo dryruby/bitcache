@@ -314,6 +314,27 @@ share_as :Bitcache_Filter do
     end
   end
 
+  describe "Filter#or" do
+    it "returns a new Filter" do
+      @filter.or(@filter.dup).should be_a @class
+      @filter.or(@filter.dup).should_not equal @filter
+    end
+  end
+
+  describe "Filter#or!" do
+    it "raises a TypeError if the filter is frozen" do
+      lambda { @filter.freeze.or!(@filter.dup) }.should raise_error TypeError
+    end
+
+    it "raises an ArgumentError if the filters have incompatible sizes" do
+      lambda { @class.new(32).or!(@class.new(16)) }.should raise_error ArgumentError
+    end
+
+    it "returns self" do
+      @filter.or!(@filter.dup).should equal @filter
+    end
+  end
+
   describe "Filter#to_str" do
     it "returns a String" do
       @filter.to_str.should be_a String
