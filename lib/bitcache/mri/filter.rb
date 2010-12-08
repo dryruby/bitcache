@@ -358,6 +358,14 @@ module Bitcache
     end
 
     ##
+    # Returns `self`.
+    #
+    # @return [Filter] `self`
+    def to_filter
+      self
+    end
+
+    ##
     # Returns the byte string representation of this filter.
     #
     # @return [String]

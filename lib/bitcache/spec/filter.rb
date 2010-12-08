@@ -377,6 +377,12 @@ share_as :Bitcache_Filter do
     end
   end
 
+  describe "Filter#to_filter" do
+    it "returns self" do
+      @filter.to_filter.should equal @filter
+    end
+  end
+
   describe "Filter#to_str" do
     it "returns a String" do
       @filter.to_str.should be_a String
