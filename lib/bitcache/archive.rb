@@ -1,6 +1,18 @@
 module Bitcache
   ##
-  # A Bitcache archive file.
+  # A Bitcache archive.
+  #
+  # @example Writing an archive to a file
+  #   Archive.new do |archive|
+  #     archive << Identifier.for("Hello, world!")
+  #     archive.dump(File.open("archive.bin", 'wb+'))
+  #   end
+  #
+  # @example Reading an archive from a file
+  #   Archive.load(File.open("archive.bin")) do |archive|
+  #     puts archive.inspect
+  #   end
+  #
   class Archive
     ##
     # The magic number for the file header.
@@ -13,20 +25,63 @@ module Bitcache
     ##
     # Deserializes an archive from the given `input` stream or file.
     #
+    # @example
+    #   File.open("archive.bin", 'rb') do |file|
+    #     archive = Archive.load(file)
+    #     puts archive.inspect
+    #   end
+    #
+    # @example
+    #   File.open("archive.bin", 'rb') do |file|
+    #     Archive.load(file) do |archive|
+    #       puts archive.inspect
+    #     end
+    #   end
+    #
     # @param  [File, IO, StringIO] input
     #   the input stream to read from
     # @param  [Hash{Symbol => Object}] options
     #   any additional options
     # @return [Archive]
-    def self.load(input, options = {})
-      self.new(:header => nil) do |archive|
+    def self.load(input, options = {}, &block)
+      archive = self.new(:header => nil) do |archive|
         archive.header = Header.load(input)
         archive.sections << Section.load(input) until input.eof?
       end
+      block_given? ? block.call(archive) : archive
+    end
+
+    ##
+    # Constructs an archive and serializes it to the given `output` stream
+    # or file.
+    #
+    # @example
+    #   File.open("archive.bin", 'wb+') do |file|
+    #     Archive.dump(file) do |archive|
+    #       archive << Identifier.for("Hello, world!")
+    #     end
+    #   end
+    #
+    # @param  [Hash{Symbol => Object}] options
+    #   any additional options
+    # @yield  [archive]
+    # @yieldparam  [Archive] archive
+    # @yieldreturn [void] ignored
+    # @return [void]
+    def self.dump(output, options = {}, &block)
+      self.new(options, &block).dump(output)
     end
 
     ##
     # Initializes a new archive.
+    #
+    # @example
+    #   Archive.new do |archive|
+    #     archive << Identifier.for("Hello, world!")
+    #     File.open("archive.bin", 'wb+') do |file|
+    #       archive.dump(file)
+    #     end
+    #   end
     #
     # @param  [Hash{Symbol => Object}] options
     # @option options [Integer, #to_i] :version (VERSION)
@@ -205,6 +260,7 @@ module Bitcache
       # @return [void] `self`
       def dump(output)
         output.write([@magic, @version, @flags].pack(PACK))
+        return self
       end
     end
 
@@ -271,6 +327,7 @@ module Bitcache
       def dump(output)
         output.write([size - 8].pack('Q'))
         @records.each { |record| record.dump(output) }
+        return self
       end
     end
 
@@ -388,6 +445,7 @@ module Bitcache
           else
             raise "invalid record flags: #{@flags.inspect}"
         end
+        return self
       end
     end
   end # Archive
