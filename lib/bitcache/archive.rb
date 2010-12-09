@@ -11,6 +11,21 @@ module Bitcache
     VERSION = 0x0000
 
     ##
+    # Deserializes an archive from the given `input` stream or file.
+    #
+    # @param  [File, IO, StringIO] input
+    #   the input stream to read from
+    # @param  [Hash{Symbol => Object}] options
+    #   any additional options
+    # @return [Archive]
+    def self.load(input, options = {})
+      self.new(:header => nil) do |archive|
+        archive.header = Header.load(input)
+        archive.sections << Section.load(input) until input.eof?
+      end
+    end
+
+    ##
     # Initializes a new archive.
     #
     # @param  [Hash{Symbol => Object}] options
@@ -31,7 +46,7 @@ module Bitcache
     # The archive header.
     #
     # @return [Header]
-    attr_reader :header
+    attr_accessor :header
 
     ##
     # The archive sections.
@@ -44,10 +59,12 @@ module Bitcache
     #
     # @param  [Section] section
     # @return [void] `self`
-    def <<(section)
-      @sections << case section
-        when Section then section
-        else raise ArgumentError, "expected a Section, but got #{section.inspect}"
+    def <<(segment)
+      @sections << case segment
+        when Section    then segment
+        when Record     then Section.new(:records => [segment])
+        when Identifier then Section.new(:records => [Record.new(:id => segment)])
+        else raise ArgumentError, "expected a Section, but got #{segment.inspect}"
       end
       return self
     end
@@ -116,6 +133,21 @@ module Bitcache
     # The Bitcache archive header.
     class Header < Segment
       SIZE = 4 + 2 + 2
+      PACK = 'LSS'
+
+      ##
+      # Deserializes an archive header from the given `input` stream or
+      # file.
+      #
+      # @param  [File, IO, StringIO] input
+      #   the input stream to read from
+      # @return [Header]
+      def self.load(input)
+        magic, version, flags = input.read(SIZE).unpack(PACK)
+        raise "invalid archive magic number: #{magic.inspect}"     if magic   != MAGIC
+        raise "invalid archive version number: #{version.inspect}" if version != VERSION
+        self.new(:magic => magic, :version => version, :flags => flags)
+      end
 
       ##
       # Initializes a new archive header.
@@ -150,6 +182,14 @@ module Bitcache
       attr_accessor :flags
 
       ##
+      # Returns `true` if this header is valid, `false` otherwise.
+      #
+      # @return [Boolean] `true` or `false`
+      def valid?
+        @magic.eql?(MAGIC) && @version.eql?(VERSION)
+      end
+
+      ##
       # Returns the total byte size of this segment.
       #
       # @return [Integer]
@@ -164,13 +204,27 @@ module Bitcache
       #   the output stream to write to
       # @return [void] `self`
       def dump(output)
-        output.write([@magic, @version, @flags].pack('LSS'))
+        output.write([@magic, @version, @flags].pack(PACK))
       end
     end
 
     ##
     # A Bitcache archive section.
     class Section < Segment
+      ##
+      # Deserializes an archive section from the given `input` stream or
+      # file.
+      #
+      # @param  [File, IO, StringIO] input
+      #   the input stream to read from
+      # @return [Header]
+      def self.load(input)
+        self.new do |section|
+          end_offset = input.read(8).unpack('Q').first + input.pos
+          section.records << Record.load(input) until input.pos >= end_offset
+        end
+      end
+
       ##
       # Initializes a new archive section.
       #
@@ -193,7 +247,8 @@ module Bitcache
       # @return [void] `self`
       def <<(record)
         @records << case record
-          when Record then record
+          when Record     then record
+          when Identifier then Record.new(:id => record)
           else raise ArgumentError, "expected a Record, but got #{record.inspect}"
         end
         return self
@@ -222,6 +277,31 @@ module Bitcache
     ##
     # A Bitcache archive record.
     class Record < Segment
+      ##
+      # Deserializes an archive record from the given `input` stream or
+      # file.
+      #
+      # @param  [File, IO, StringIO] input
+      #   the input stream to read from
+      # @return [Header]
+      def self.load(input)
+        self.new do |record|
+          record.flags = input.read(2).unpack('S').first
+          record.id = input.read(20) # FIXME
+          record.id = Identifier.new(record.id) if record.id.size.eql?(20) # FIXME
+          case
+            when record.flags.zero?
+              # all done
+            when record.flags & 4
+              record.length = input.read(4).unpack('L').first
+              record.offset = input.read(4).unpack('L').first
+              record.data   = input.read(record.length) if record.offset.zero?
+            else
+              raise "invalid record flags: #{record.flags.inspect}"
+          end
+        end
+      end
+
       ##
       # Initializes a new archive record.
       #
