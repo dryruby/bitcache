@@ -2,6 +2,50 @@ class Bitcache::Archive
   ##
   # A Bitcache archive record.
   class Record < Segment
+    FLAGS_LEN  = 2
+    FLAGS_PACK = 'S'
+
+    ##
+    # @private
+    # @param  [IO] input
+    # @return [Integer]
+    def self.count(input)
+      Section.count(input)
+    end
+
+    ##
+    # @private
+    # @param  [IO] input
+    # @return [Integer]
+    def self.flags(input)
+      input.read(FLAGS_LEN).unpack(FLAGS_PACK).first
+    end
+
+    ##
+    # @private
+    # @param  [IO] input
+    # @return [Identifier]
+    def self.id(input)
+      digest = input.read(20) # FIXME
+      Identifier.new(digest)
+    end
+
+    ##
+    # @private
+    # @param  [IO] input
+    # @return [Integer]
+    def self.length(input)
+      input.read(4).unpack('L').first
+    end
+
+    ##
+    # @private
+    # @param  [IO] input
+    # @return [Integer]
+    def self.offset(input)
+      input.read(4).unpack('L').first
+    end
+
     ##
     # Deserializes an archive record from the given `input` stream or
     # file.
@@ -11,15 +55,14 @@ class Bitcache::Archive
     # @return [Header]
     def self.load(input)
       self.new do |record|
-        record.flags = input.read(2).unpack('S').first
-        record.id = input.read(20) # FIXME
-        record.id = Identifier.new(record.id) if record.id.size.eql?(20) # FIXME
+        record.flags = self.flags(input)
+        record.id    = self.id(input)
         case
           when record.flags.zero?
             # all done
           when record.flags & 4
-            record.length = input.read(4).unpack('L').first
-            record.offset = input.read(4).unpack('L').first
+            record.length = self.length(input)
+            record.offset = self.offset(input)
             record.data   = input.read(record.length) if record.offset.zero?
           else
             raise "invalid record flags: #{record.flags.inspect}"
@@ -80,7 +123,7 @@ class Bitcache::Archive
     #
     # @return [Integer]
     def size
-      size = 2 + @id.size
+      size = FLAGS_LEN + @id.size
       size += case
         when @flags.zero?
           0
@@ -103,10 +146,10 @@ class Bitcache::Archive
     def dump(output)
       case
         when @flags.zero?
-          output.write([@flags.to_i].pack('S'))
+          output.write([@flags.to_i].pack(FLAGS_PACK))
           output.write(@id.to_str)
         when @flags & 4
-          output.write([@flags.to_i].pack('S'))
+          output.write([@flags.to_i].pack(FLAGS_PACK))
           output.write(@id.to_str)
           output.write([@length.to_i, @offset.to_i].pack('LL'))
           output.write(@data.to_str) if @offset.to_i.zero?
