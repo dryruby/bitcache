@@ -6,6 +6,14 @@ class Bitcache::Archive
     PACK = 'LSS'
 
     ##
+    # @private
+    # @param  [IO] input
+    # @return [void]
+    def self.skip(input)
+      input.seek(SIZE, IO::SEEK_CUR)
+    end
+
+    ##
     # Deserializes an archive header from the given `input` stream or
     # file.
     #
