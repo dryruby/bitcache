@@ -35,6 +35,7 @@ module Bitcache
     Struct = Object
   end
 
+  autoload :Block,       'bitcache/mri/block'
   autoload :Filter,      'bitcache/mri/filter'
   autoload :Identifier,  'bitcache/mri/id'
   autoload :Index,       'bitcache/mri/index'

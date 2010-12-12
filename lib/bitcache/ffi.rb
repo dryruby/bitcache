@@ -9,6 +9,7 @@ module Bitcache
     extend  ::FFI::Library
     ffi_lib const_defined?(:LIBBITCACHE) ? LIBBITCACHE : 'libbitcache'
 
+    autoload :Block,      'bitcache/ffi/block'
     autoload :Filter,     'bitcache/ffi/filter'
     autoload :Identifier, 'bitcache/ffi/id'
     autoload :Index,      'bitcache/ffi/index'
