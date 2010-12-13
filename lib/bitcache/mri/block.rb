@@ -53,7 +53,7 @@ module Bitcache
     # @return [Integer] `0`
     # @see    IO#rewind
     def rewind
-      data.rewind
+      pos > 0 ? data.rewind : 0
     end
 
     ##
@@ -89,6 +89,36 @@ module Bitcache
     end
 
     ##
+    # Enumerates each byte in the block data.
+    #
+    # @yield  [byte]
+    #   each byte in the block
+    # @yieldparam  [Integer] byte
+    #   a non-negative integer in the range `(0..255)`
+    # @yieldreturn [void] ignored
+    # @return [Enumerator]
+    def each_byte(&block)
+      rewind && data.each_byte(&block) if block_given?
+      enum_for(:each_byte)
+    end
+
+    ##
+    # Enumerates each line in the block data, where lines are separated by
+    # the given `separator` string.
+    #
+    # @param  [String] separator
+    #   the line separator to use (defaults to `$/`)
+    # @yield  [line]
+    #   each line in the block
+    # @yieldparam  [String] line
+    # @yieldreturn [void] ignored
+    # @return [Enumerator]
+    def each_line(separator = $/, &block)
+      rewind && data.each_line(separator, &block) if block_given?
+      enum_for(:each_line, separator)
+    end
+
+    ##
     # Returns a read-only IO stream for accessing the block data.
     #
     # @return [IO] a read-only IO stream
@@ -103,8 +133,7 @@ module Bitcache
     #   an optional character encoding (Ruby 1.9+ only)
     # @return [String] a binary string
     def to_str(encoding = nil)
-      rewind
-      str = readbytes(size)
+      str = rewind && read
       str.force_encoding(encoding) if encoding && str.respond_to?(:force_encoding) # Ruby 1.9+
       str
     end

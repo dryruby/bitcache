@@ -69,6 +69,30 @@ share_as :Bitcache_Block do
     end
   end
 
+  describe "Block#each_byte" do
+    it "returns an Enumerator" do
+      @block.each_byte.should be_an Enumerator
+    end
+
+    it "yields Integer bytes" do
+      @block.each_byte do |byte|
+        byte.should be_an Integer
+      end
+    end
+  end
+
+  describe "Block#each_line" do
+    it "returns an Enumerator" do
+      @block.each_line.should be_an Enumerator
+    end
+
+    it "yields String lines" do
+      @block.each_line do |line|
+        line.should be_a String
+      end
+    end
+  end
+
   describe "Block#to_io" do
     it "returns an IO stream" do
       [IO, StringIO].should include @block.to_io.class
