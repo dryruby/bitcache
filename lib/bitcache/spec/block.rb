@@ -105,21 +105,33 @@ share_as :Bitcache_Block do
     end
   end
 
-  describe "Block#readbytes" do
-    it "returns a String" do
-      @block.readbytes(1).should be_a String
-    end
-  end
-
   describe "Block#readbyte" do
     it "returns an Integer" do
       @block.readbyte.should be_an Integer
     end
   end
 
+  describe "Block#readbytes" do
+    it "returns a String" do
+      @block.readbytes(1).should be_a String
+    end
+  end
+
   describe "Block#readchar" do
     it "returns a character" do
       @block.readchar.should be_a ?c.class # Ruby 1.8/1.9
+    end
+  end
+
+  describe "Block#readline" do
+    it "returns a String" do
+      @block.readline.should be_a String
+    end
+  end
+
+  describe "Block#readlines" do
+    it "returns an Array" do
+      @block.readlines.should be_an Array
     end
   end
 

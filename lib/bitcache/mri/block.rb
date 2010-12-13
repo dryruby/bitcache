@@ -173,17 +173,6 @@ module Bitcache
     end
 
     ##
-    # Reads exactly `length` bytes from the current read position in the
-    # block data.
-    #
-    # @return [String]
-    # @raise  [EOFError] if `#pos` is past the end of the block data
-    # @raise  [TruncatedDataError] if the data read is too short
-    def readbytes(length)
-      data.send(data.respond_to?(:readbytes) ? :readbytes : :read, length)
-    end
-
-    ##
     # Reads the next byte from the block data.
     #
     # Raises an error if attempting to read past the end of the block data.
@@ -197,9 +186,21 @@ module Bitcache
     end
 
     ##
+    # Reads exactly `length` bytes from the current read position in the
+    # block data.
+    #
+    # @return [String]
+    # @raise  [EOFError] if `#pos` is past the end of the block data
+    # @raise  [TruncatedDataError] if the data read is too short
+    def readbytes(length)
+      raise EOFError, "end of block reached" unless pos < size # FIXME
+      data.send(data.respond_to?(:readbytes) ? :readbytes : :read, length)
+    end
+
+    ##
     # Reads the next character from the block data.
     #
-    # Returns `nil` if attempting to read past the end of the block data.
+    # Raises an error if attempting to read past the end of the block data.
     #
     # @return [String] a character
     # @raise  [EOFError] if `#pos` is past the end of the block data
@@ -207,6 +208,36 @@ module Bitcache
     def readchar
       raise EOFError, "end of block reached" unless pos < size
       data.readchar
+    end
+
+    ##
+    # Reads the next line from the block data.
+    #
+    # Raises an error if attempting to read past the end of the block data.
+    #
+    # @param  [String] separator
+    #   the line separator to use (defaults to `$/`)
+    # @return [String] a string terminated by `separator`
+    # @raise  [EOFError] if `#pos` is past the end of the block data
+    # @see    IO#readline
+    def readline(separator = $/)
+      raise EOFError, "end of block reached" unless pos < size
+      data.readline(separator)
+    end
+
+    ##
+    # Reads all the lines in the block data, returning them as an array.
+    #
+    # Returns an empty array if attempting to read past the end of the block
+    # data.
+    #
+    # @param  [String] separator
+    #   the line separator to use (defaults to `$/`)
+    # @return [Array] an array of strings
+    # @see    IO#readlines
+    def readlines(separator = $/)
+      return [] unless pos < size
+      data.readlines(separator)
     end
 
     ##
