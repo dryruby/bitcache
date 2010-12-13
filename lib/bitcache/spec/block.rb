@@ -152,4 +152,10 @@ share_as :Bitcache_Block do
       @block.to_s.should be_a String
     end
   end
+
+  describe "Block#inspect" do
+    it "returns a String" do
+      @block.inspect.should be_a String
+    end
+  end
 end

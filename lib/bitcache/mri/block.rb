@@ -2,6 +2,8 @@ module Bitcache
   ##
   # A Bitcache data block.
   class Block < Struct
+    include Inspectable
+
     ##
     # Initializes a new block.
     def initialize(&block)
@@ -234,6 +236,14 @@ module Bitcache
     # @return [String] a hexadecimal string
     def to_s
       id.to_s
+    end
+
+    ##
+    # Returns a developer-friendly representation of this block.
+    #
+    # @return [String]
+    def inspect
+      super
     end
 
     # Load accelerated method implementations when available:
