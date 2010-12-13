@@ -39,6 +39,24 @@ share_as :Bitcache_Block do
     end
   end
 
+  describe "Block#==" do
+    it "returns a Boolean" do
+      (@block == @block).should be_a_boolean
+    end
+  end
+
+  describe "Block#eql?" do
+    it "returns a Boolean" do
+      @block.eql?(@block).should be_a_boolean
+    end
+  end
+
+  describe "Block#hash" do
+    it "returns a Fixnum" do
+      @block.hash.should be_a Fixnum
+    end
+  end
+
   describe "Block#pos" do
     it "returns an Integer" do
       @block.pos.should be_an Integer

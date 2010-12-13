@@ -35,6 +35,47 @@ module Bitcache
     attr_reader :data
 
     ##
+    # Returns `true` if this block is equal to the given `other` block or
+    # byte string.
+    #
+    # @param  [Object] other
+    # @return [Boolean] `true` or `false`
+    def ==(other)
+      return true if self.equal?(other)
+      case other
+        when Identifier
+          id.eql?(other)
+        when Block
+          if id && other.id
+            id.eql?(other.id)
+          else
+            size.eql?(other.size) && to_str.eql?(other.to_str)
+          end
+        when String
+          size.eql?(other.bytesize) && to_str.eql?(other)
+        else false
+      end
+    end
+    alias_method :===, :==
+
+    ##
+    # Returns `true` if this block is equal to the given `other` block.
+    #
+    # @param  [Object] other
+    # @return [Boolean] `true` or `false`
+    def eql?(other)
+      other.is_a?(Block) && self == other
+    end
+
+    ##
+    # Returns the hash code for the block identifier.
+    #
+    # @return [Fixnum] a non-negative integer in the range `(0...(2**32))`
+    def hash
+      id ? id.to_hash : 0
+    end
+
+    ##
     # Returns the current read position as a byte offset from the beginning
     # of the block data.
     #
