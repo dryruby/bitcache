@@ -181,6 +181,32 @@ module Bitcache
     end
 
     ##
+    # Returns an enumerator yielding each byte in the block data.
+    #
+    # @return [Enumerator]
+    def bytes
+      each_byte
+    end
+
+    ##
+    # Returns an enumerator yielding each character in the block data.
+    #
+    # @return [Enumerator]
+    def chars
+      each_char
+    end
+
+    ##
+    # Returns an enumerator yielding each line in the block data.
+    #
+    # @param  [String] separator
+    #   the line separator to use (defaults to `$/`)
+    # @return [Enumerator]
+    def lines(separator = $/)
+      each_line(separator)
+    end
+
+    ##
     # Enumerates each byte in the block data.
     #
     # @yield  [byte]
