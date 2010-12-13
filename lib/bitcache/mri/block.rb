@@ -22,11 +22,11 @@ module Bitcache
     attr_reader :id
 
     ##
-    # The block size.
+    # The block size, in bytes.
     #
-    # @return [Integer]
-    #   a non-negative integer in the range `(0...(2**64))`
+    # @return [Integer] a non-negative integer in the range `(0...(2**64))`
     attr_reader :size
+    alias_method :bytesize, :size
 
     ##
     # The block data stream.
@@ -35,7 +35,39 @@ module Bitcache
     attr_reader :data
 
     ##
-    # Returns a read-only IO stream for accessing this block's data.
+    # Returns the current read position as a byte offset from the beginning
+    # of the block data.
+    #
+    # @return [Integer] a non-negative integer in the range `(0..size)`
+    # @see    IO#pos
+    def pos
+      data.pos
+    end
+    alias_method :tell, :pos
+
+    ##
+    # Positions the next read back to the beginning of the block data.
+    #
+    # This is equivalent to `#seek(0, IO::SEEK_SET)`.
+    #
+    # @return [Integer] `0`
+    # @see    IO#rewind
+    def rewind
+      data.rewind
+    end
+
+    ##
+    # Seeks to a given byte offset in the block data according to the value
+    # of `whence`.
+    #
+    # @return [Integer] `0`
+    # @see    IO#seek
+    def seek(amount, whence = IO::SEEK_SET)
+      data.seek(amount, whence)
+    end
+
+    ##
+    # Returns a read-only IO stream for accessing the block data.
     #
     # @return [IO] a read-only IO stream
     def to_io
@@ -43,20 +75,20 @@ module Bitcache
     end
 
     ##
-    # Returns the byte string representation of this block's data.
+    # Returns the byte string representation of the block data.
     #
     # @param  [Encoding] encoding
     #   an optional character encoding (Ruby 1.9+ only)
     # @return [String] a binary string
     def to_str(encoding = nil)
+      rewind
       str = data.send(data.respond_to?(:readbytes) ? :readbytes : :read, size)
       str.force_encoding(encoding) if encoding && str.respond_to?(:force_encoding) # Ruby 1.9+
       str
     end
 
     ##
-    # Returns the hexadecimal string representation of this block's
-    # identifier.
+    # Returns the hexadecimal string representation of the block identifier.
     #
     # @return [String] a hexadecimal string
     def to_s

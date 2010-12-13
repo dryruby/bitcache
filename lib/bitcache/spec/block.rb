@@ -39,6 +39,24 @@ share_as :Bitcache_Block do
     end
   end
 
+  describe "Block#pos" do
+    it "returns an Integer" do
+      @block.pos.should be_an Integer
+    end
+  end
+
+  describe "Block#rewind" do
+    it "returns zero" do
+      @block.rewind.should be_zero
+    end
+  end
+
+  describe "Block#seek" do
+    it "returns zero" do
+      @block.seek(0, IO::SEEK_SET).should be_zero
+    end
+  end
+
   describe "Block#to_io" do
     it "returns an IO stream" do
       [IO, StringIO].should include @block.to_io.class
