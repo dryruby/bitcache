@@ -39,6 +39,24 @@ share_as :Bitcache_Block do
     end
   end
 
+  describe "Block#empty?" do
+    it "returns a Boolean" do
+      @block.empty?.should be_a_boolean
+    end
+  end
+
+  describe "Block#nonzero?" do
+    it "returns a Boolean" do
+      @block.nonzero?.should be_a_boolean
+    end
+  end
+
+  describe "Block#zero?" do
+    it "returns a Boolean" do
+      @block.zero?.should be_a_boolean
+    end
+  end
+
   describe "Block#==" do
     it "returns a Boolean" do
       (@block == @block).should be_a_boolean

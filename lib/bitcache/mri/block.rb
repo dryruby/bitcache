@@ -35,6 +35,32 @@ module Bitcache
     attr_reader :data
 
     ##
+    # Returns `true` if the block size is zero.
+    #
+    # @return [Boolean] `true` or `false`
+    def empty?
+      size.zero?
+    end
+
+    ##
+    # Returns `true` unless all bytes in the block data are zero.
+    #
+    # @return [Boolean] `true` or `false`
+    # @see    #zero?
+    def nonzero?
+      !(zero?)
+    end
+
+    ##
+    # Returns `true` if all bytes in the block data are zero.
+    #
+    # @return [Boolean] `true` or `false`
+    # @see    #nonzero?
+    def zero?
+      /\A\x00+\z/ === to_str
+    end
+
+    ##
     # Returns `true` if this block is equal to the given `other` block or
     # byte string.
     #
