@@ -57,13 +57,36 @@ module Bitcache
     end
 
     ##
-    # Seeks to a given byte offset in the block data according to the value
-    # of `whence`.
+    # Seeks to a given byte `offset` in the block data according to the
+    # value of `whence`.
     #
+    # @param  [Integer] offset
+    #   an integer offset
+    # @param  [Integer] whence
+    #   `IO::SEEK_CUR`, `IO::SEEK_END`, or `IO::SEEK_SET`
     # @return [Integer] `0`
     # @see    IO#seek
-    def seek(amount, whence = IO::SEEK_SET)
-      data.seek(amount, whence)
+    def seek(offset, whence = IO::SEEK_SET)
+      data.seek(offset, whence)
+    end
+
+    ##
+    # Returns the byte at the given byte `offset` in the block data.
+    #
+    # @param  [Integer] offset
+    #   an integer offset
+    # @return [Integer] a non-negative integer in the range `(0..255)`
+    def [](offset)
+      case offset
+        when Integer then case
+          when offset < 0
+            seek(offset, IO::SEEK_END) && readbytes(1)[0].ord
+          when offset < size
+            seek(offset, IO::SEEK_SET) && readbytes(1)[0].ord
+          else nil
+        end
+        else to_str[offset] # FIXME
+      end
     end
 
     ##

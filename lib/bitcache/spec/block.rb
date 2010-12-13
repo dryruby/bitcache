@@ -57,6 +57,12 @@ share_as :Bitcache_Block do
     end
   end
 
+  describe "Block#[]" do
+    it "returns an Integer" do
+      @block[0].should be_an Integer
+    end
+  end
+
   describe "Block#read" do
     it "returns a String" do
       @block.read(1).should be_a String
