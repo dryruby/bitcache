@@ -34,6 +34,35 @@ module Bitcache
     # @return [IO]
     attr_reader :data
 
+    ##
+    # Returns a read-only IO stream for accessing this block's data.
+    #
+    # @return [IO] a read-only IO stream
+    def to_io
+      data
+    end
+
+    ##
+    # Returns the byte string representation of this block's data.
+    #
+    # @param  [Encoding] encoding
+    #   an optional character encoding (Ruby 1.9+ only)
+    # @return [String] a binary string
+    def to_str(encoding = nil)
+      str = data.send(data.respond_to?(:readbytes) ? :readbytes : :read, size)
+      str.force_encoding(encoding) if encoding && str.respond_to?(:force_encoding) # Ruby 1.9+
+      str
+    end
+
+    ##
+    # Returns the hexadecimal string representation of this block's
+    # identifier.
+    #
+    # @return [String] a hexadecimal string
+    def to_s
+      id.to_s
+    end
+
     # Load accelerated method implementations when available:
     send(:include, Bitcache::FFI::Block) if defined?(Bitcache::FFI::Block)
   end # Block

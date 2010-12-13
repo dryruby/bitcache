@@ -38,4 +38,22 @@ share_as :Bitcache_Block do
       [IO, StringIO].should include @block.data.class
     end
   end
+
+  describe "Block#to_io" do
+    it "returns an IO stream" do
+      [IO, StringIO].should include @block.to_io.class
+    end
+  end
+
+  describe "Block#to_str" do
+    it "returns a String" do
+      @block.to_str.should be_a String
+    end
+  end
+
+  describe "Block#to_s" do
+    it "returns a String" do
+      @block.to_s.should be_a String
+    end
+  end
 end
