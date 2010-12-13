@@ -63,6 +63,27 @@ module Bitcache
     end
 
     ##
+    # Returns `true` if the block data contains any `0x00` bytes.
+    #
+    # @return [Boolean] `true` or `false`
+    def binary?
+      /\x00/ === to_str
+    end
+
+    ##
+    # Returns `true` if the block data contains ASCII characters only.
+    #
+    # @return [Boolean] `true` or `false`
+    def ascii?
+      if ''.respond_to?(:ascii_only?)
+        to_str.ascii_only?            # Ruby 1.9+
+      else
+        /\A[\x00-\x7F]+\z/ === to_str # Ruby 1.8
+      end
+    end
+    alias_method :ascii_only?, :ascii?
+
+    ##
     # Returns `true` if this block is equal to the given `other` block or
     # byte string.
     #

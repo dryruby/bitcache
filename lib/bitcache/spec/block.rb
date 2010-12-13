@@ -57,6 +57,18 @@ share_as :Bitcache_Block do
     end
   end
 
+  describe "Block#binary?" do
+    it "returns a Boolean" do
+      @block.binary?.should be_a_boolean
+    end
+  end
+
+  describe "Block#ascii?" do
+    it "returns a Boolean" do
+      @block.ascii?.should be_a_boolean
+    end
+  end
+
   describe "Block#==" do
     it "returns a Boolean" do
       (@block == @block).should be_a_boolean
