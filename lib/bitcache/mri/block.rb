@@ -177,10 +177,36 @@ module Bitcache
     # block data.
     #
     # @return [String]
-    # @raise  [EOFError] if at the end of the block
+    # @raise  [EOFError] if `#pos` is past the end of the block data
     # @raise  [TruncatedDataError] if the data read is too short
     def readbytes(length)
       data.send(data.respond_to?(:readbytes) ? :readbytes : :read, length)
+    end
+
+    ##
+    # Reads the next byte from the block data.
+    #
+    # Raises an error if attempting to read past the end of the block data.
+    #
+    # @return [Integer] an integer in the range `(0..255)`
+    # @raise  [EOFError] if `#pos` is past the end of the block data
+    # @see    IO#readbyte
+    def readbyte
+      raise EOFError, "end of block reached" unless pos < size
+      data.readbyte
+    end
+
+    ##
+    # Reads the next character from the block data.
+    #
+    # Returns `nil` if attempting to read past the end of the block data.
+    #
+    # @return [String] a character
+    # @raise  [EOFError] if `#pos` is past the end of the block data
+    # @see    IO#readchar
+    def readchar
+      raise EOFError, "end of block reached" unless pos < size
+      data.readchar
     end
 
     ##

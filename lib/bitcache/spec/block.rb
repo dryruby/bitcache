@@ -111,6 +111,18 @@ share_as :Bitcache_Block do
     end
   end
 
+  describe "Block#readbyte" do
+    it "returns an Integer" do
+      @block.readbyte.should be_an Integer
+    end
+  end
+
+  describe "Block#readchar" do
+    it "returns a character" do
+      @block.readchar.should be_a ?c.class # Ruby 1.8/1.9
+    end
+  end
+
   describe "Block#getbyte" do
     it "returns an Integer" do
       @block.getbyte.should be_an Integer
