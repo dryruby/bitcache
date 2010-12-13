@@ -123,6 +123,18 @@ share_as :Bitcache_Block do
     end
   end
 
+  describe "Block#each_char" do
+    it "returns an Enumerator" do
+      @block.each_char.should be_an Enumerator
+    end
+
+    it "yields characters" do
+      @block.each_char do |char|
+        char.should be_a ?c.class # Ruby 1.8/1.9
+      end
+    end
+  end
+
   describe "Block#each_line" do
     it "returns an Enumerator" do
       @block.each_line.should be_an Enumerator

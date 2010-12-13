@@ -184,7 +184,7 @@ module Bitcache
     # Enumerates each byte in the block data.
     #
     # @yield  [byte]
-    #   each byte in the block
+    #   each byte in the block data
     # @yieldparam  [Integer] byte
     #   a non-negative integer in the range `(0..255)`
     # @yieldreturn [void] ignored
@@ -195,13 +195,26 @@ module Bitcache
     end
 
     ##
+    # Enumerates each character in the block data.
+    #
+    # @yield  [char]
+    #   each character in the block data
+    # @yieldparam  [String] char
+    # @yieldreturn [void] ignored
+    # @return [Enumerator]
+    def each_char(&block)
+      rewind && data.each_char(&block) if block_given?
+      enum_for(:each_char)
+    end
+
+    ##
     # Enumerates each line in the block data, where lines are separated by
     # the given `separator` string.
     #
     # @param  [String] separator
     #   the line separator to use (defaults to `$/`)
     # @yield  [line]
-    #   each line in the block
+    #   each line in the block data
     # @yieldparam  [String] line
     # @yieldreturn [void] ignored
     # @return [Enumerator]
