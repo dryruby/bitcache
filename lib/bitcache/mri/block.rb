@@ -173,6 +173,19 @@ module Bitcache
     end
 
     ##
+    # Reads at most `length` bytes from the current read position in the
+    # block data, blocking only if no data is immediately available.
+    #
+    # @param  [Integer] length
+    #   a non-negative integer
+    # @return [String]
+    # @raise  [EOFError] if `#pos` is past the end of the block data
+    # @see    IO#readpartial
+    def readpartial(length)
+      data.readpartial(length)
+    end
+
+    ##
     # Reads the next byte from the block data.
     #
     # Raises an error if attempting to read past the end of the block data.

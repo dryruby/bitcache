@@ -105,6 +105,12 @@ share_as :Bitcache_Block do
     end
   end
 
+  describe "Block#readpartial" do
+    it "returns a String" do
+      @block.readpartial(1).should be_a String
+    end
+  end
+
   describe "Block#readbyte" do
     it "returns an Integer" do
       @block.readbyte.should be_an Integer
