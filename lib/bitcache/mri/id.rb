@@ -263,7 +263,7 @@ module Bitcache
     ##
     # Returns `self`.
     #
-    # @return [void] `self`
+    # @return [Identifier] `self`
     def to_id
       self
     end

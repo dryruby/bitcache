@@ -135,6 +135,12 @@ share_as :Bitcache_Block do
     end
   end
 
+  describe "Block#to_id" do
+    it "returns an Identifier" do
+      @block.to_id.should be_an Identifier
+    end
+  end
+
   describe "Block#to_io" do
     it "returns an IO stream" do
       [IO, StringIO].should include @block.to_io.class

@@ -211,6 +211,14 @@ module Bitcache
     end
 
     ##
+    # Returns the block identifier.
+    #
+    # @return [Identifier]
+    def to_id
+      id
+    end
+
+    ##
     # Returns a read-only IO stream for accessing the block data.
     #
     # @return [IO] a read-only IO stream
