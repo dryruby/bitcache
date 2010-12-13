@@ -129,6 +129,12 @@ share_as :Bitcache_Block do
     end
   end
 
+  describe "Block#lineno" do
+    it "returns an Integer" do
+      @block.lineno.should be_an Integer
+    end
+  end
+
   describe "Block#each_byte" do
     it "returns an Enumerator" do
       @block.each_byte.should be_an Enumerator

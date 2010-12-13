@@ -99,6 +99,7 @@ module Bitcache
     # Returns the hash code for the block identifier.
     #
     # @return [Fixnum] a non-negative integer in the range `(0...(2**32))`
+    # @see    Identifier#hash
     def hash
       id ? id.to_hash : 0
     end
@@ -145,6 +146,7 @@ module Bitcache
     # @param  [Integer] offset
     #   an integer offset
     # @return [Integer] a non-negative integer in the range `(0..255)`
+    # @see    String#[]
     def [](offset)
       case offset
         when Integer then case
@@ -165,6 +167,7 @@ module Bitcache
     # @param  [Integer] length
     #   a non-negative integer of `nil`
     # @return [String]
+    # @see    IO#read
     def read(length = nil)
       data.read(length)
     end
@@ -184,6 +187,7 @@ module Bitcache
     # Returns an enumerator yielding each byte in the block data.
     #
     # @return [Enumerator]
+    # @see    IO#bytes
     def bytes
       each_byte
     end
@@ -192,6 +196,7 @@ module Bitcache
     # Returns an enumerator yielding each character in the block data.
     #
     # @return [Enumerator]
+    # @see    IO#chars
     def chars
       each_char
     end
@@ -202,8 +207,21 @@ module Bitcache
     # @param  [String] separator
     #   the line separator to use (defaults to `$/`)
     # @return [Enumerator]
+    # @see    IO#lines
     def lines(separator = $/)
       each_line(separator)
+    end
+
+    ##
+    # Returns the current line number in the block data.
+    #
+    # This counts the number of times `#gets` is called, not necessarily the
+    # actual number of newlines encountered.
+    #
+    # @return [Integer]
+    # @see    IO#lineno
+    def lineno
+      data.lineno
     end
 
     ##
@@ -215,6 +233,7 @@ module Bitcache
     #   a non-negative integer in the range `(0..255)`
     # @yieldreturn [void] ignored
     # @return [Enumerator]
+    # @see    IO#each_byte
     def each_byte(&block)
       rewind && data.each_byte(&block) if block_given?
       enum_for(:each_byte)
@@ -228,6 +247,7 @@ module Bitcache
     # @yieldparam  [String] char
     # @yieldreturn [void] ignored
     # @return [Enumerator]
+    # @see    IO#each_char
     def each_char(&block)
       rewind && data.each_char(&block) if block_given?
       enum_for(:each_char)
@@ -244,6 +264,7 @@ module Bitcache
     # @yieldparam  [String] line
     # @yieldreturn [void] ignored
     # @return [Enumerator]
+    # @see    IO#each_line
     def each_line(separator = $/, &block)
       rewind && data.each_line(separator, &block) if block_given?
       enum_for(:each_line, separator)
