@@ -240,7 +240,7 @@ module Bitcache
     # identifier, interpreted as an unsigned 32-bit integer in native byte
     # order.
     #
-    # @return [Fixnum] a non-negative integer in the range `(0...(2**32))`
+    # @return [Fixnum] an integer in the range `(0...(2**32))`
     def hash
       digest.unpack('L').first
     end

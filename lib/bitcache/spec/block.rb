@@ -111,6 +111,24 @@ share_as :Bitcache_Block do
     end
   end
 
+  describe "Block#getbyte" do
+    it "returns an Integer" do
+      @block.getbyte.should be_an Integer
+    end
+  end
+
+  describe "Block#getc" do
+    it "returns a character" do
+      @block.getc.should be_a ?c.class # Ruby 1.8/1.9
+    end
+  end
+
+  describe "Block#gets" do
+    it "returns a String" do
+      @block.gets.should be_a String
+    end
+  end
+
   describe "Block#bytes" do
     it "returns an Enumerator" do
       @block.bytes.should be_an Enumerator

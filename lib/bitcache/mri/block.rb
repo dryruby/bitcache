@@ -26,7 +26,7 @@ module Bitcache
     ##
     # The block size, in bytes.
     #
-    # @return [Integer] a non-negative integer in the range `(0...(2**64))`
+    # @return [Integer] an integer in the range `(0...(2**64))`
     attr_reader :size
     alias_method :bytesize, :size
 
@@ -98,7 +98,7 @@ module Bitcache
     ##
     # Returns the hash code for the block identifier.
     #
-    # @return [Fixnum] a non-negative integer in the range `(0...(2**32))`
+    # @return [Fixnum] an integer in the range `(0...(2**32))`
     # @see    Identifier#hash
     def hash
       id ? id.to_hash : 0
@@ -108,7 +108,7 @@ module Bitcache
     # Returns the current read position as a byte offset from the beginning
     # of the block data.
     #
-    # @return [Integer] a non-negative integer in the range `(0..size)`
+    # @return [Integer] an integer in the range `(0..size)`
     # @see    IO#pos
     def pos
       data.pos
@@ -145,7 +145,7 @@ module Bitcache
     #
     # @param  [Integer] offset
     #   an integer offset
-    # @return [Integer] a non-negative integer in the range `(0..255)`
+    # @return [Integer] an integer in the range `(0..255)`
     # @see    String#[]
     def [](offset)
       case offset
@@ -165,7 +165,7 @@ module Bitcache
     # block data, or to the end of the block if `length` is `nil`.
     #
     # @param  [Integer] length
-    #   a non-negative integer of `nil`
+    #   a non-negative integer or `nil`
     # @return [String]
     # @see    IO#read
     def read(length = nil)
@@ -181,6 +181,41 @@ module Bitcache
     # @raise  [TruncatedDataError] if the data read is too short
     def readbytes(length)
       data.send(data.respond_to?(:readbytes) ? :readbytes : :read, length)
+    end
+
+    ##
+    # Reads the next byte from the block data.
+    #
+    # Returns `nil` if attempting to read past the end of the block data.
+    #
+    # @return [Integer] an integer in the range `(0..255)`, or `nil`
+    # @see    IO#getbyte
+    def getbyte
+      data.getbyte
+    end
+
+    ##
+    # Reads the next character from the block data.
+    #
+    # Returns `nil` if attempting to read past the end of the block data.
+    #
+    # @return [String] a character, or `nil`
+    # @see    IO#getc
+    def getc
+      data.getc
+    end
+
+    ##
+    # Reads the next line from the block data.
+    #
+    # Returns `nil` if attempting to read past the end of the block data.
+    #
+    # @param  [String] separator
+    #   the line separator to use (defaults to `$/`)
+    # @return [String] a string terminated by `separator`, or `nil`
+    # @see    IO#gets
+    def gets(separator = $/)
+      data.gets(separator)
     end
 
     ##
@@ -230,7 +265,7 @@ module Bitcache
     # @yield  [byte]
     #   each byte in the block data
     # @yieldparam  [Integer] byte
-    #   a non-negative integer in the range `(0..255)`
+    #   an integer in the range `(0..255)`
     # @yieldreturn [void] ignored
     # @return [Enumerator]
     # @see    IO#each_byte
