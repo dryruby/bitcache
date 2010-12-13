@@ -231,6 +231,12 @@ share_as :Bitcache_Block do
     end
   end
 
+  describe "Block#unpack" do
+    it "returns an Array" do
+      @block.unpack('C').should be_an Array
+    end
+  end
+
   describe "Block#to_id" do
     it "returns an Identifier" do
       @block.to_id.should be_an Identifier

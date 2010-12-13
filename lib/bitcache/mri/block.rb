@@ -397,6 +397,17 @@ module Bitcache
     end
 
     ##
+    # Decodes the block data according to the given `format` string,
+    # returning an array containing each value extracted.
+    #
+    # @param  [String] format
+    # @return [Array]
+    # @see    String#unpack
+    def unpack(format)
+      to_str.unpack(format)
+    end
+
+    ##
     # Returns the block identifier.
     #
     # @return [Identifier]
