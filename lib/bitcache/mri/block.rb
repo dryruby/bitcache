@@ -67,6 +67,28 @@ module Bitcache
     end
 
     ##
+    # Reads at most `length` bytes from the current read position in the
+    # block data, or to the end of the block if `length` is `nil`.
+    #
+    # @param  [Integer] length
+    #   a non-negative integer of `nil`
+    # @return [String]
+    def read(length = nil)
+      data.read(length)
+    end
+
+    ##
+    # Reads exactly `length` bytes from the current read position in the
+    # block data.
+    #
+    # @return [String]
+    # @raise  [EOFError] if at the end of the block
+    # @raise  [TruncatedDataError] if the data read is too short
+    def readbytes(length)
+      data.send(data.respond_to?(:readbytes) ? :readbytes : :read, length)
+    end
+
+    ##
     # Returns a read-only IO stream for accessing the block data.
     #
     # @return [IO] a read-only IO stream
@@ -82,7 +104,7 @@ module Bitcache
     # @return [String] a binary string
     def to_str(encoding = nil)
       rewind
-      str = data.send(data.respond_to?(:readbytes) ? :readbytes : :read, size)
+      str = readbytes(size)
       str.force_encoding(encoding) if encoding && str.respond_to?(:force_encoding) # Ruby 1.9+
       str
     end

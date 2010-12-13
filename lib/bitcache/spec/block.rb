@@ -57,6 +57,18 @@ share_as :Bitcache_Block do
     end
   end
 
+  describe "Block#read" do
+    it "returns a String" do
+      @block.read(1).should be_a String
+    end
+  end
+
+  describe "Block#readbytes" do
+    it "returns a String" do
+      @block.readbytes(1).should be_a String
+    end
+  end
+
   describe "Block#to_io" do
     it "returns an IO stream" do
       [IO, StringIO].should include @block.to_io.class
