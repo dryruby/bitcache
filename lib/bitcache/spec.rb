@@ -1,4 +1,4 @@
-require 'spec' # @see http://rubygems.org/gems/rspec
+require 'rspec' # @see http://rubygems.org/gems/rspec
 
 module Bitcache
   ##
