@@ -25,7 +25,8 @@ module Bitcache::TokyoCabinet
 
     ##
     # @param  [#to_s] path
-    def initialize(path)
+    # @param  [Hash{Symbol => Object}] options
+    def initialize(path, options = {})
       @path, @db = path.to_s, BDB.new
     end
 
@@ -82,6 +83,10 @@ module Bitcache::TokyoCabinet
       @mode = nil
       return self
     end
+
+    ##
+    # @return [String]
+    attr_reader :path
 
     ##
     # @param  [Identifier] id
