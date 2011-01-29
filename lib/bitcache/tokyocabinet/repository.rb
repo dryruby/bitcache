@@ -31,6 +31,14 @@ module Bitcache::TokyoCabinet
     end
 
     ##
+    # @private
+    # @return [void] `self`
+    def initialize!
+      open(:write).close unless File.exists?(path)
+      return self
+    end
+
+    ##
     # @return [Boolean] `true` or `false`
     def open?
       @open || false
