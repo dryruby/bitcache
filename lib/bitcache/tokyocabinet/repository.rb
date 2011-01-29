@@ -51,7 +51,7 @@ module Bitcache::TokyoCabinet
           else raise ArgumentError, "expected :read/:write or 'r'/'w', but got #{mode.inspect}"
         end
 
-        @db.open(@path, mode) or raise_error!
+        @db.open(@path, @mode) or raise_error!
         @open = true
 
         result = self
