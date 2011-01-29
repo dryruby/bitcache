@@ -7,6 +7,8 @@ module Bitcache::TokyoCabinet
   class Repository # < Bitcache::Repository
     include TokyoCabinet
 
+    FILE_EXTENSION = '.tcb'
+
     ##
     # @param  [#to_s] path
     # @param  [Symbol] mode
