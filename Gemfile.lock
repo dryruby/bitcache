@@ -13,6 +13,7 @@ GEM
     rspec-expectations (2.4.0)
       diff-lcs (~> 1.1.2)
     rspec-mocks (2.4.0)
+    tokyocabinet (1.29)
 
 PLATFORMS
   ruby
@@ -20,3 +21,4 @@ PLATFORMS
 DEPENDENCIES
   ffi (>= 1.0)
   rspec (>= 2.4)
+  tokyocabinet (>= 1.29)
