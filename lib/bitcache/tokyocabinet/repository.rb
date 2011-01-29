@@ -84,10 +84,16 @@ module Bitcache::TokyoCabinet
     end
 
     ##
+    # @param  [Identifier] id
     # @return [Integer]
-    def size
+    def size(id = nil)
+      check_id!(id) unless id.nil?
       open(:read) do |db|
-        db.fsiz()
+        if id
+          db.vsiz(id.to_str)
+        else
+          db.fsiz()
+        end
       end
     end
     alias_method :bytesize, :size
