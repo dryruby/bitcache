@@ -9,6 +9,8 @@ module Bitcache
   module ZeroMQ
     include ::ZMQ
 
-    autoload :Loop, 'bitcache/zeromq/loop'
+    autoload :Client, 'bitcache/zeromq/client'
+    autoload :Loop,   'bitcache/zeromq/loop'
+    autoload :Server, 'bitcache/zeromq/server'
   end # ZeroMQ
 end # Bitcache

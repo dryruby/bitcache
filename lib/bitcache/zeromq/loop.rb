@@ -60,6 +60,7 @@ module Bitcache::ZeroMQ
       @context = ZMQ::Context.new(1)
       @poller  = ZMQ::Poller.new
       setup if respond_to?(:setup)
+      on_start if respond_to?(:on_start)
       loop do
         on_loop if respond_to?(:on_loop)
         @poller.poll(:blocking)
@@ -100,8 +101,10 @@ module Bitcache::ZeroMQ
     ##
     # @return [void]
     def die
+      on_stop if respond_to?(:on_stop)
       sockets.each { |socket| socket.close } if sockets
       context.terminate if context
+      on_exit if respond_to?(:on_exit)
       abort ""
     end
   end # Loop
