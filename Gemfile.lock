@@ -4,6 +4,7 @@ GEM
     diff-lcs (1.1.2)
     ffi (1.0.5)
       rake (>= 0.8.7)
+    ffi-rzmq (0.7.0)
     rake (0.8.7)
     rspec (2.4.0)
       rspec-core (~> 2.4.0)
@@ -20,5 +21,6 @@ PLATFORMS
 
 DEPENDENCIES
   ffi (>= 1.0)
+  ffi-rzmq (>= 0.7)
   rspec (>= 2.4)
   tokyocabinet (>= 1.29)

@@ -19,5 +19,5 @@ end
 
 desc "Open an IRB session with all libraries preloaded"
 task :irb do
-  sh "bundle exec irb -Ilib -rbitcache -rbitcache/tokyocabinet"
+  sh "bundle exec irb -Ilib -rbitcache -rbitcache/tokyocabinet -rbitcache/zeromq"
 end
