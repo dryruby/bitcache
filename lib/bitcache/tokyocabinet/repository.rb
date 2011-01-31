@@ -86,7 +86,7 @@ module Bitcache::TokyoCabinet
     ##
     # @return [void] `self`
     def close
-      @db.close or raise_error! if @open
+      @db.close if @open
       @open = false
       @mode = nil
       return self
