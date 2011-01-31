@@ -18,9 +18,13 @@ module Bitcache::ZeroMQ
     # @return [ZMQ::Socket]
     attr_reader :socket
 
+    # @return [Hash]
+    attr_reader :options
+
     ##
     # @param  [String] endpoint
     # @param  [Hash{Symbol => Object}] options
+    # @option options [ZMQ::Context] :context (ZMQ::Context.new)
     def initialize(endpoint, options = {})
       @endpoint = endpoint.to_s
       @options  = options.dup
@@ -29,7 +33,7 @@ module Bitcache::ZeroMQ
     ##
     # @return [void] `self`
     def connect
-      @context ||= ZMQ::Context.new
+      @context ||= @options[:context] || ZMQ::Context.new
       @socket = @context.socket(ZMQ::REQ) unless @socket
       @socket.connect(@endpoint)
       return self
@@ -40,7 +44,7 @@ module Bitcache::ZeroMQ
     def disconnect
       @socket.close
       @socket = nil
-      @context.terminate
+      @context.terminate unless @options[:context]
       return self
     end
 

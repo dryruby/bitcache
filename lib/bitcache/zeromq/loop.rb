@@ -80,6 +80,8 @@ module Bitcache::ZeroMQ
       Signal.trap(:USR2, method(:on_sigusr2))
     end
 
+  protected
+
     ##
     # Handles the `SIGTERM` signal.
     #
@@ -136,8 +138,6 @@ module Bitcache::ZeroMQ
       # no-op by default
     end
 
-  protected
-
     ##
     # @return [void]
     def die
@@ -145,7 +145,7 @@ module Bitcache::ZeroMQ
       sockets.each { |socket| socket.close } if sockets
       context.terminate if context
       on_exit if respond_to?(:on_exit)
-      abort ""
+      exit
     end
   end # Loop
 end # Bitcache::ZeroMQ

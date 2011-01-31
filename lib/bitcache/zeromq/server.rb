@@ -32,6 +32,8 @@ module Bitcache::ZeroMQ
       super(options)
     end
 
+  protected
+
     ##
     # @return [void]
     def on_start
