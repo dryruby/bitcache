@@ -35,8 +35,10 @@ module Bitcache::ZeroMQ
     def connect
       @context ||= @options[:context] || ZMQ::Context.new
       @push = @context.socket(ZMQ::PUSH) unless @push
+      @push.setsockopt(ZMQ::LINGER, @options[:linger] || -1) # try to send the data indefinitely
       @push.connect("#{@endpoint}.push") # HACK
       @req = @context.socket(ZMQ::REQ) unless @req
+      @req.setsockopt(ZMQ::LINGER, @options[:linger] || -1) # try to send the data indefinitely
       @req.connect("#{@endpoint}.req")   # HACK
       return self
     end
