@@ -80,7 +80,9 @@ module Bitcache::ZeroMQ
     # @return [void]
     def on_push(socket)
       id = Bitcache::Identifier.new(socket.recv_string)
-      @repository[id] = socket.recv_string
+      data = socket.recv_string
+      @repository[id] = data
+      on_put(id, data) if respond_to?(:on_put)
     end
 
     ##
@@ -106,6 +108,7 @@ module Bitcache::ZeroMQ
             id, data = part
             @repository[id] = data
             socket.send_string(id.to_str, parts.empty? ? 0 : ZMQ::SNDMORE)
+            on_put(id, data) if respond_to?(:on_put)
           end
         else
           # TODO
