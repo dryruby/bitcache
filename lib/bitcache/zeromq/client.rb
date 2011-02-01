@@ -53,19 +53,37 @@ module Bitcache::ZeroMQ
     end
 
     ##
+    # @param  [Array<#to_s>] operands
+    # @return [void] `self`
+    def push(*operands)
+      operands.map!(&:to_s)
+      while operand = operands.shift
+        @push.send_string(operand.to_s, operands.empty? ? 0 : ZMQ::SNDMORE)
+      end
+      return self
+    end
+
+    ##
+    # @param  [Symbol] operator
+    # @param  [Array<#to_s>] operands
+    # @return [void]
+    def req(operator, *operands)
+      result = []
+      @req.send_string(operator.to_s, operands.empty? ? 0 : ZMQ::SNDMORE)
+      operands.map!(&:to_s)
+      while operand = operands.shift
+        @req.send_string(operand.to_s, operands.empty? ? 0 : ZMQ::SNDMORE)
+      end
+      result << @req.recv_string
+      result << @req.recv_string while @req.more_parts?
+      result
+    end
+
+    ##
     # @param  [Array<Identifier>] id
     # @return [Array<String>]
     def fetch(*ids)
-      result = []
-      unless ids.empty?
-        @req.send_string('get', ZMQ::SNDMORE)
-        while id = ids.shift
-          @req.send_string(id.to_str, ids.empty? ? 0 : ZMQ::SNDMORE)
-        end
-        result << @req.recv_string
-        result << @req.recv_string while @req.more_parts?
-      end
-      result
+      ids.empty? ? [] : req(:get, *ids.map(&:to_str))
     end
 
     ##
@@ -82,8 +100,7 @@ module Bitcache::ZeroMQ
     # @param  [Object] data
     # @return [void]
     def []=(id, data)
-      @push.send_string(id.to_str, ZMQ::SNDMORE)
-      @push.send_string(Bitcache.read(data))
+      push(id.to_str, Bitcache.read(data))
       data
     end
 
