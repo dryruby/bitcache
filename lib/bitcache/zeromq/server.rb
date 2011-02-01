@@ -19,8 +19,8 @@ module Bitcache::ZeroMQ
     # @return [Repository]
     attr_reader :repository
 
-    # @return [ZMQ::Socket]
-    attr_reader :socket
+    # @return [Hash{Symbol => ZMQ::Socket}]
+    attr_reader :inputs
 
     ##
     # @param  [String] endpoint
@@ -29,6 +29,7 @@ module Bitcache::ZeroMQ
     def initialize(endpoint, repository, options = {})
       @endpoint   = endpoint.to_s
       @repository = repository
+      @inputs     = {}
       super(options)
     end
 
@@ -39,9 +40,16 @@ module Bitcache::ZeroMQ
     def on_start
       @repository.open(:write)
       begin
-        @socket = context.socket(ZMQ::REP)
-        @socket.bind(@endpoint)
-        register(@socket, ZMQ::POLLIN)
+        unless options[:pull].eql?(false)
+          @inputs[:pull] = context.socket(ZMQ::PULL)
+          @inputs[:pull].bind("#{@endpoint}.push") # HACK
+          register(@inputs[:pull], ZMQ::POLLIN)
+        end
+        unless options[:rep].eql?(false)
+          @inputs[:rep] = context.socket(ZMQ::REP)
+          @inputs[:rep].bind("#{@endpoint}.req")   # HACK
+          register(@inputs[:rep], ZMQ::POLLIN)
+        end
       rescue => error
         @repository.close
         raise error
@@ -58,36 +66,50 @@ module Bitcache::ZeroMQ
     # @param  [ZMQ::Socket] socket
     # @return [void]
     def on_readable(socket)
-      return unless socket.equal?(@socket)
-      case message = socket.recv_string
-        when 'get'
-          id = Bitcache::Identifier.new(socket.recv_string)
-          on_get(id)
-        when 'put'
+      case socket
+        when @inputs[:pull]
           id = Bitcache::Identifier.new(socket.recv_string)
           data = socket.recv_string
-          on_put(id, data)
-        else
-          # TODO
+          on_push(id, data)
+        when @inputs[:rep]
+          case message = socket.recv_string
+            when 'get'
+              id = Bitcache::Identifier.new(socket.recv_string)
+              on_get_req(id)
+            when 'put'
+              id = Bitcache::Identifier.new(socket.recv_string)
+              data = socket.recv_string
+              on_put_req(id, data)
+            else
+              # TODO
+          end
+          socket.recv_string while socket.more_parts?
       end
-      socket.recv_string while socket.more_parts?
-    end
-
-    ##
-    # @param  [Identifier] id
-    # @return [void]
-    def on_get(id)
-      data = @repository[id]
-      socket.send_string(data || '')
     end
 
     ##
     # @param  [Identifier] id
     # @param  [String] data
     # @return [void]
-    def on_put(id, data)
+    def on_push(id, data)
       @repository[id] = data
-      socket.send_string(id.to_str)
+    end
+
+    ##
+    # @param  [Identifier] id
+    # @return [void]
+    def on_get_req(id)
+      data = @repository[id]
+      @inputs[:rep].send_string(data || '')
+    end
+
+    ##
+    # @param  [Identifier] id
+    # @param  [String] data
+    # @return [void]
+    def on_put_req(id, data)
+      @repository[id] = data
+      @inputs[:rep].send_string(id.to_str)
     end
   end # Server
 end # Bitcache::ZeroMQ

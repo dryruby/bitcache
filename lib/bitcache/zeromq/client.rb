@@ -34,16 +34,20 @@ module Bitcache::ZeroMQ
     # @return [void] `self`
     def connect
       @context ||= @options[:context] || ZMQ::Context.new
-      @socket = @context.socket(ZMQ::REQ) unless @socket
-      @socket.connect(@endpoint)
+      @push = @context.socket(ZMQ::PUSH) unless @push
+      @push.connect("#{@endpoint}.push") # HACK
+      @req = @context.socket(ZMQ::REQ) unless @req
+      @req.connect("#{@endpoint}.req")   # HACK
       return self
     end
 
     ##
     # @return [void] `self`
     def disconnect
-      @socket.close
-      @socket = nil
+      @req.close
+      @req = nil
+      @push.close
+      @push = nil
       @context.terminate unless @options[:context]
       return self
     end
@@ -52,9 +56,9 @@ module Bitcache::ZeroMQ
     # @param  [Identifier] id
     # @return [String]
     def [](id)
-      socket.send_string('get', ZMQ::SNDMORE)
-      socket.send_string(id.to_str)
-      socket.recv_string
+      @req.send_string('get', ZMQ::SNDMORE)
+      @req.send_string(id.to_str)
+      @req.recv_string
     end
 
     ##
@@ -62,20 +66,19 @@ module Bitcache::ZeroMQ
     # @param  [Object] data
     # @return [void]
     def []=(id, data)
-      socket.send_string('put', ZMQ::SNDMORE)
-      socket.send_string(id.to_str, ZMQ::SNDMORE)
-      socket.send_string(Bitcache.read(data))
-      socket.recv_string
+      @push.send_string(id.to_str, ZMQ::SNDMORE)
+      @push.send_string(Bitcache.read(data))
+      data
     end
 
     ##
     # @param  [Object] data
     # @return [void]
     def <<(data)
-      socket.send_string('put', ZMQ::SNDMORE)
-      socket.send_string('', ZMQ::SNDMORE)
-      socket.send_string(Bitcache.read(data))
-      socket.recv_string
+      @req.send_string('put', ZMQ::SNDMORE)
+      @req.send_string('', ZMQ::SNDMORE)
+      @req.send_string(Bitcache.read(data))
+      @req.recv_string
     end
   end # Client
 end # Bitcache::ZeroMQ
