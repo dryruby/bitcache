@@ -36,8 +36,12 @@ module Bitcache::ZeroMQ
     ##
     # @return [void] `self`
     def stop
-      Process.kill(:TERM, @pid)
-      Process.wait(@pid, Process::WNOHANG)
+      begin
+        Process.kill(:TERM, @pid)
+        Process.wait(@pid, Process::WNOHANG)
+      rescue Errno::ESRCH => error
+        # No such process
+      end
       return self
     end
 
