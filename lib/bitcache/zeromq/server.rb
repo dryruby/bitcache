@@ -69,47 +69,32 @@ module Bitcache::ZeroMQ
       case socket
         when @inputs[:pull]
           id = Bitcache::Identifier.new(socket.recv_string)
-          data = socket.recv_string
-          on_push(id, data)
+          @repository[id] = socket.recv_string
         when @inputs[:rep]
           case message = socket.recv_string
             when 'get'
-              id = Bitcache::Identifier.new(socket.recv_string)
-              on_get_req(id)
+              parts = []
+              while socket.more_parts?
+                parts << Bitcache::Identifier.new(socket.recv_string)
+              end
+              while id = parts.shift
+                socket.send_string(@repository[id] || '', parts.empty? ? 0 : ZMQ::SNDMORE)
+              end
             when 'put'
-              id = Bitcache::Identifier.new(socket.recv_string)
-              data = socket.recv_string
-              on_put_req(id, data)
+              parts = []
+              while socket.more_parts?
+                parts << [Bitcache::Identifier.new(socket.recv_string), socket.recv_string]
+              end
+              while part = parts.shift
+                id, data = part
+                @repository[id] = data
+                socket.send_string(id.to_str, parts.empty? ? 0 : ZMQ::SNDMORE)
+              end
             else
               # TODO
           end
-          socket.recv_string while socket.more_parts?
       end
-    end
-
-    ##
-    # @param  [Identifier] id
-    # @param  [String] data
-    # @return [void]
-    def on_push(id, data)
-      @repository[id] = data
-    end
-
-    ##
-    # @param  [Identifier] id
-    # @return [void]
-    def on_get_req(id)
-      data = @repository[id]
-      @inputs[:rep].send_string(data || '')
-    end
-
-    ##
-    # @param  [Identifier] id
-    # @param  [String] data
-    # @return [void]
-    def on_put_req(id, data)
-      @repository[id] = data
-      @inputs[:rep].send_string(id.to_str)
+      socket.recv_string while socket.more_parts?
     end
   end # Server
 end # Bitcache::ZeroMQ

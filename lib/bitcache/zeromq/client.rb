@@ -53,6 +53,22 @@ module Bitcache::ZeroMQ
     end
 
     ##
+    # @param  [Array<Identifier>] id
+    # @return [Array<String>]
+    def fetch(*ids)
+      result = []
+      unless ids.empty?
+        @req.send_string('get', ZMQ::SNDMORE)
+        while id = ids.shift
+          @req.send_string(id.to_str, ids.empty? ? 0 : ZMQ::SNDMORE)
+        end
+        result << @req.recv_string
+        result << @req.recv_string while @req.more_parts?
+      end
+      result
+    end
+
+    ##
     # @param  [Identifier] id
     # @return [String]
     def [](id)
