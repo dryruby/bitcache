@@ -112,6 +112,12 @@ module Bitcache::TokyoCabinet
     alias_method :bytesize, :size
 
     ##
+    # @return [Boolean] `true` or `false`
+    def empty?
+      count.zero?
+    end
+
+    ##
     # @return [Integer]
     def count
       open(:read) do |db|
