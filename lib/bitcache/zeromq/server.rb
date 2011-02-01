@@ -68,33 +68,48 @@ module Bitcache::ZeroMQ
     def on_readable(socket)
       case socket
         when @inputs[:pull]
-          id = Bitcache::Identifier.new(socket.recv_string)
-          @repository[id] = socket.recv_string
+          on_push(socket)
         when @inputs[:rep]
-          case message = socket.recv_string
-            when 'get'
-              parts = []
-              while socket.more_parts?
-                parts << Bitcache::Identifier.new(socket.recv_string)
-              end
-              while id = parts.shift
-                socket.send_string(@repository[id] || '', parts.empty? ? 0 : ZMQ::SNDMORE)
-              end
-            when 'put'
-              parts = []
-              while socket.more_parts?
-                parts << [Bitcache::Identifier.new(socket.recv_string), socket.recv_string]
-              end
-              while part = parts.shift
-                id, data = part
-                @repository[id] = data
-                socket.send_string(id.to_str, parts.empty? ? 0 : ZMQ::SNDMORE)
-              end
-            else
-              # TODO
-          end
+          on_req(socket, req = socket.recv_string.to_sym)
       end
       socket.recv_string while socket.more_parts?
+    end
+
+    ##
+    # @param  [ZMQ::Socket] socket
+    # @return [void]
+    def on_push(socket)
+      id = Bitcache::Identifier.new(socket.recv_string)
+      @repository[id] = socket.recv_string
+    end
+
+    ##
+    # @param  [ZMQ::Socket] socket
+    # @param  [Symbol] req
+    # @return [void]
+    def on_req(socket, req)
+      case req
+        when :get
+          parts = []
+          while socket.more_parts?
+            parts << Bitcache::Identifier.new(socket.recv_string)
+          end
+          while id = parts.shift
+            socket.send_string(@repository[id] || '', parts.empty? ? 0 : ZMQ::SNDMORE)
+          end
+        when :put
+          parts = []
+          while socket.more_parts?
+            parts << [Bitcache::Identifier.new(socket.recv_string), socket.recv_string]
+          end
+          while part = parts.shift
+            id, data = part
+            @repository[id] = data
+            socket.send_string(id.to_str, parts.empty? ? 0 : ZMQ::SNDMORE)
+          end
+        else
+          # TODO
+      end
     end
   end # Server
 end # Bitcache::ZeroMQ
