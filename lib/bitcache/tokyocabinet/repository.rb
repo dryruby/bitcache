@@ -155,6 +155,26 @@ module Bitcache::TokyoCabinet
     end
 
     ##
+    # @yield  [id, data]
+    # @yieldparam  [Identifier] id
+    # @yieldparam  [String] data
+    # @yieldreturn [void] ignored
+    # @return [Enumerator]
+    def each(&block)
+      if block_given?
+        open(:read) do |db|
+          cursor = BDBCUR.new(db)
+          cursor.first()
+          while key = cursor.key()
+            block.call(Bitcache::Identifier.new(key), cursor.val()) # FIXME
+            cursor.next()
+          end
+        end
+      end
+      enum_for(:each)
+    end
+
+    ##
     # @param  [Identifier] id
     # @return [String]
     def [](id)
