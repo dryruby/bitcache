@@ -80,6 +80,7 @@ module Bitcache::ZeroMQ
       Signal.trap(:TERM, method(:on_sigterm))
       Signal.trap(:INT,  method(:on_sigint))
       Signal.trap(:HUP,  method(:on_sighup))
+      Signal.trap(:CHLD, method(:on_sigchld))
       Signal.trap(:USR1, method(:on_sigusr1))
       Signal.trap(:USR2, method(:on_sigusr2))
     end
@@ -118,6 +119,17 @@ module Bitcache::ZeroMQ
     def on_sighup(signum)
       log.info("Received a SIGHUP (#{signum}) signal, terminating...") if respond_to?(:log)
       die
+    end
+
+    ##
+    # Handles the `SIGCHLD` signal.
+    #
+    # @param  [Integer] signum
+    # @return [void]
+    # @see    http://en.wikipedia.org/wiki/SIGCHLD
+    def on_sigchld(signum)
+      log.info("Received a SIGCHLD (#{signum}) signal.") if respond_to?(:log)
+      # no-op by default
     end
 
     ##
