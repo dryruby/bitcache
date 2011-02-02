@@ -67,7 +67,7 @@ module Bitcache::ZeroMQ
       on_start if respond_to?(:on_start)
       loop do
         on_loop if respond_to?(:on_loop)
-        @poller.poll(:blocking)
+        @poller.poll(@options[:poll_timeout] || :blocking)
         @poller.readables.each do |socket|
           on_readable(socket)
         end
