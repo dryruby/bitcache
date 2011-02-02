@@ -29,6 +29,7 @@ module Bitcache::ZeroMQ
     ##
     # @return [void] `self`
     def start
+      @pid = nil
       @pid = fork(&method(:run))
       return self
     end
