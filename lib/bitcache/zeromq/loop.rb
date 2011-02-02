@@ -41,6 +41,8 @@ module Bitcache::ZeroMQ
         Process.wait(@pid, Process::WNOHANG)
       rescue Errno::ESRCH => error
         # No such process
+      rescue Errno::ECHILD => error
+        # No child processes
       end
       return self
     end
