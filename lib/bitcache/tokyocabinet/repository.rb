@@ -97,7 +97,7 @@ module Bitcache::TokyoCabinet
     attr_reader :path
 
     ##
-    # @param  [Identifier] id
+    # @param  [Identifier, #to_str] id
     # @return [Integer]
     def size(id = nil)
       check_id!(id) unless id.nil?
@@ -126,7 +126,7 @@ module Bitcache::TokyoCabinet
     end
 
     ##
-    # @param  [Identifier] id
+    # @param  [Identifier, #to_str] id
     # @return [Boolean] `true` or `false`
     def has_identifier?(id)
       check_id!(id)
@@ -175,7 +175,7 @@ module Bitcache::TokyoCabinet
     end
 
     ##
-    # @param  [Identifier] id
+    # @param  [Identifier, #to_str] id
     # @return [String]
     def [](id)
       check_id!(id)
@@ -185,7 +185,7 @@ module Bitcache::TokyoCabinet
     end
 
     ##
-    # @param  [Identifier] id
+    # @param  [Identifier, #to_str] id
     # @param  [String] data
     # @return [void]
     def []=(id, data)
@@ -223,9 +223,10 @@ module Bitcache::TokyoCabinet
 
     ##
     # @private
+    # @param  [Object] id
     # @return [void]
     def check_id!(id)
-      raise ArgumentError, "expected Identifier, but got #{id.inspect}" unless id.is_a?(Bitcache::Identifier)
+      raise ArgumentError, "expected Identifier or String, but got #{id.inspect}" unless id.is_a?(String) || id.is_a?(Bitcache::Identifier)
     end
 
     ##
