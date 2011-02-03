@@ -77,29 +77,30 @@ module Bitcache::ZeroMQ
     ##
     # @param  [Symbol] operator
     # @param  [Array<#to_s>] operands
-    # @return [void]
+    # @return [void] `self`
     def send_req(operator, *operands)
       @req.send_string(operator.to_s, operands.empty? ? 0 : ZMQ::SNDMORE)
       operands.map!(&:to_s)
       while operand = operands.shift
         @req.send_string(operand.to_s, operands.empty? ? 0 : ZMQ::SNDMORE)
       end
-      return nil
+      return self
     end
 
     ##
     # @return [Array<String>]
-    def read_reps
-      reps = []
-      reps << read_rep
-      reps << read_rep while @req.more_parts?
-      reps
+    def read_reps(nonblock = false)
+      if rep = read_rep(nonblock)
+        reps = [rep]
+        reps << read_rep(nonblock) while @req.more_parts?
+        reps
+      end
     end
 
     ##
     # @return [String]
-    def read_rep
-      @req.recv_string
+    def read_rep(nonblock = false)
+      @req.recv_string(nonblock ? ZMQ::NOBLOCK : 0)
     end
 
     ##
