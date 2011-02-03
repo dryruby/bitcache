@@ -34,9 +34,16 @@ module Bitcache::TokyoCabinet
     # @private
     # @return [void] `self`
     def initialize!
-      open(:write).close unless File.exists?(path)
+      open(:write).close unless exists?
       return self
     end
+
+    ##
+    # @return [Boolean] `true` or `false`
+    def exists?
+      File.exists?(path)
+    end
+    alias_method :exist?, :exists?
 
     ##
     # @return [Boolean] `true` or `false`
