@@ -37,7 +37,22 @@ typedef struct {
 
 typedef struct {
   int stripe;
+  bitcache_map_t* map;
+  GHashTableIter hash_table_iter;
 } bitcache_map_iter_t;
+
+extern int bitcache_map_init(bitcache_map_t* map, const GHashFunc hash_func, const GEqualFunc equal_func, const GDestroyNotify key_destroy_func, const GDestroyNotify value_destroy_func);
+extern int bitcache_map_reset(bitcache_map_t* map);
+extern int bitcache_map_clear(bitcache_map_t* map);
+extern ssize_t bitcache_map_count(bitcache_map_t* map);
+extern bool bitcache_map_lookup(bitcache_map_t* map, const char* key, void** value);
+extern int bitcache_map_insert(bitcache_map_t* map, const char* key, const void* value);
+extern int bitcache_map_remove(bitcache_map_t* map, const char* key);
+
+extern int bitcache_map_iter_init(bitcache_map_iter_t* iter, bitcache_map_t* map);
+extern int bitcache_map_iter_next(bitcache_map_iter_t* iter, char** key, void** value);
+extern int bitcache_map_iter_remove(bitcache_map_iter_t* iter);
+extern int bitcache_map_iter_done(bitcache_map_iter_t* iter);
 
 #if defined(BITCACHE_MAP_MUTEX)
 #define bitcache_map_stripe_crlock(map_stripe) pthread_mutex_init(&(map_stripe)->lock, NULL)
@@ -52,14 +67,6 @@ typedef struct {
 #define bitcache_map_stripe_wrlock(map_stripe) pthread_rwlock_wrlock(&(map_stripe)->lock)
 #define bitcache_map_stripe_unlock(map_stripe) pthread_rwlock_unlock(&(map_stripe)->lock)
 #endif
-
-extern int bitcache_map_init(bitcache_map_t* map, const GHashFunc hash_func, const GEqualFunc equal_func, const GDestroyNotify key_destroy_func, const GDestroyNotify value_destroy_func);
-extern int bitcache_map_reset(bitcache_map_t* map);
-extern int bitcache_map_clear(bitcache_map_t* map);
-extern ssize_t bitcache_map_count(bitcache_map_t* map);
-extern bool bitcache_map_lookup(bitcache_map_t* map, const char* key, void** value);
-extern int bitcache_map_insert(bitcache_map_t* map, const char* key, const void* value);
-extern int bitcache_map_remove(bitcache_map_t* map, const char* key);
 
 #ifdef __cplusplus
 }

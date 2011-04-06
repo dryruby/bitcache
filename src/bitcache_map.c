@@ -139,3 +139,63 @@ bitcache_map_remove(bitcache_map_t* map, const char* key) {
 
   return 0;
 }
+
+//////////////////////////////////////////////////////////////////////////////
+// Map Iterator API
+
+int
+bitcache_map_iter_init(bitcache_map_iter_t* iter, bitcache_map_t* map) {
+  if (unlikely(iter == NULL || map == NULL))
+    return -(errno = EINVAL); // invalid argument
+
+  bzero(iter, sizeof(bitcache_map_iter_t));
+  iter->map    = map;
+  iter->stripe = 0;
+
+  bitcache_map_stripe_t* map_stripe = &map->stripes[iter->stripe];
+  g_hash_table_iter_init(&iter->hash_table_iter, map_stripe->hash_table);
+
+  return 0;
+}
+
+int
+bitcache_map_iter_next(bitcache_map_iter_t* iter, char** key, void** value) {
+  if (unlikely(iter == NULL))
+    return -(errno = EINVAL); // invalid argument
+
+  int result = 0;
+
+  if (likely(g_hash_table_iter_next(&iter->hash_table_iter, (void**)key, value) != FALSE)) {
+    result = 1;
+  }
+  else {
+    while (++iter->stripe < iter->map->striping) {
+      if (likely(g_hash_table_iter_next(&iter->hash_table_iter, (void**)key, value) != FALSE)) {
+        result = 1;
+        break;
+      }
+    }
+  }
+
+  return result;
+}
+
+int
+bitcache_map_iter_remove(bitcache_map_iter_t* iter) {
+  if (unlikely(iter == NULL))
+    return -(errno = EINVAL); // invalid argument
+
+  g_hash_table_iter_remove(&iter->hash_table_iter);
+
+  return 0;
+}
+
+int
+bitcache_map_iter_done(bitcache_map_iter_t* iter) {
+  if (unlikely(iter == NULL))
+    return -(errno = EINVAL); // invalid argument
+
+  bzero(iter, sizeof(bitcache_map_iter_t));
+
+  return 0;
+}
