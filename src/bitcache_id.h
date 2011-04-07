@@ -13,6 +13,8 @@ typedef struct {
   uint8_t digest[20];
 } bitcache_id_t;
 
+extern int bitcache_id_cmp(const bitcache_id_t* id1, const bitcache_id_t* id2);
+
 #ifdef __cplusplus
 }
 #endif
