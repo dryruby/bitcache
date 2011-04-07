@@ -7,6 +7,7 @@
 extern "C" {
 #endif
 
+#include "bitcache_id.h"
 #include <stdbool.h>
 #include <string.h>
 #include <glib.h>
@@ -45,12 +46,12 @@ extern int bitcache_map_init(bitcache_map_t* map, const GHashFunc hash_func, con
 extern int bitcache_map_reset(bitcache_map_t* map);
 extern int bitcache_map_clear(bitcache_map_t* map);
 extern ssize_t bitcache_map_count(bitcache_map_t* map);
-extern bool bitcache_map_lookup(bitcache_map_t* map, const char* key, void** value);
-extern int bitcache_map_insert(bitcache_map_t* map, const char* key, const void* value);
-extern int bitcache_map_remove(bitcache_map_t* map, const char* key);
+extern bool bitcache_map_lookup(bitcache_map_t* map, const bitcache_id_t* key, void** value);
+extern int bitcache_map_insert(bitcache_map_t* map, const bitcache_id_t* key, const void* value);
+extern int bitcache_map_remove(bitcache_map_t* map, const bitcache_id_t* key);
 
 extern int bitcache_map_iter_init(bitcache_map_iter_t* iter, bitcache_map_t* map);
-extern int bitcache_map_iter_next(bitcache_map_iter_t* iter, char** key, void** value);
+extern int bitcache_map_iter_next(bitcache_map_iter_t* iter, bitcache_id_t** key, void** value);
 extern int bitcache_map_iter_remove(bitcache_map_iter_t* iter);
 extern int bitcache_map_iter_done(bitcache_map_iter_t* iter);
 

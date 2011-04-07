@@ -90,13 +90,13 @@ bitcache_map_count(bitcache_map_t* map) {
 }
 
 bool
-bitcache_map_lookup(bitcache_map_t* map, const char* key, void** value) {
+bitcache_map_lookup(bitcache_map_t* map, const bitcache_id_t* key, void** value) {
   if (unlikely(map == NULL || key == NULL))
     return -(errno = EINVAL); // invalid argument
 
   bool found = FALSE;
 
-  const int shard = (key[0] & (map->striping - 1));
+  const int shard = (key->digest[0] & (map->striping - 1));
   bitcache_map_stripe_t* map_stripe = &map->stripes[shard];
 
   bitcache_map_stripe_rdlock(map_stripe);
@@ -109,11 +109,11 @@ bitcache_map_lookup(bitcache_map_t* map, const char* key, void** value) {
 }
 
 int
-bitcache_map_insert(bitcache_map_t* map, const char* key, const void* value) {
+bitcache_map_insert(bitcache_map_t* map, const bitcache_id_t* key, const void* value) {
   if (unlikely(map == NULL || key == NULL))
     return -(errno = EINVAL); // invalid argument
 
-  const int shard = (key[0] & (map->striping - 1));
+  const int shard = (key->digest[0] & (map->striping - 1));
   bitcache_map_stripe_t* map_stripe = &map->stripes[shard];
 
   bitcache_map_stripe_wrlock(map_stripe);
@@ -124,11 +124,11 @@ bitcache_map_insert(bitcache_map_t* map, const char* key, const void* value) {
 }
 
 int
-bitcache_map_remove(bitcache_map_t* map, const char* key) {
+bitcache_map_remove(bitcache_map_t* map, const bitcache_id_t* key) {
   if (unlikely(map == NULL || key == NULL))
     return -(errno = EINVAL); // invalid argument
 
-  const int shard = (key[0] & (map->striping - 1));
+  const int shard = (key->digest[0] & (map->striping - 1));
   bitcache_map_stripe_t* map_stripe = &map->stripes[shard];
 
   bitcache_map_stripe_wrlock(map_stripe);
@@ -159,7 +159,7 @@ bitcache_map_iter_init(bitcache_map_iter_t* iter, bitcache_map_t* map) {
 }
 
 int
-bitcache_map_iter_next(bitcache_map_iter_t* iter, char** key, void** value) {
+bitcache_map_iter_next(bitcache_map_iter_t* iter, bitcache_id_t** key, void** value) {
   if (unlikely(iter == NULL))
     return -(errno = EINVAL); // invalid argument
 
