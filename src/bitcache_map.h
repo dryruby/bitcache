@@ -9,6 +9,7 @@ extern "C" {
 
 #include "bitcache_id.h"
 #include <stdbool.h>
+#include <stdlib.h>
 #include <string.h>
 #include <glib.h>
 #ifdef MT
