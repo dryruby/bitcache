@@ -256,15 +256,6 @@ bitcache_id_is_zero(const bitcache_id* id) {
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// Identifier API: Comparators
-
-int
-bitcache_id_compare(const bitcache_id* id1, const bitcache_id* id2) {
-  assert(id1 != NULL && id2 != NULL && id1->type == id2->type);
-  return memcmp(id1->digest, id2->digest, bitcache_id_get_digest_size(id1));
-}
-
-//////////////////////////////////////////////////////////////////////////////
 // Identifier API: Converters
 
 char*
@@ -291,121 +282,9 @@ bitcache_id_to_mpi(const bitcache_id* id, byte* buffer) {
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// Filter API: Allocators
-
-bitcache_filter*
-bitcache_filter_alloc() {
-  return bitcache_slice_alloc(sizeof(bitcache_filter));
-}
-
-void
-bitcache_filter_free(bitcache_filter* filter) {
-  assert(filter != NULL);
-  if (filter->bitmap != NULL) {
-    bitcache_free(filter->bitmap);
-    filter->bitmap = NULL;
-  }
-  bitcache_slice_free1(sizeof(bitcache_filter), filter);
-}
-
-//////////////////////////////////////////////////////////////////////////////
-// Filter API: Constructors
-
-bitcache_filter*
-bitcache_filter_new(size_t size) {
-  bitcache_filter* filter = bitcache_filter_alloc();
-  bitcache_filter_init(filter, size);
-  return filter;
-}
-
-bitcache_filter*
-bitcache_filter_copy(const bitcache_filter* filter) {
-  assert(filter != NULL);
-}
-
-//////////////////////////////////////////////////////////////////////////////
-// Filter API: Mutators
-
-void
-bitcache_filter_init(bitcache_filter* filter, size_t size) {
-  assert(filter != NULL);
-
-  if (size > 0) {
-    // TODO: calculate the optimal bitmap size and allocate memory for it
-    filter->bitsize = 0;
-    filter->bitmap = NULL;
-  }
-}
-
-void
-bitcache_filter_clear(bitcache_filter* filter) {
-  assert(filter != NULL);
-
-  if (filter->bitmap != NULL) {
-    bzero(filter->bitmap, bitcache_filter_get_bytesize(filter));
-  }
-}
-
-void
-bitcache_filter_insert(bitcache_filter* filter, const bitcache_id* id) {
-  assert(filter != NULL && filter->bitmap != NULL);
-  assert(id != NULL);
-  // TODO
-}
-
-void
-bitcache_filter_remove(bitcache_filter* filter, const bitcache_id* id) {
-  assert(filter != NULL && filter->bitmap != NULL);
-  assert(id != NULL);
-  // this is a no-op in the standard Bloom filter implementation.
-}
-
-void
-bitcache_filter_merge(bitcache_filter* filter1, const bitcache_filter* filter2, const bitcache_op op) {
-  assert(filter1 != NULL && filter2 != NULL);
-
-  if (op == BITCACHE_OP_NOP)
-    return;
-
-  // TODO
-}
-
-//////////////////////////////////////////////////////////////////////////////
-// Filter API: Accessors
-
-guint
-bitcache_filter_get_hash(const bitcache_filter* filter) {
-  assert(filter != NULL);
-  return g_direct_hash(filter);
-}
-
-size_t
-bitcache_filter_get_bitsize(const bitcache_filter* filter) {
-  assert(filter != NULL);
-  return filter->bitsize;
-}
-
-size_t
-bitcache_filter_get_bytesize(const bitcache_filter* filter) {
-  assert(filter != NULL);
-  return filter->bitsize == 0 ? 0 : (size_t)ceil(filter->bitsize / 8.0);
-}
-
-byte*
-bitcache_filter_get_bitmap(const bitcache_filter* filter) {
-  assert(filter != NULL);
-  return filter->bitmap;
-}
-
-size_t
-bitcache_filter_get_count(const bitcache_filter* filter, const bitcache_id* id) {
-  assert(filter != NULL && id != NULL);
-  return bitcache_filter_has_element(filter, id) ? 1 : 0; // false positives are possible
-}
-
-//////////////////////////////////////////////////////////////////////////////
 // Filter API: Predicates
 
+/*
 bool
 bitcache_filter_is_equal(const bitcache_filter* filter1, const bitcache_filter* filter2) {
   assert(filter1 != NULL && filter2 != NULL);
@@ -434,12 +313,7 @@ bitcache_filter_is_empty(const bitcache_filter* filter) {
   }
   return TRUE;
 }
-
-bool
-bitcache_filter_has_element(const bitcache_filter* filter, const bitcache_id* id) {
-  assert(filter != NULL && id != NULL);
-  return TRUE; // FIXME: this is a hardcoded false positive, for now
-}
+*/
 
 //////////////////////////////////////////////////////////////////////////////
 // List API: Allocators
@@ -694,6 +568,7 @@ bitcache_list_foreach(const bitcache_list* list, const bitcache_id_func func, vo
 //////////////////////////////////////////////////////////////////////////////
 // List API: Converters
 
+/*
 bitcache_filter*
 bitcache_list_to_filter(const bitcache_list* list) {
   assert(list != NULL);
@@ -704,6 +579,7 @@ bitcache_list_to_filter(const bitcache_list* list) {
   }
   return filter;
 }
+*/
 
 bitcache_set*
 bitcache_list_to_set(const bitcache_list* list) {
@@ -980,6 +856,7 @@ bitcache_set_foreach(const bitcache_set* set, const bitcache_id_func func, void*
 //////////////////////////////////////////////////////////////////////////////
 // Set API: Converters
 
+/*
 bitcache_filter*
 bitcache_set_to_filter(const bitcache_set* set) {
   assert(set != NULL);
@@ -995,6 +872,7 @@ bitcache_set_to_filter(const bitcache_set* set) {
   }
   return filter;
 }
+*/
 
 bitcache_list*
 bitcache_set_to_list(const bitcache_set* set) {

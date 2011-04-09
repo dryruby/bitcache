@@ -11,8 +11,8 @@
 // Tree API
 
 static int
-bitcache_tree_id_cmp(const bitcache_id_t* id1, const bitcache_id_t* id2, const void* user_data) {
-  return bitcache_id_cmp(id1, id2);
+bitcache_tree_id_compare(const bitcache_id_t* id1, const bitcache_id_t* id2, const void* user_data) {
+  return bitcache_id_compare(id1, id2);
 }
 
 int
@@ -21,7 +21,7 @@ bitcache_tree_init(bitcache_tree_t* tree, const GDestroyNotify key_destroy_func,
     return -(errno = EINVAL); // invalid argument
 
   bzero(tree, sizeof(bitcache_tree_t));
-  tree->g_tree = g_tree_new_full((GCompareDataFunc)bitcache_tree_id_cmp, NULL, key_destroy_func, value_destroy_func);
+  tree->g_tree = g_tree_new_full((GCompareDataFunc)bitcache_tree_id_compare, NULL, key_destroy_func, value_destroy_func);
   bitcache_tree_crlock(tree);
 
   return 0;

@@ -221,7 +221,7 @@ module Bitcache
     # @return [Boolean] `true` or `false`
     def has_identifier?(id)
       id.to_id.hashes.each do |hash|
-        return false unless self[hash % @bitsize]
+        return false unless self[hash & (@bitsize - 1)]
       end
       return true # may return a false positive
     end
@@ -324,7 +324,7 @@ module Bitcache
     def insert(id)
       raise TypeError, "can't modify frozen filter" if frozen?
       id.to_id.hashes.each do |hash|
-        self[hash % @bitsize] = true
+        self[hash & (@bitsize - 1)] = true
       end
       return self
     end

@@ -14,6 +14,7 @@ extern "C" {
 /* GCC-specific optimizations */
 // @see http://gcc.gnu.org/onlinedocs/gcc/Function-Attributes.html
 #ifdef __GNUC__
+# define NONNULL __attribute__((__nonnull__)) /* the function requires non-NULL arguments */
 # define FLATTEN __attribute__((__flatten__)  /* inline every call inside the function, if possible */
 # define PURE    __attribute__((__pure__))    /* declare that the function has no side effects */
 # if GCC_VERSION >= 4003
@@ -24,6 +25,7 @@ extern "C" {
 #  define COLD
 # endif
 #else  /* !__GNUC__ */
+# define NONNULL
 # define FLATTEN
 # define PURE
 # define HOT

@@ -11,7 +11,10 @@
 //////////////////////////////////////////////////////////////////////////////
 // Identifier API
 
-int
-bitcache_id_cmp(const bitcache_id_t* id1, const bitcache_id_t* id2) {
+int HOT
+bitcache_id_compare(const bitcache_id_t* id1, const bitcache_id_t* id2) {
+  if (unlikely(id1 == NULL || id2 == NULL))
+    return -(errno = EINVAL); // invalid argument
+
   return unlikely(id1 == id2) ? 0 : memcmp(id1->digest, id2->digest, sizeof(bitcache_id_t));
 }

@@ -121,38 +121,6 @@ extern byte* bitcache_id_to_mpi(const bitcache_id* id, byte* buffer);
 #define BITCACHE_FILTER_DEFAULT_CAPACITY 4096 // elements
 #define BITCACHE_FILTER_BITS_PER_ELEMENT 8    // bits
 
-typedef struct {
-  size_t bitsize;
-  byte* bitmap;
-} bitcache_filter;
-
-// Allocators
-extern bitcache_filter* bitcache_filter_alloc();
-extern void bitcache_filter_free(bitcache_filter* filter);
-
-// Constructors
-extern bitcache_filter* bitcache_filter_new(size_t size);
-extern bitcache_filter* bitcache_filter_copy(const bitcache_filter* filter);
-
-// Mutators
-extern void bitcache_filter_init(bitcache_filter* filter, size_t size);
-extern void bitcache_filter_clear(bitcache_filter* filter);
-extern void bitcache_filter_insert(bitcache_filter* filter, const bitcache_id* id);
-extern void bitcache_filter_remove(bitcache_filter* filter, const bitcache_id* id);
-extern void bitcache_filter_merge(bitcache_filter* filter1, const bitcache_filter* filter2, const bitcache_op op);
-
-// Accessors
-extern guint bitcache_filter_get_hash(const bitcache_filter* filter);
-extern size_t bitcache_filter_get_bitsize(const bitcache_filter* filter);
-extern size_t bitcache_filter_get_bytesize(const bitcache_filter* filter);
-extern byte* bitcache_filter_get_bitmap(const bitcache_filter* filter);
-extern size_t bitcache_filter_get_count(const bitcache_filter* filter, const bitcache_id* id);
-
-// Predicates
-extern bool bitcache_filter_is_equal(const bitcache_filter* filter1, const bitcache_filter* filter2);
-extern bool bitcache_filter_is_empty(const bitcache_filter* filter);
-extern bool bitcache_filter_has_element(const bitcache_filter* filter, const bitcache_id* id);
-
 //////////////////////////////////////////////////////////////////////////////
 // List API
 
@@ -212,7 +180,7 @@ extern bool bitcache_list_is_empty(const bitcache_list* list);
 extern void bitcache_list_foreach(const bitcache_list* list, const bitcache_id_func func, void* user_data);
 
 // Converters
-extern bitcache_filter* bitcache_list_to_filter(const bitcache_list* list);
+//extern bitcache_filter* bitcache_list_to_filter(const bitcache_list* list);
 //extern bitcache_set* bitcache_list_to_set(const bitcache_list* list);
 
 //////////////////////////////////////////////////////////////////////////////
@@ -222,7 +190,7 @@ typedef GHashTable bitcache_set_map;
 
 typedef struct {
   bitcache_set_map* root;
-  bitcache_filter* filter; // an optional Bloom filter
+  //bitcache_filter* filter; // an optional Bloom filter
 } bitcache_set;
 
 // Allocators
@@ -258,7 +226,7 @@ extern bool bitcache_set_has_element(const bitcache_set* set, const bitcache_id*
 extern void bitcache_set_foreach(const bitcache_set* set, const bitcache_id_func func, void* user_data);
 
 // Converters
-extern bitcache_filter* bitcache_set_to_filter(const bitcache_set* set);
+//extern bitcache_filter* bitcache_set_to_filter(const bitcache_set* set);
 extern bitcache_list* bitcache_set_to_list(const bitcache_set* set);
 
 //////////////////////////////////////////////////////////////////////////////

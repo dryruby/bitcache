@@ -103,35 +103,18 @@ module Bitcache
     attach_function :bitcache_id_to_base64_string, [:bitcache_id, :pointer], :string
     attach_function :bitcache_id_to_mpi, [:bitcache_id, :pointer], :pointer
 
-    # Filter API: Allocators
-    attach_function :bitcache_filter_alloc, [], :bitcache_filter
-    attach_function :bitcache_filter_free, [:bitcache_filter], :void
-
-    # Filter API: Constructors
-    attach_function :bitcache_filter_new, [:size_t], :bitcache_filter
-    #attach_function :bitcache_filter_new_union, [:bitcache_filter, :bitcache_filter], :bitcache_filter
-    #attach_function :bitcache_filter_new_intersection, [:bitcache_filter, :bitcache_filter], :bitcache_filter
-    #attach_function :bitcache_filter_new_difference, [:bitcache_filter, :bitcache_filter], :bitcache_filter
-    attach_function :bitcache_filter_copy, [:bitcache_filter], :bitcache_filter
-
-    # Filter API: Mutators
-    attach_function :bitcache_filter_init, [:bitcache_filter, :size_t], :void
-    attach_function :bitcache_filter_clear, [:bitcache_filter], :void
-    attach_function :bitcache_filter_insert, [:bitcache_filter, :bitcache_id], :void
-    attach_function :bitcache_filter_remove, [:bitcache_filter, :bitcache_id], :void
-    attach_function :bitcache_filter_merge, [:bitcache_filter, :bitcache_filter, :bitcache_op], :void
-
-    # Filter API: Accessors
-    attach_function :bitcache_filter_get_hash, [:bitcache_filter], :uint
-    attach_function :bitcache_filter_get_bitsize, [:bitcache_filter], :size_t
-    attach_function :bitcache_filter_get_bytesize, [:bitcache_filter], :size_t
-    attach_function :bitcache_filter_get_bitmap, [:bitcache_filter], :pointer
-    attach_function :bitcache_filter_get_count, [:bitcache_filter, :bitcache_id], :size_t
-
-    # Filter API: Predicates
-    attach_function :bitcache_filter_is_equal, [:bitcache_filter, :bitcache_filter], :bool
-    attach_function :bitcache_filter_is_empty, [:bitcache_filter], :bool
-    attach_function :bitcache_filter_has_element, [:bitcache_filter, :bitcache_id], :bool
+    # Filter API
+    attach_function :bitcache_filter_init, [:bitcache_filter, :size_t], :int
+    attach_function :bitcache_filter_reset, [:bitcache_filter], :int
+    attach_function :bitcache_filter_clear, [:bitcache_filter], :int
+    attach_function :bitcache_filter_size, [:bitcache_filter], :ssize_t
+    attach_function :bitcache_filter_count, [:bitcache_filter, :bitcache_id], :long
+    attach_function :bitcache_filter_lookup, [:bitcache_filter, :bitcache_id], :bool
+    attach_function :bitcache_filter_insert, [:bitcache_filter, :bitcache_id], :int
+    attach_function :bitcache_filter_compare, [:bitcache_filter, :bitcache_filter], :int
+    attach_function :bitcache_filter_merge, [:bitcache_filter, :bitcache_op, :bitcache_filter, :bitcache_filter], :int
+    attach_function :bitcache_filter_load, [:bitcache_filter, :int], :int
+    attach_function :bitcache_filter_dump, [:bitcache_filter, :int], :int
 
     # List API: Constants
     BITCACHE_LIST_SENTINEL = nil
