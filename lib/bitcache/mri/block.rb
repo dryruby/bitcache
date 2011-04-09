@@ -452,6 +452,6 @@ module Bitcache
     end
 
     # Load accelerated method implementations when available:
-    send(:include, Bitcache::FFI::Block) if defined?(Bitcache::FFI::Block)
+    #send(:include, Bitcache::FFI::Block) if defined?(Bitcache::FFI::Block)
   end # Block
 end # Bitcache

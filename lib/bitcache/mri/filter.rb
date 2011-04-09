@@ -545,6 +545,6 @@ module Bitcache
     end
 
     # Load optimized method implementations when available:
-    send(:include, Bitcache::FFI::Filter) if defined?(Bitcache::FFI::Filter)
+    #send(:include, Bitcache::FFI::Filter) if defined?(Bitcache::FFI::Filter)
   end # Filter
 end # Bitcache

@@ -16,6 +16,6 @@ module Bitcache
     # TODO
 
     # Load optimized method implementations when available:
-    send(:include, Bitcache::FFI::Index) if defined?(Bitcache::FFI::Index)
+    #send(:include, Bitcache::FFI::Index) if defined?(Bitcache::FFI::Index)
   end # Index
 end # Bitcache
