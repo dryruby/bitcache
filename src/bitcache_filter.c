@@ -79,7 +79,7 @@ bitcache_filter_lookup(const bitcache_filter_t* filter, const bitcache_id_t* id)
 
   const uint32_t m = filter->size * 8;
   for (int k = 0; k < BITCACHE_FILTER_K_MAX; k++) {
-    const uint32_t i = ((uint32_t*)id)[k] & (m - 1);
+    const uint32_t i = ((uint32_t*)id)[k] % m;
     const uint8_t* p = filter->bitmap + (i >> 3);
     const uint8_t  b = 1 << (i & 7);
 
@@ -99,7 +99,7 @@ bitcache_filter_insert(bitcache_filter_t* filter, const bitcache_id_t* id) {
 
   const uint32_t m = filter->size * 8;
   for (int k = 0; k < BITCACHE_FILTER_K_MAX; k++) {
-    const uint32_t i = ((uint32_t*)id)[k] & (m - 1);
+    const uint32_t i = ((uint32_t*)id)[k] % m;
     uint8_t* const p = filter->bitmap + (i >> 3);
     const uint8_t  b = 1 << (i & 7);
 
