@@ -166,11 +166,13 @@ bitcache_map_iter_next(bitcache_map_iter_t* iter, bitcache_id_t** key, void** va
   int result = 0;
 
   if (likely(g_hash_table_iter_next(&iter->hash_table_iter, (void**)key, value) != FALSE)) {
+    iter->position++;
     result = 1;
   }
   else {
     while (++iter->stripe < iter->map->striping) {
       if (likely(g_hash_table_iter_next(&iter->hash_table_iter, (void**)key, value) != FALSE)) {
+        iter->position++;
         result = 1;
         break;
       }

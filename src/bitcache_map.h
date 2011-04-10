@@ -38,6 +38,7 @@ typedef struct {
 } bitcache_map_t;
 
 typedef struct {
+  int position;
   int stripe;
   bitcache_map_t* map;
   GHashTableIter hash_table_iter;

@@ -31,6 +31,7 @@ typedef struct {
 } bitcache_tree_t;
 
 typedef struct {
+  int position;
   bitcache_tree_t* tree;
 } bitcache_tree_iter_t;
 
