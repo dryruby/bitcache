@@ -11,22 +11,17 @@
 // Map API
 
 int
-bitcache_map_init(bitcache_map_t* map, const GHashFunc hash_func, const GEqualFunc equal_func, const GDestroyNotify key_destroy_func, const GDestroyNotify value_destroy_func) {
+bitcache_map_init(bitcache_map_t* map, const GDestroyNotify key_destroy_func, const GDestroyNotify value_destroy_func) {
   if (unlikely(map == NULL))
     return -(errno = EINVAL); // invalid argument
 
   bzero(map, sizeof(bitcache_map_t));
-  map->striping = BITCACHE_MAP_STRIPES;
 
-  for (int i = 0; i < map->striping; i++) {
-    bitcache_map_stripe_t* map_stripe = &map->stripes[i];
-
-    bitcache_map_stripe_crlock(map_stripe);
-    map_stripe->hash_table = g_hash_table_new_full(
-      (hash_func != NULL) ? hash_func : g_direct_hash,
-      (equal_func != NULL) ? equal_func : g_direct_equal,
-      key_destroy_func, value_destroy_func);
-  }
+  bitcache_map_crlock(map);
+  map->hash_table = g_hash_table_new_full(
+    (GHashFunc)bitcache_id_hash,
+    (GEqualFunc)bitcache_id_equal,
+    key_destroy_func, value_destroy_func);
 
   return 0;
 }
@@ -36,17 +31,11 @@ bitcache_map_reset(bitcache_map_t* map) {
   if (unlikely(map == NULL))
     return -(errno = EINVAL); // invalid argument
 
-  for (int i = 0; i < map->striping; i++) {
-    bitcache_map_stripe_t* map_stripe = &map->stripes[i];
-
-    bitcache_map_stripe_rmlock(map_stripe);
-    if (map_stripe->hash_table != NULL) {
-      g_hash_table_destroy(map_stripe->hash_table);
-      map_stripe->hash_table = NULL;
-    }
+  bitcache_map_rmlock(map);
+  if (likely(map->hash_table != NULL)) {
+    g_hash_table_destroy(map->hash_table);
+    map->hash_table = NULL;
   }
-
-  map->striping = 0;
 
   return 0;
 }
@@ -56,15 +45,11 @@ bitcache_map_clear(bitcache_map_t* map) {
   if (unlikely(map == NULL))
     return -(errno = EINVAL); // invalid argument
 
-  for (int i = 0; i < map->striping; i++) {
-    bitcache_map_stripe_t* map_stripe = &map->stripes[i];
-
-    bitcache_map_stripe_wrlock(map_stripe);
-    if (map_stripe->hash_table != NULL) {
-      g_hash_table_remove_all(map_stripe->hash_table);
-    }
-    bitcache_map_stripe_unlock(map_stripe);
+  bitcache_map_wrlock(map);
+  if (likely(map->hash_table != NULL)) {
+    g_hash_table_remove_all(map->hash_table);
   }
+  bitcache_map_unlock(map);
 
   return 0;
 }
@@ -76,15 +61,11 @@ bitcache_map_count(bitcache_map_t* map) {
 
   ssize_t count = 0;
 
-  for (int i = 0; i < map->striping; i++) {
-    bitcache_map_stripe_t* map_stripe = &map->stripes[i];
-
-    bitcache_map_stripe_rdlock(map_stripe);
-    if (map_stripe->hash_table != NULL) {
-      count += g_hash_table_size(map_stripe->hash_table);
-    }
-    bitcache_map_stripe_unlock(map_stripe);
+  bitcache_map_rdlock(map);
+  if (likely(map->hash_table != NULL)) {
+    count += g_hash_table_size(map->hash_table);
   }
+  bitcache_map_unlock(map);
 
   return count;
 }
@@ -92,18 +73,15 @@ bitcache_map_count(bitcache_map_t* map) {
 bool
 bitcache_map_lookup(bitcache_map_t* map, const bitcache_id_t* key, void** value) {
   if (unlikely(map == NULL || key == NULL))
-    return -(errno = EINVAL); // invalid argument
+    return errno = EINVAL, FALSE; // invalid argument
 
   bool found = FALSE;
 
-  const int shard = (key->digest[0] & (map->striping - 1));
-  bitcache_map_stripe_t* map_stripe = &map->stripes[shard];
-
-  bitcache_map_stripe_rdlock(map_stripe);
-  if (map_stripe->hash_table != NULL) {
-    found = g_hash_table_lookup_extended(map_stripe->hash_table, key, NULL, value);
+  bitcache_map_rdlock(map);
+  if (likely(map->hash_table != NULL)) {
+    found = g_hash_table_lookup_extended(map->hash_table, key, NULL, value);
   }
-  bitcache_map_stripe_unlock(map_stripe);
+  bitcache_map_unlock(map);
 
   return found;
 }
@@ -113,12 +91,14 @@ bitcache_map_insert(bitcache_map_t* map, const bitcache_id_t* key, const void* v
   if (unlikely(map == NULL || key == NULL))
     return -(errno = EINVAL); // invalid argument
 
-  const int shard = (key->digest[0] & (map->striping - 1));
-  bitcache_map_stripe_t* map_stripe = &map->stripes[shard];
-
-  bitcache_map_stripe_wrlock(map_stripe);
-  g_hash_table_insert(map_stripe->hash_table, (void*)key, (void*)value);
-  bitcache_map_stripe_unlock(map_stripe);
+  bitcache_map_wrlock(map);
+  if (likely(map->hash_table != NULL)) {
+    g_hash_table_insert(map->hash_table, (void*)key, (void*)value);
+  }
+  else {
+    assert(map->hash_table != NULL);
+  }
+  bitcache_map_unlock(map);
 
   return 0;
 }
@@ -128,14 +108,11 @@ bitcache_map_remove(bitcache_map_t* map, const bitcache_id_t* key) {
   if (unlikely(map == NULL || key == NULL))
     return -(errno = EINVAL); // invalid argument
 
-  const int shard = (key->digest[0] & (map->striping - 1));
-  bitcache_map_stripe_t* map_stripe = &map->stripes[shard];
-
-  bitcache_map_stripe_wrlock(map_stripe);
-  if (map_stripe->hash_table != NULL) {
-    g_hash_table_remove(map_stripe->hash_table, (void*)key);
+  bitcache_map_wrlock(map);
+  if (likely(map->hash_table != NULL)) {
+    g_hash_table_remove(map->hash_table, (void*)key);
   }
-  bitcache_map_stripe_unlock(map_stripe);
+  bitcache_map_unlock(map);
 
   return 0;
 }
@@ -149,42 +126,30 @@ bitcache_map_iter_init(bitcache_map_iter_t* iter, bitcache_map_t* map) {
     return -(errno = EINVAL); // invalid argument
 
   bzero(iter, sizeof(bitcache_map_iter_t));
-  iter->map    = map;
-  iter->stripe = 0;
-
-  bitcache_map_stripe_t* map_stripe = &map->stripes[iter->stripe];
-  g_hash_table_iter_init(&iter->hash_table_iter, map_stripe->hash_table);
+  iter->map = map;
+  g_hash_table_iter_init(&iter->hash_table_iter, map->hash_table);
 
   return 0;
 }
 
-int
+bool
 bitcache_map_iter_next(bitcache_map_iter_t* iter, bitcache_id_t** key, void** value) {
-  if (unlikely(iter == NULL))
-    return -(errno = EINVAL); // invalid argument
+  if (unlikely(iter == NULL || iter->map == NULL))
+    return errno = EINVAL, FALSE; // invalid argument
 
-  int result = 0;
+  int more = FALSE;
 
   if (likely(g_hash_table_iter_next(&iter->hash_table_iter, (void**)key, value) != FALSE)) {
     iter->position++;
-    result = 1;
-  }
-  else {
-    while (++iter->stripe < iter->map->striping) {
-      if (likely(g_hash_table_iter_next(&iter->hash_table_iter, (void**)key, value) != FALSE)) {
-        iter->position++;
-        result = 1;
-        break;
-      }
-    }
+    more = TRUE;
   }
 
-  return result;
+  return more;
 }
 
 int
 bitcache_map_iter_remove(bitcache_map_iter_t* iter) {
-  if (unlikely(iter == NULL))
+  if (unlikely(iter == NULL || iter->map == NULL))
     return -(errno = EINVAL); // invalid argument
 
   g_hash_table_iter_remove(&iter->hash_table_iter);
@@ -194,7 +159,7 @@ bitcache_map_iter_remove(bitcache_map_iter_t* iter) {
 
 int
 bitcache_map_iter_done(bitcache_map_iter_t* iter) {
-  if (unlikely(iter == NULL))
+  if (unlikely(iter == NULL || iter->map == NULL))
     return -(errno = EINVAL); // invalid argument
 
   bzero(iter, sizeof(bitcache_map_iter_t));
