@@ -92,11 +92,6 @@ extern bitcache_id* bitcache_id_new_from_hex_string(const char* string);
 extern bitcache_id* bitcache_id_new_from_base64_string(const char* string);
 extern bitcache_id* bitcache_id_copy(const bitcache_id* id);
 
-// Mutators
-extern void bitcache_id_init(bitcache_id* id, const bitcache_id_type type, const byte* digest);
-extern void bitcache_id_clear(bitcache_id* id);
-extern void bitcache_id_fill(bitcache_id* id, const byte value);
-
 // Accessors
 extern guint bitcache_id_get_hash(const bitcache_id* id);
 extern bitcache_id_type bitcache_id_get_type(const bitcache_id* id);

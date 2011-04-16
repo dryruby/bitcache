@@ -127,7 +127,7 @@ bitcache_id*
 bitcache_id_new(const bitcache_id_type type, const byte* digest) {
   assert(type != BITCACHE_NONE);
   bitcache_id* id = bitcache_id_alloc(type);
-  bitcache_id_init(id, type, digest);
+  //bitcache_id_init(id, type, digest); // FIXME
   return id;
 }
 
@@ -179,30 +179,6 @@ bitcache_id*
 bitcache_id_copy(const bitcache_id* id) {
   assert(id != NULL);
   return bitcache_slice_copy(bitcache_id_sizeof(id->type), id);
-}
-
-//////////////////////////////////////////////////////////////////////////////
-// Identifier API: Mutators
-
-void
-bitcache_id_init(bitcache_id* id, const bitcache_id_type type, const byte* digest) {
-  assert(type != BITCACHE_NONE);
-  id->type = type;
-  if (digest != NULL) {
-    bitcache_memmove(id->digest, digest, bitcache_id_get_digest_size(id));
-  }
-}
-
-void
-bitcache_id_clear(bitcache_id* id) {
-  assert(id != NULL);
-  bzero(id->digest, bitcache_id_get_digest_size(id));
-}
-
-void
-bitcache_id_fill(bitcache_id* id, const byte value) {
-  assert(id != NULL);
-  memset(id->digest, value, bitcache_id_get_digest_size(id));
 }
 
 //////////////////////////////////////////////////////////////////////////////
