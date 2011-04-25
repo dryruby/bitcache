@@ -699,43 +699,6 @@ bitcache_set_copy(const bitcache_set* set) {
 // Set API: Mutators
 
 void
-bitcache_set_init(bitcache_set* set) {
-  assert(set != NULL);
-  set->root = g_hash_table_new(
-    (GHashFunc)bitcache_id_get_hash,
-    (GEqualFunc)bitcache_id_is_equal);
-}
-
-void
-bitcache_set_clear(bitcache_set* set) {
-  assert(set != NULL && set->root != NULL);
-  g_hash_table_remove_all(set->root);
-}
-
-void
-bitcache_set_insert(bitcache_set* set, const bitcache_id* id) {
-  assert(set != NULL && set->root != NULL);
-  assert(id != NULL);
-  g_hash_table_insert(set->root, (bitcache_id*)id, NULL);
-}
-
-void
-bitcache_set_remove(bitcache_set* set, const bitcache_id* id) {
-  assert(set != NULL && set->root != NULL);
-  assert(id != NULL);
-  g_hash_table_remove(set->root, id);
-}
-
-void
-bitcache_set_replace(bitcache_set* set, const bitcache_id* id1, const bitcache_id* id2) {
-  assert(set != NULL && set->root != NULL);
-  assert(id1 != NULL && id2 != NULL);
-
-  bitcache_set_remove(set, id1);
-  bitcache_set_insert(set, id2);
-}
-
-void
 bitcache_set_merge(bitcache_set* set1, const bitcache_set* set2, const bitcache_op op) {
   assert(set1 != NULL && set2 != NULL);
 

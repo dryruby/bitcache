@@ -200,11 +200,6 @@ extern bitcache_set* bitcache_set_new_difference(const bitcache_set* set1, const
 extern bitcache_set* bitcache_set_copy(const bitcache_set* set);
 
 // Mutators
-extern void bitcache_set_init(bitcache_set* set);
-extern void bitcache_set_clear(bitcache_set* set);
-extern void bitcache_set_insert(bitcache_set* set, const bitcache_id* id);
-extern void bitcache_set_remove(bitcache_set* set, const bitcache_id* id);
-extern void bitcache_set_replace(bitcache_set* set, const bitcache_id* id1, const bitcache_id* id2);
 extern void bitcache_set_merge(bitcache_set* set1, const bitcache_set* set2, const bitcache_op op);
 
 // Accessors
