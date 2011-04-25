@@ -96,7 +96,7 @@ bitcache_id_hash(const bitcache_id_t* id) {
   if (unlikely(id == NULL))
     return errno = EINVAL, 0; // invalid argument
 
-  return *((uint32_t*)id); // the first 4 bytes of the identifier
+  return *((uint32_t*)id->digest); // the first 4 bytes of the identifier digest
 }
 
 //////////////////////////////////////////////////////////////////////////////
