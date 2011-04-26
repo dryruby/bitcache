@@ -86,6 +86,7 @@ incorrect or invalid input. Rather, they will return @code{-EINVAL} and set
 @code{errno} accordingly.
 
 @section Thread Safety
+@cindex thread safety
 @cindex locking
 
 When compiled with the @code{-DMT} preprocessor flag, all @code{libbitcache}
@@ -118,17 +119,108 @@ TODO
 @section Computing Identifiers
 @findex bitcache_id_t
 
-TODO
+@deftypefn {Function} int bitcache_id_init (bitcache_id_t* @var{id}, uint8_t* @var{digest})
+@end deftypefn
+
+@deftypefn {Function} ssize_t bitcache_id_parse (bitcache_id_t* @var{id}, char* @var{hexstring})
+@end deftypefn
+
+@deftypefn {Function} ssize_t bitcache_id_serialize (bitcache_id_t* @var{id}, char* @var{buffer}, size_t @var{buffer_size})
+@end deftypefn
+
+@deftypefn {Function} int bitcache_id_clear (bitcache_id_t* @var{id})
+@end deftypefn
+
+@deftypefn {Function} int bitcache_id_fill (bitcache_id_t* @var{id}, uint8_t @var{value})
+@end deftypefn
+
+@deftypefn {Function} bool bitcache_id_equal (bitcache_id_t* @var{id1}, bitcache_id_t* @var{id2})
+@end deftypefn
+
+@deftypefn {Function} int bitcache_id_compare (bitcache_id_t* @var{id1}, bitcache_id_t* @var{id2})
+@end deftypefn
+
+@deftypefn {Function} uint32_t bitcache_id_hash (bitcache_id_t* @var{id})
+@end deftypefn
 
 @section Using Filters
 @findex bitcache_filter_t
+@findex bitcache_filter_op_t
 
-TODO
+@deftypefn {Function} int bitcache_filter_init (bitcache_filter_t* @var{filter}, size_t @var{size})
+@end deftypefn
+
+@deftypefn {Function} int bitcache_filter_reset (bitcache_filter_t* @var{filter})
+@end deftypefn
+
+@deftypefn {Function} int bitcache_filter_clear (bitcache_filter_t* @var{filter})
+@end deftypefn
+
+@deftypefn {Function} ssize_t bitcache_filter_size (bitcache_filter_t* @var{filter})
+@end deftypefn
+
+@deftypefn {Function} long bitcache_filter_count (bitcache_filter_t* @var{filter}, bitcache_id_t* @var{id})
+@end deftypefn
+
+@deftypefn {Function} bool bitcache_filter_lookup (bitcache_filter_t* @var{filter}, bitcache_id_t* @var{id})
+@end deftypefn
+
+@deftypefn {Function} int bitcache_filter_insert (bitcache_filter_t* @var{filter}, bitcache_id_t* @var{id})
+@end deftypefn
+
+@deftypefn {Function} int bitcache_filter_compare (bitcache_filter_t* @var{filter1}, bitcache_filter_t* @var{filter2})
+@end deftypefn
+
+@deftypefn {Function} int bitcache_filter_merge (bitcache_filter_t* @var{filter0}, bitcache_filter_op_t @var{op}, bitcache_filter_t* @var{filter1}, bitcache_filter_t* @var{filter2})
+@end deftypefn
+
+@deftypefn {Function} int bitcache_filter_load (bitcache_filter_t* @var{filter}, int @var{fd})
+@end deftypefn
+
+@deftypefn {Function} int bitcache_filter_dump (bitcache_filter_t* @var{filter}, int @var{fd})
+@end deftypefn
 
 @section Using Sets
 @findex bitcache_set_t
 
-TODO
+@deftypefn {Function} int bitcache_set_init (bitcache_set_t* @var{set}, GDestroyNotify @var{id_destroy_func})
+@end deftypefn
+
+@deftypefn {Function} int bitcache_set_reset (bitcache_set_t* @var{set})
+@end deftypefn
+
+@deftypefn {Function} int bitcache_set_clear (bitcache_set_t* @var{set})
+@end deftypefn
+
+@deftypefn {Function} long bitcache_set_count (bitcache_set_t* @var{set})
+@end deftypefn
+
+@deftypefn {Function} bool bitcache_set_lookup (bitcache_set_t* @var{set}, bitcache_id_t* @var{id})
+@end deftypefn
+
+@deftypefn {Function} int bitcache_set_insert (bitcache_set_t* @var{set}, bitcache_id_t* @var{id})
+@end deftypefn
+
+@deftypefn {Function} int bitcache_set_remove (bitcache_set_t* @var{set}, bitcache_id_t* @var{id})
+@end deftypefn
+
+@deftypefn {Function} int bitcache_set_replace (bitcache_set_t* @var{set}, bitcache_id_t* @var{id1}, bitcache_id_t* @var{id2})
+@end deftypefn
+
+@subsection Iterating Sets
+@findex bitcache_set_iter_t
+
+@deftypefn {Function} int bitcache_set_iter_init (bitcache_set_iter_t* @var{iter}, bitcache_set_t* @var{set})
+@end deftypefn
+
+@deftypefn {Function} bool bitcache_set_iter_next (bitcache_set_iter_t* @var{iter}, bitcache_id_t** @var{id})
+@end deftypefn
+
+@deftypefn {Function} int bitcache_set_iter_remove (bitcache_set_iter_t* @var{iter})
+@end deftypefn
+
+@deftypefn {Function} int bitcache_set_iter_done (bitcache_set_iter_t* @var{iter})
+@end deftypefn
 
 @comment *********************************************************************
 
