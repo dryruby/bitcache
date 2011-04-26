@@ -36,6 +36,7 @@ this manual for any purpose, commercial or non-commercial, and by any means.
 
 @menu
 * Overview of Bitcache::
+* Bitcache Data Structures::
 * Developing with Bitcache::
 * Concept Index::
 * Function and Type Index::
@@ -92,29 +93,80 @@ incorrect or invalid input. Rather, they will return @code{-EINVAL} and set
 When compiled with the @code{-DMT} preprocessor flag, all @code{libbitcache}
 data structures will automatically be synchronized to ensure thread safety.
 
-@section Data Structures
+@comment *********************************************************************
+
+@node Bitcache Data Structures
+@chapter Bitcache Data Structures
 @cindex data structures
 
-@subsection Identifiers
+@comment ---------------------------------------------------------------------
+
+@section Bitcache Identifiers
 
 TODO
 
-@subsection Blocks
+@subsection Time complexity
+@subsection Space requirements
+
+@comment ---------------------------------------------------------------------
+
+@section Bitcache Blocks
 
 TODO
 
-@subsection Filters
+@subsection Time complexity
+@subsection Space requirements
+
+@comment ---------------------------------------------------------------------
+
+@section Bitcache Filters
+
+Bitcache implements Bloom filters for recognizing Bitcache identifiers.
+
+Bloom filters are space-efficient probabilistic data structures used to test
+whether an element is a member of a set. False positives are possible, but
+false negatives are not. Elements can be added to the set, but not removed.
+The more elements that are added to the set, the larger the probability of
+false positives.
+
+@subsection Time complexity
+
+The time needed to either add an identifier or to check whether an
+identifier is a member of the set is a fixed constant, @code{O(k)},
+completely independent of the number of identifiers already in the set.
+
+The constant @code{k} is proportional to the length of the specific type of
+identifier used; @code{k=4} for MD5 identifiers, @code{k=5} for SHA-1
+identifiers, and @code{k=8} for SHA-256 identifiers.
+
+@subsection Space requirements
+
+The Bitcache implementation of Bloom filters is tuned to by default use 8
+bits per element, giving a fixed false positive probability of around 2%.
+
+@subsection Limitations
+
+Identifiers can't be removed from a filter except by recreating the filter
+afresh. This could be addressed by implementing a counting Bloom filter, but
+that would add complexity as well as quadruple the space requirements of
+filters. Still, counting filters may be provided as an option in the future
+if there is demand for the feature.
+
+@comment ---------------------------------------------------------------------
+
+@section Bitcache Sets
 
 TODO
 
-@subsection Sets
-
-TODO
+@subsection Time complexity
+@subsection Space requirements
 
 @comment *********************************************************************
 
 @node Developing with Bitcache
 @chapter Developing with Bitcache
+
+@comment ---------------------------------------------------------------------
 
 @section Computing Identifiers
 @findex bitcache_id_t
@@ -142,6 +194,8 @@ TODO
 
 @deftypefn {Function} uint32_t bitcache_id_hash (bitcache_id_t* @var{id})
 @end deftypefn
+
+@comment ---------------------------------------------------------------------
 
 @section Using Filters
 @findex bitcache_filter_t
@@ -179,6 +233,8 @@ TODO
 
 @deftypefn {Function} int bitcache_filter_dump (bitcache_filter_t* @var{filter}, int @var{fd})
 @end deftypefn
+
+@comment ---------------------------------------------------------------------
 
 @section Using Sets
 @findex bitcache_set_t
