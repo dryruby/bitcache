@@ -62,13 +62,18 @@ All declarations needed to develop with Bitcache are collected in the
 include file @code{bitcache.h}, which can be used with both C and C++
 compilers.
 
+@example
+#include <bitcache.h>
+@end example
+
 @section Memory Management
 @cindex memory management
 @findex malloc
 
 In general, @code{libbitcache} does not dynamically allocate any memory.
-Choosing a memory-management strategy, whether based on @code{malloc()} or
-garbage collection, is explicitly left up to the users of the library.
+Choosing a memory-management strategy, whether based on
+@code{malloc()}/@code{free()} or garbage collection, is explicitly left up
+to the users of the library.
 
 @section Error Handling
 @cindex error handling
@@ -77,6 +82,24 @@ garbage collection, is explicitly left up to the users of the library.
 Most @code{libbitcache} functions return a signed integer value, wherein a
 negative value indicates that the function call failed due to an error. The
 returned value is equivalent to @code{-errno}.
+
+The following standard error codes may be returned by @code{libbitcache}
+functions:
+
+@table @code
+@findex EINVAL
+@item EINVAL
+invalid argument
+@findex ENOMEM
+@item ENOMEM
+cannot allocate memory
+@findex EOVERFLOW
+@item EOVERFLOW
+buffer overflow
+@end table
+
+Other standard error codes not listed above may be returned where they are
+percolated up from a failed standard library call or system call.
 
 @subsection Assertions
 @cindex assertions
@@ -99,27 +122,92 @@ data structures will automatically be synchronized to ensure thread safety.
 @chapter Bitcache Data Structures
 @cindex data structures
 
-@comment ---------------------------------------------------------------------
-
-@section Bitcache Identifiers
-
-TODO
-
-@subsection Time complexity
-@subsection Space requirements
+This chapter describes the various data structures provided by Bitcache.
 
 @comment ---------------------------------------------------------------------
 
 @section Bitcache Blocks
+@cindex block
 
 TODO
 
+Bitcache blocks can optionally be stored in compressed and/or encrypted form.
+
 @subsection Time complexity
+
+TODO
+
 @subsection Space requirements
+
+TODO
+
+@subsection Limitations
+
+The minimum block size is zero bytes, and the maximum block size
+@math{2^64 - 1} bytes (about 18 exabytes).
+
+@comment ---------------------------------------------------------------------
+
+@section Bitcache Identifiers
+@cindex identifier
+
+Bitcache identifiers uniquely identify blocks using a cryptographic
+fingerprint.
+
+@subsection Time complexity
+
+TODO
+
+@subsection Space requirements
+
+TODO
+
+@comment ---------------------------------------------------------------------
+
+@section Bitcache Lists
+@cindex list
+
+Bitcache lists can be used e.g. to maintain block lists for file systems
+implemented on top of Bitcache.
+
+Bitcache lists are presently implemented using singly-linked lists.
+
+@subsection Time complexity
+
+The time complexity for obtaining the length of a list is @code{O(n)}.
+
+The time complexity for inserting an identifier into a list is @code{O(1)}
+at the head of the list and @code{O(n)} at the tail of the list.
+
+The time complexity for testing whether a list includes an identifier is
+@code{O(n)}.
+
+@subsection Space requirements
+
+TODO
+
+@comment ---------------------------------------------------------------------
+
+@section Bitcache Queues
+@cindex queue
+
+TODO
+
+Bitcache queues are implemented using doubly-linked lists.
+
+@subsection Time complexity
+
+TODO
+
+@subsection Space requirements
+
+TODO
 
 @comment ---------------------------------------------------------------------
 
 @section Bitcache Filters
+@cindex Bloom filter
+@cindex filter
 
 Bitcache implements Bloom filters for recognizing Bitcache identifiers.
 
@@ -129,7 +217,16 @@ false negatives are not. Elements can be added to the set, but not removed.
 The more elements that are added to the set, the larger the probability of
 false positives.
 
+@subsection Characteristics
+
+@subsubsection False positive probability
+
+@math{}
+
 @subsection Time complexity
+@cindex MD5
+@cindex SHA-1
+@cindex SHA-256
 
 The time needed to either add an identifier or to check whether an
 identifier is a member of the set is a fixed constant, @code{O(k)},
@@ -155,11 +252,53 @@ if there is demand for the feature.
 @comment ---------------------------------------------------------------------
 
 @section Bitcache Sets
+@cindex set
 
 TODO
 
+Bitcache sets are presently implemented using a hash table.
+
 @subsection Time complexity
+
+TODO
+
 @subsection Space requirements
+
+TODO
+
+@comment ---------------------------------------------------------------------
+
+@section Bitcache Maps
+@cindex map
+
+TODO
+
+Bitcache maps are presently implemented using a hash table.
+
+@subsection Time complexity
+
+TODO
+
+@subsection Space requirements
+
+TODO
+
+@comment ---------------------------------------------------------------------
+
+@section Bitcache Indexes
+@cindex index
+
+Bitcache indexes are maps of Bitcache identifiers to sets of identifiers.
+
+Bitcache indexes are presently implemented using a hash table.
+
+@subsection Time complexity
+
+TODO
+
+@subsection Space requirements
+
+TODO
 
 @comment *********************************************************************
 
@@ -278,6 +417,151 @@ TODO
 @deftypefn {Function} int bitcache_set_iter_done (bitcache_set_iter_t* @var{iter})
 @end deftypefn
 
+@comment *********************************************************************
+@node Glossary
+@unnumbered Glossary
+@table @dfn
+
+@item archive
+@cindex archive
+TODO
+
+@item assertion
+@findex assert
+TODO
+
+@item atomicity
+TODO
+
+@item big-O notation
+see @emph{time complexity}.
+
+@item block
+@cindex block
+a block of data.
+
+@item Bloom filter
+@cindex Bloom filter
+a space-efficient probabilistic data structure used to test whether an
+element is a member of a set; false positives are possible, but false
+negatives are not.
+
+@item content addressable
+@cindex content addressable
+TODO
+
+@item content-addressable storage (CAS)
+@cindex content-addressable storage
+TODO
+
+@item cryptography
+TODO
+
+@item digest
+@cindex digest
+TODO
+
+@item @code{errno}
+@findex errno
+on POSIX systems, a thread-local integer variable containing the error
+number set by a failed library call or system call.
+
+@item fingerprint
+TODO
+
+@item GLib
+TODO
+
+@item hash code
+TODO
+
+@item hash collision
+TODO
+
+@item hexadecimal
+a numerical notation with base 16 instead of base 10.
+
+@item identifier
+@cindex identifier
+TODO
+
+@item index
+@cindex index
+TODO
+
+@item list
+@cindex list
+an ordered collection.
+
+@item map
+@cindex map
+TODO
+
+@item MD5
+@cindex MD5
+TODO
+
+@item octal
+a numerical notation with base 16 instead of base 10.
+
+@item OpenSSL
+TODO
+
+@item queue
+@cindex queue
+an ordered collection supporting element insertion at the back of the
+collection and element removal at the front, thus constituting a
+first-in-first-out (FIFO) data structure.
+
+@item set
+@cindex set
+TODO
+
+@item set difference
+@cindex set operation
+the difference of two sets is the set of all elements which are members of
+the first set but not members of the second set.
+
+@item set intersection
+@cindex set operation
+the intersection of two sets is the set of all elements which are members of
+both sets.
+
+@item set union
+@cindex set operation
+the union of two sets is the set of all elements which are members of either
+set.
+
+@item SHA-1
+@cindex SHA-1
+TODO
+
+@item SHA-2
+@cindex SHA-2
+TODO
+
+@item SHA-224
+TODO
+
+@item SHA-256
+@cindex SHA-256
+TODO
+
+@item SHA-384
+TODO
+
+@item SHA-512
+TODO
+
+@item time complexity
+@cindex time complexity
+a quantification of the amount of time taken by an algorithm to run as a
+function of the size of the input to the problem.
+
+@item Unlicense
+a standard template for public-domain dedications; see @url{http://unlicense.org/}.
+
+@end table
 @comment *********************************************************************
 
 @node Concept Index
