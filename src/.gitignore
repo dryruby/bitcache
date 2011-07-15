@@ -4,6 +4,3 @@
 *.o
 *.la
 *.lo
-bit
-bit-id
-bitcached
