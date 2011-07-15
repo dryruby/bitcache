@@ -32,15 +32,6 @@ extern "C" {
 # define COLD
 #endif /* __GNUC__ */
 
-/* branch prediction hints */
-#ifdef __GNUC__
-# define likely(x)         __builtin_expect(!!(x), 1) /* `x` is likely to evaluate to TRUE   */
-# define unlikely(x)       __builtin_expect(!!(x), 0) /* `x` is unlikely to evaluate to TRUE */
-#else
-# define likely(x)         x
-# define unlikely(x)       x
-#endif /* __GNUC__ */
-
 #ifdef __cplusplus
 }
 #endif
