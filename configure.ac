@@ -22,6 +22,10 @@ dnl libcprime (https://github.com/bendiken/libcprime)
 AC_CHECK_HEADERS([cprime.h],
   AC_SEARCH_LIBS([string_alloc], [cprime]),
   AC_MSG_ERROR([*** Header file cprime.h not found; install https://github.com/bendiken/libcprime ***]))
+dnl libcrypto (libssl-dev on Ubuntu, openssl on Mac OS X + MacPorts)
+AC_CHECK_HEADERS([openssl/sha.h],
+  AC_SEARCH_LIBS([SHA1], [crypto]),
+  AC_MSG_ERROR([*** Header file openssl/sha.h not found; install the libssl-dev package ***]))
 dnl glib (libglib2.0-dev on Ubuntu, glib2 on Mac OS X + MacPorts)
 AM_PATH_GLIB_2_0([2.24.0], [], [], [gthread])
 AC_CONFIG_HEADERS([config.h])

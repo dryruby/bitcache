@@ -4,7 +4,7 @@ AM_LDFLAGS      = -rdynamic
 LDADD           = libbitcache.la
 lib_LTLIBRARIES = libbitcache.la
 
-libbitcache_la_LIBADD  = $(GLIB_LIBS) -lcrypto
+libbitcache_la_LIBADD  = $(GLIB_LIBS)
 libbitcache_la_SOURCES = bitcache.c \
   filter.c \
   id.c \
