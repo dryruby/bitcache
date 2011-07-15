@@ -1,7 +1,7 @@
 /* This is free and unencumbered software released into the public domain. */
 
-#ifndef BITCACHE_ID_H
-#define BITCACHE_ID_H
+#ifndef _BITCACHE_ID_H
+#define _BITCACHE_ID_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -10,6 +10,7 @@ extern "C" {
 #include <stdbool.h>
 #include <stdint.h>
 #include <unistd.h>  /* for ssize_t */
+
 #include <glib.h>
 
 typedef struct {
@@ -29,4 +30,4 @@ extern uint32_t bitcache_id_hash(const bitcache_id_t* id);
 }
 #endif
 
-#endif /* BITCACHE_ID_H */
+#endif /* _BITCACHE_ID_H */

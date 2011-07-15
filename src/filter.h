@@ -1,16 +1,16 @@
 /* This is free and unencumbered software released into the public domain. */
 
-#ifndef BITCACHE_FILTER_H
-#define BITCACHE_FILTER_H
+#ifndef _BITCACHE_FILTER_H
+#define _BITCACHE_FILTER_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "bitcache_id.h"
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include <glib.h>
 
 #define BITCACHE_FILTER_K_MAX (sizeof(bitcache_id_t) / sizeof(uint32_t)) /* k=5 for SHA-1 */
@@ -43,4 +43,4 @@ extern int bitcache_filter_dump(const bitcache_filter_t* filter, const int fd);
 }
 #endif
 
-#endif /* BITCACHE_FILTER_H */
+#endif /* _BITCACHE_FILTER_H */

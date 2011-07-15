@@ -1,18 +1,18 @@
 /* This is free and unencumbered software released into the public domain. */
 
-#ifndef BITCACHE_SET_H
-#define BITCACHE_SET_H
+#ifndef _BITCACHE_SET_H
+#define _BITCACHE_SET_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "bitcache_id.h"
-//#include "bitcache_filter.h" // TODO
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include <glib.h>
+
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>
 #endif
@@ -58,10 +58,10 @@ extern int bitcache_set_iter_done(bitcache_set_iter_t* iter);
 #define bitcache_set_rdlock(set)
 #define bitcache_set_wrlock(set)
 #define bitcache_set_unlock(set)
-#endif
+#endif /* HAVE_PTHREAD_H */
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* BITCACHE_SET_H */
+#endif /* _BITCACHE_SET_H */

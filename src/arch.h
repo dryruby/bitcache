@@ -1,7 +1,7 @@
 /* This is free and unencumbered software released into the public domain. */
 
-#ifndef BITCACHE_ARCH_H
-#define BITCACHE_ARCH_H
+#ifndef _BITCACHE_ARCH_H
+#define _BITCACHE_ARCH_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -45,4 +45,4 @@ extern "C" {
 }
 #endif
 
-#endif /* BITCACHE_ARCH_H */
+#endif /* _BITCACHE_ARCH_H */

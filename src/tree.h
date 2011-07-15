@@ -1,17 +1,18 @@
 /* This is free and unencumbered software released into the public domain. */
 
-#ifndef BITCACHE_TREE_H
-#define BITCACHE_TREE_H
+#ifndef _BITCACHE_TREE_H
+#define _BITCACHE_TREE_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "bitcache_id.h"
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include <glib.h>
+
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>
 #endif
@@ -70,10 +71,10 @@ extern int bitcache_tree_iter_done(bitcache_tree_iter_t* iter);
 #define bitcache_tree_wrlock(tree) pthread_rwlock_wrlock(&(tree)->lock)
 #define bitcache_tree_unlock(tree) pthread_rwlock_unlock(&(tree)->lock)
 #endif
-#endif /* MT */
+#endif /* HAVE_PTHREAD_H */
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* BITCACHE_TREE_H */
+#endif /* _BITCACHE_TREE_H */

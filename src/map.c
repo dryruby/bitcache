@@ -1,8 +1,6 @@
 /* This is free and unencumbered software released into the public domain. */
 
-#include "bitcache_arch.h"
-#include "bitcache_map.h"
-#include "config.h"
+#include "build.h"
 #include <assert.h>
 #include <errno.h>
 #include <strings.h>

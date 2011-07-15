@@ -7,6 +7,12 @@
 extern "C" {
 #endif
 
+#include <bitcache/id.h>
+#include <bitcache/filter.h>
+#include <bitcache/map.h>
+#include <bitcache/set.h>
+#include <bitcache/tree.h>
+
 extern const char* const bitcache_version_string;
 
 #ifdef __cplusplus

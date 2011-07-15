@@ -6,18 +6,18 @@ lib_LTLIBRARIES = libbitcache.la
 
 libbitcache_la_LIBADD  = $(GLIB_LIBS) -lcrypto
 libbitcache_la_SOURCES = bitcache.c \
-  bitcache_filter.c \
-  bitcache_id.c \
-  bitcache_map.c \
-  bitcache_set.c \
-  bitcache_tree.c
+  filter.c \
+  id.c \
+  map.c \
+  set.c \
+  tree.c
 
 include_HEADERS = bitcache.h
 
 pkginclude_HEADERS = \
-  bitcache_arch.h \
-  bitcache_filter.h \
-  bitcache_id.h \
-  bitcache_map.h \
-  bitcache_set.h \
-  bitcache_tree.h
+  arch.h \
+  filter.h \
+  id.h \
+  map.h \
+  set.h \
+  tree.h

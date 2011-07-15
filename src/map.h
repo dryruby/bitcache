@@ -1,17 +1,18 @@
 /* This is free and unencumbered software released into the public domain. */
 
-#ifndef BITCACHE_MAP_H
-#define BITCACHE_MAP_H
+#ifndef _BITCACHE_MAP_H
+#define _BITCACHE_MAP_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "bitcache_id.h"
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include <glib.h>
+
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>
 #endif
@@ -67,10 +68,10 @@ extern int bitcache_map_iter_done(bitcache_map_iter_t* iter);
 #define bitcache_map_rdlock(map)
 #define bitcache_map_wrlock(map)
 #define bitcache_map_unlock(map)
-#endif
+#endif /* HAVE_PTHREAD_H */
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* BITCACHE_MAP_H */
+#endif /* _BITCACHE_MAP_H */
