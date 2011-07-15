@@ -18,11 +18,16 @@ AC_CHECK_HEADERS_ONCE([dirent.h errno.h iconv.h libgen.h mqueue.h poll.h
                        pthread.h sched.h syslog.h])
 dnl Linux header files:
 AC_CHECK_HEADERS_ONCE([execinfo.h])
-dnl glib2:
-AM_PATH_GLIB_2_0([2.24.0], [], [], [gthread-2.0])
-dnl libev:
-AC_CHECK_HEADERS(ev.h)
-AC_CHECK_LIB(ev, ev_loop)
+dnl libcprime (https://github.com/bendiken/libcprime)
+AC_CHECK_HEADERS([cprime.h],
+  AC_SEARCH_LIBS([string_alloc], [cprime]),
+  AC_MSG_ERROR([*** Header file cprime.h not found; install https://github.com/bendiken/libcprime ***]))
+dnl glib (libglib2.0-dev on Ubuntu, glib2 on Mac OS X + MacPorts)
+AM_PATH_GLIB_2_0([2.24.0], [], [], [gthread])
+dnl libev (libev-dev on Ubuntu, libev on Mac OS X + MacPorts)
+AC_CHECK_HEADERS([ev.h],
+  AC_SEARCH_LIBS([ev_loop], [ev]),
+  AC_MSG_ERROR([*** Header file ev.h not found; install the libev-dev package ***]))
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([Makefile src/Makefile doc/Makefile doc/man/Makefile])
 AC_OUTPUT
