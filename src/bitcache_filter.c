@@ -165,7 +165,7 @@ bitcache_filter_load_from_file(bitcache_filter_t* filter, const int fd, const of
     filter->size = sb.st_size - off;
   }
 
-  void* base = mmap(NULL, filter->size, PROT_READ, MAP_FILE | MAP_SHARED, fd, off);
+  void* base = mmap(NULL, filter->size, PROT_READ, MAP_SHARED, fd, off);
   if (unlikely(base == MAP_FAILED)) {
     return -errno;
   }

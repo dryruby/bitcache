@@ -68,7 +68,7 @@ int main(int argc, char* argv[]) {
       return 1;
     }
 
-    byte* data = mmap(0, sb.st_size, PROT_READ, MAP_FILE | MAP_SHARED, fd, 0);
+    byte* data = mmap(0, sb.st_size, PROT_READ, MAP_SHARED, fd, 0);
     if (data == MAP_FAILED) {
       perror("mmap");
       return 1;

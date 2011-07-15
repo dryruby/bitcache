@@ -12,11 +12,11 @@ extern "C" {
 #include <stdlib.h>
 #include <string.h>
 #include <glib.h>
-#ifdef MT
+#ifdef HAVE_PTHREAD_H
 #include <pthread.h>
 #endif
 
-#ifdef MT
+#ifdef HAVE_PTHREAD_H
 //#define BITCACHE_TREE_MUTEX  TRUE
 #define BITCACHE_TREE_RWLOCK TRUE
 #endif
@@ -50,7 +50,7 @@ extern int bitcache_tree_iter_next(bitcache_tree_iter_t* iter, bitcache_id_t** k
 extern int bitcache_tree_iter_remove(bitcache_tree_iter_t* iter);
 extern int bitcache_tree_iter_done(bitcache_tree_iter_t* iter);
 
-#ifndef MT
+#ifndef HAVE_PTHREAD_H
 #define bitcache_tree_crlock(tree)
 #define bitcache_tree_rmlock(tree)
 #define bitcache_tree_rdlock(tree)

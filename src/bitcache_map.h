@@ -12,11 +12,11 @@ extern "C" {
 #include <stdlib.h>
 #include <string.h>
 #include <glib.h>
-#ifdef MT
+#ifdef HAVE_PTHREAD_H
 #include <pthread.h>
 #endif
 
-#ifdef MT
+#ifdef HAVE_PTHREAD_H
 //#define BITCACHE_MAP_MUTEX  TRUE
 #define BITCACHE_MAP_RWLOCK TRUE
 #endif
@@ -61,6 +61,12 @@ extern int bitcache_map_iter_done(bitcache_map_iter_t* iter);
 #define bitcache_map_rdlock(map) pthread_rwlock_rdlock(&(map)->lock)
 #define bitcache_map_wrlock(map) pthread_rwlock_wrlock(&(map)->lock)
 #define bitcache_map_unlock(map) pthread_rwlock_unlock(&(map)->lock)
+#else
+#define bitcache_map_crlock(map)
+#define bitcache_map_rmlock(map)
+#define bitcache_map_rdlock(map)
+#define bitcache_map_wrlock(map)
+#define bitcache_map_unlock(map)
 #endif
 
 #ifdef __cplusplus

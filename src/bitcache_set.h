@@ -13,14 +13,14 @@ extern "C" {
 #include <stdlib.h>
 #include <string.h>
 #include <glib.h>
-#ifdef MT
+#ifdef HAVE_PTHREAD_H
 #include <pthread.h>
 #endif
 
 typedef struct {
   GHashTable* hash_table;
   //bitcache_filter_t filter; // TODO
-#ifdef MT
+#ifdef HAVE_PTHREAD_H
   pthread_rwlock_t lock;
 #endif
 } bitcache_set_t;
@@ -45,7 +45,7 @@ extern bool bitcache_set_iter_next(bitcache_set_iter_t* iter, bitcache_id_t** id
 extern int bitcache_set_iter_remove(bitcache_set_iter_t* iter);
 extern int bitcache_set_iter_done(bitcache_set_iter_t* iter);
 
-#ifdef MT
+#ifdef HAVE_PTHREAD_H
 #define BITCACHE_SET_LOCK_INITIALIZER PTHREAD_RWLOCK_INITIALIZER
 #define bitcache_set_crlock(set)      pthread_rwlock_init(&(set)->lock, NULL)
 #define bitcache_set_rmlock(set)      pthread_rwlock_destroy(&(set)->lock)
