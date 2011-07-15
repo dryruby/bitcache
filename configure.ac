@@ -29,5 +29,6 @@ AC_CHECK_HEADERS([openssl/sha.h],
 dnl glib (libglib2.0-dev on Ubuntu, glib2 on Mac OS X + MacPorts)
 AM_PATH_GLIB_2_0([2.24.0], [], [], [gthread])
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_FILES([Makefile src/Makefile doc/Makefile doc/man/Makefile])
+dnl AC_CONFIG_FILES([Makefile src/Makefile doc/Makefile doc/man/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile])
 AC_OUTPUT
