@@ -1,2 +1,9 @@
+.deps/
+.libs/
+*.a
 *.o
-test.*
+*.la
+*.lo
+bit
+bit-id
+bitcached
