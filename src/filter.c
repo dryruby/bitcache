@@ -13,8 +13,7 @@
 
 int
 bitcache_filter_init(bitcache_filter_t* filter, const size_t size) {
-  if (unlikely(filter == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(filter != NULL);
 
   bzero(filter, sizeof(bitcache_filter_t));
 
@@ -30,8 +29,7 @@ bitcache_filter_init(bitcache_filter_t* filter, const size_t size) {
 
 int
 bitcache_filter_reset(bitcache_filter_t* filter) {
-  if (unlikely(filter == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(filter != NULL);
 
   if (likely(filter->bitmap != NULL)) {
     free(filter->bitmap), filter->bitmap = NULL;
@@ -43,8 +41,7 @@ bitcache_filter_reset(bitcache_filter_t* filter) {
 
 int
 bitcache_filter_clear(bitcache_filter_t* filter) {
-  if (unlikely(filter == NULL || filter->bitmap == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(filter != NULL && filter->bitmap != NULL);
 
   bzero(filter->bitmap, filter->size);
 
@@ -53,16 +50,14 @@ bitcache_filter_clear(bitcache_filter_t* filter) {
 
 ssize_t PURE
 bitcache_filter_size(const bitcache_filter_t* filter) {
-  if (unlikely(filter == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(filter != NULL);
 
   return sizeof(bitcache_filter_t) + filter->size;
 }
 
 long HOT
 bitcache_filter_count(const bitcache_filter_t* filter, const bitcache_id_t* id) {
-  if (unlikely(filter == NULL || filter->bitmap == NULL || id == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(filter != NULL && filter->bitmap != NULL && id != NULL);
 
   // false positives are possible, but false negatives are not:
   return (bitcache_filter_lookup(filter, id) != FALSE) ? 1 : 0;
@@ -70,8 +65,7 @@ bitcache_filter_count(const bitcache_filter_t* filter, const bitcache_id_t* id) 
 
 bool HOT
 bitcache_filter_lookup(const bitcache_filter_t* filter, const bitcache_id_t* id) {
-  if (unlikely(filter == NULL || filter->bitmap == NULL || id == NULL))
-    return errno = EINVAL, FALSE; // invalid argument
+  validate_with_false_return(filter != NULL && filter->bitmap != NULL && id != NULL);
 
   bool found = TRUE; // false positives are possible
 
@@ -92,8 +86,7 @@ bitcache_filter_lookup(const bitcache_filter_t* filter, const bitcache_id_t* id)
 
 int HOT
 bitcache_filter_insert(bitcache_filter_t* filter, const bitcache_id_t* id) {
-  if (unlikely(filter == NULL || filter->bitmap == NULL || id == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(filter != NULL && filter->bitmap != NULL && id != NULL);
 
   const uint32_t m = filter->size * 8;
   for (int k = 0; k < BITCACHE_FILTER_K_MAX; k++) {
@@ -109,26 +102,19 @@ bitcache_filter_insert(bitcache_filter_t* filter, const bitcache_id_t* id) {
 
 int
 bitcache_filter_compare(const bitcache_filter_t* filter1, const bitcache_filter_t* filter2) {
-  if (unlikely(filter1 == NULL || filter1->bitmap == NULL))
-    return -(errno = EINVAL); // invalid argument
-  if (unlikely(filter2 == NULL || filter2->bitmap == NULL))
-    return -(errno = EINVAL); // invalid argument
-  if (unlikely(filter1->size != filter2->size))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(filter1 != NULL && filter1->bitmap != NULL);
+  validate_with_errno_return(filter2 != NULL && filter2->bitmap != NULL);
+  validate_with_errno_return(filter1->size == filter2->size);
 
   return bcmp(filter1->bitmap, filter2->bitmap, filter1->size);
 }
 
 int
 bitcache_filter_merge(bitcache_filter_t* filter0, const bitcache_filter_op_t op, const bitcache_filter_t* filter1, const bitcache_filter_t* filter2) {
-  if (unlikely(filter0 == NULL || filter0->bitmap == NULL))
-    return -(errno = EINVAL); // invalid argument
-  if (unlikely(filter1 == NULL || filter1->bitmap == NULL))
-    return -(errno = EINVAL); // invalid argument
-  if (unlikely(filter2 == NULL || filter2->bitmap == NULL))
-    return -(errno = EINVAL); // invalid argument
-  if (unlikely(filter0->size != filter1->size || filter1->size != filter2->size))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(filter0 != NULL && filter0->bitmap != NULL);
+  validate_with_errno_return(filter1 != NULL && filter1->bitmap != NULL);
+  validate_with_errno_return(filter2 != NULL && filter2->bitmap != NULL);
+  validate_with_errno_return(filter0->size == filter1->size && filter1->size == filter2->size);
 
   switch (op) {
     case BITCACHE_FILTER_NOP:
@@ -179,8 +165,7 @@ bitcache_filter_load_from_pipe(bitcache_filter_t* filter, const int fd) {
 
 int COLD
 bitcache_filter_load(bitcache_filter_t* filter, const int fd) {
-  if (unlikely(filter == NULL || fd < 0))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(filter != NULL && fd >= 0);
 
   // figure out the current file offset:
   off_t off = lseek(fd, 0, SEEK_CUR);
@@ -199,8 +184,8 @@ bitcache_filter_load(bitcache_filter_t* filter, const int fd) {
 
 int COLD
 bitcache_filter_dump(const bitcache_filter_t* filter, const int fd) {
-  if (unlikely(filter == NULL || filter->bitmap == NULL || fd < 0))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(filter != NULL);
+  validate_with_errno_return(filter != NULL && filter->bitmap != NULL && fd >= 0);
 
   uint8_t* buffer = filter->bitmap;
   size_t buffer_size = filter->size;

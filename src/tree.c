@@ -15,8 +15,7 @@ bitcache_tree_id_compare(const bitcache_id_t* id1, const bitcache_id_t* id2, con
 
 int
 bitcache_tree_init(bitcache_tree_t* tree, const GDestroyNotify key_destroy_func, const GDestroyNotify value_destroy_func) {
-  if (unlikely(tree == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(tree != NULL);
 
   bzero(tree, sizeof(bitcache_tree_t));
   tree->g_tree = g_tree_new_full((GCompareDataFunc)bitcache_tree_id_compare, NULL, key_destroy_func, value_destroy_func);
@@ -27,8 +26,7 @@ bitcache_tree_init(bitcache_tree_t* tree, const GDestroyNotify key_destroy_func,
 
 int
 bitcache_tree_reset(bitcache_tree_t* tree) {
-  if (unlikely(tree == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(tree != NULL);
 
   bitcache_tree_rmlock(tree);
   if (likely(tree->g_tree != NULL)) {
@@ -40,8 +38,7 @@ bitcache_tree_reset(bitcache_tree_t* tree) {
 
 int
 bitcache_tree_clear(bitcache_tree_t* tree) {
-  if (unlikely(tree == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(tree != NULL);
 
   bitcache_tree_wrlock(tree);
   if (likely(tree->g_tree != NULL)) {
@@ -55,8 +52,7 @@ bitcache_tree_clear(bitcache_tree_t* tree) {
 
 ssize_t
 bitcache_tree_size(bitcache_tree_t* tree) {
-  if (unlikely(tree == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(tree != NULL);
 
   ssize_t size = 0;
 
@@ -72,8 +68,7 @@ bitcache_tree_size(bitcache_tree_t* tree) {
 
 ssize_t
 bitcache_tree_count(bitcache_tree_t* tree) {
-  if (unlikely(tree == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(tree != NULL);
 
   ssize_t count = 0;
 
@@ -88,8 +83,7 @@ bitcache_tree_count(bitcache_tree_t* tree) {
 
 int
 bitcache_tree_height(bitcache_tree_t* tree) {
-  if (unlikely(tree == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(tree != NULL);
 
   int height = 0;
 
@@ -104,8 +98,7 @@ bitcache_tree_height(bitcache_tree_t* tree) {
 
 bool
 bitcache_tree_lookup(bitcache_tree_t* tree, const bitcache_id_t* key, void** value) {
-  if (unlikely(tree == NULL || key == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(tree != NULL && key != NULL);
 
   bool found = FALSE;
 
@@ -120,8 +113,7 @@ bitcache_tree_lookup(bitcache_tree_t* tree, const bitcache_id_t* key, void** val
 
 int
 bitcache_tree_insert(bitcache_tree_t* tree, const bitcache_id_t* key, const void* value) {
-  if (unlikely(tree == NULL || key == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(tree != NULL && key != NULL);
 
   bitcache_tree_wrlock(tree);
   assert(tree->g_tree != NULL);
@@ -133,8 +125,7 @@ bitcache_tree_insert(bitcache_tree_t* tree, const bitcache_id_t* key, const void
 
 int
 bitcache_tree_remove(bitcache_tree_t* tree, const bitcache_id_t* key) {
-  if (unlikely(tree == NULL || key == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(tree != NULL && key != NULL);
 
   bitcache_tree_wrlock(tree);
   if (likely(tree->g_tree != NULL)) {
@@ -150,8 +141,7 @@ bitcache_tree_remove(bitcache_tree_t* tree, const bitcache_id_t* key) {
 
 int
 bitcache_tree_iter_init(bitcache_tree_iter_t* iter, bitcache_tree_t* tree) {
-  if (unlikely(iter == NULL || tree == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(iter != NULL && tree != NULL);
 
   bzero(iter, sizeof(bitcache_tree_iter_t));
   iter->tree = tree;
@@ -164,8 +154,7 @@ bitcache_tree_iter_init(bitcache_tree_iter_t* iter, bitcache_tree_t* tree) {
 
 int
 bitcache_tree_iter_next(bitcache_tree_iter_t* iter, bitcache_id_t** key, void** value) {
-  if (unlikely(iter == NULL || iter->tree == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(iter != NULL && iter->tree != NULL);
 
   int result = 0;
 
@@ -176,8 +165,7 @@ bitcache_tree_iter_next(bitcache_tree_iter_t* iter, bitcache_id_t** key, void** 
 
 int
 bitcache_tree_iter_remove(bitcache_tree_iter_t* iter) {
-  if (unlikely(iter == NULL || iter->tree == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(iter != NULL && iter->tree != NULL);
 
   // TODO: mark the current node for removal.
 
@@ -186,8 +174,7 @@ bitcache_tree_iter_remove(bitcache_tree_iter_t* iter) {
 
 int
 bitcache_tree_iter_done(bitcache_tree_iter_t* iter) {
-  if (unlikely(iter == NULL || iter->tree == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(iter != NULL && iter->tree != NULL);
 
   // release the read lock obtained in bitcache_tree_iter_init():
   bitcache_tree_unlock(iter->tree);

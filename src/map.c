@@ -10,8 +10,7 @@
 
 int
 bitcache_map_init(bitcache_map_t* map, const GDestroyNotify key_destroy_func, const GDestroyNotify value_destroy_func) {
-  if (unlikely(map == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(map != NULL);
 
   bzero(map, sizeof(bitcache_map_t));
 
@@ -26,8 +25,7 @@ bitcache_map_init(bitcache_map_t* map, const GDestroyNotify key_destroy_func, co
 
 int
 bitcache_map_reset(bitcache_map_t* map) {
-  if (unlikely(map == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(map != NULL);
 
   bitcache_map_rmlock(map);
   if (likely(map->hash_table != NULL)) {
@@ -40,8 +38,7 @@ bitcache_map_reset(bitcache_map_t* map) {
 
 int
 bitcache_map_clear(bitcache_map_t* map) {
-  if (unlikely(map == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(map != NULL);
 
   bitcache_map_wrlock(map);
   if (likely(map->hash_table != NULL)) {
@@ -54,8 +51,7 @@ bitcache_map_clear(bitcache_map_t* map) {
 
 ssize_t
 bitcache_map_count(bitcache_map_t* map) {
-  if (unlikely(map == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(map != NULL);
 
   ssize_t count = 0;
 
@@ -70,8 +66,7 @@ bitcache_map_count(bitcache_map_t* map) {
 
 bool
 bitcache_map_lookup(bitcache_map_t* map, const bitcache_id_t* key, void** value) {
-  if (unlikely(map == NULL || key == NULL))
-    return errno = EINVAL, FALSE; // invalid argument
+  validate_with_false_return(map != NULL && key != NULL);
 
   bool found = FALSE;
 
@@ -86,8 +81,7 @@ bitcache_map_lookup(bitcache_map_t* map, const bitcache_id_t* key, void** value)
 
 int
 bitcache_map_insert(bitcache_map_t* map, const bitcache_id_t* key, const void* value) {
-  if (unlikely(map == NULL || key == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(map != NULL && key != NULL);
 
   bitcache_map_wrlock(map);
   if (likely(map->hash_table != NULL)) {
@@ -103,8 +97,7 @@ bitcache_map_insert(bitcache_map_t* map, const bitcache_id_t* key, const void* v
 
 int
 bitcache_map_remove(bitcache_map_t* map, const bitcache_id_t* key) {
-  if (unlikely(map == NULL || key == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(map != NULL && key != NULL);
 
   bitcache_map_wrlock(map);
   if (likely(map->hash_table != NULL)) {
@@ -120,8 +113,7 @@ bitcache_map_remove(bitcache_map_t* map, const bitcache_id_t* key) {
 
 int
 bitcache_map_iter_init(bitcache_map_iter_t* iter, bitcache_map_t* map) {
-  if (unlikely(iter == NULL || map == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(iter != NULL && map != NULL);
 
   bzero(iter, sizeof(bitcache_map_iter_t));
   iter->map = map;
@@ -132,8 +124,7 @@ bitcache_map_iter_init(bitcache_map_iter_t* iter, bitcache_map_t* map) {
 
 bool
 bitcache_map_iter_next(bitcache_map_iter_t* iter, bitcache_id_t** key, void** value) {
-  if (unlikely(iter == NULL || iter->map == NULL))
-    return errno = EINVAL, FALSE; // invalid argument
+  validate_with_false_return(iter != NULL && iter->map != NULL);
 
   int more = FALSE;
 
@@ -147,8 +138,7 @@ bitcache_map_iter_next(bitcache_map_iter_t* iter, bitcache_id_t** key, void** va
 
 int
 bitcache_map_iter_remove(bitcache_map_iter_t* iter) {
-  if (unlikely(iter == NULL || iter->map == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(iter != NULL && iter->map != NULL);
 
   g_hash_table_iter_remove(&iter->hash_table_iter);
 
@@ -157,8 +147,7 @@ bitcache_map_iter_remove(bitcache_map_iter_t* iter) {
 
 int
 bitcache_map_iter_done(bitcache_map_iter_t* iter) {
-  if (unlikely(iter == NULL || iter->map == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(iter != NULL && iter->map != NULL);
 
   bzero(iter, sizeof(bitcache_map_iter_t));
 

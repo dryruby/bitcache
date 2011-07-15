@@ -11,8 +11,7 @@
 
 int
 bitcache_id_init(bitcache_id_t* id, const uint8_t* digest) {
-  if (unlikely(id == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(id != NULL);
 
   bzero(id, sizeof(bitcache_id_t));
 
@@ -25,8 +24,7 @@ static inline int8_t bitcache_hex_parse(const char c) PURE;
 
 ssize_t
 bitcache_id_parse(bitcache_id_t* id, const char* hexstring) {
-  if (unlikely(id == NULL || hexstring == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(id != NULL && hexstring != NULL);
 
   char* s = (char*)hexstring;
   for (int i = 0; i< sizeof(bitcache_id_t); i++) {
@@ -40,8 +38,7 @@ bitcache_id_parse(bitcache_id_t* id, const char* hexstring) {
 
 ssize_t
 bitcache_id_serialize(const bitcache_id_t* id, char* buffer, size_t buffer_size) {
-  if (unlikely(id == NULL || buffer == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(id != NULL && buffer != NULL);
   if (unlikely(buffer_size < sizeof(bitcache_id_t) * 2 + 1))
     return -(errno = EOVERFLOW); // buffer overflow
 
@@ -59,40 +56,35 @@ bitcache_id_serialize(const bitcache_id_t* id, char* buffer, size_t buffer_size)
 
 int
 bitcache_id_clear(bitcache_id_t* id) {
-  if (unlikely(id == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(id != NULL);
 
   bzero(id, sizeof(bitcache_id_t));
 }
 
 int
 bitcache_id_fill(bitcache_id_t* id, const uint8_t value) {
-  if (unlikely(id == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(id != NULL);
 
   memset(id->digest, value, sizeof(bitcache_id_t));
 }
 
 bool HOT
 bitcache_id_equal(const bitcache_id_t* id1, const bitcache_id_t* id2) {
-  if (unlikely(id1 == NULL || id2 == NULL))
-    return errno = EINVAL, FALSE; // invalid argument
+  validate_with_false_return(id1 != NULL && id2 != NULL);
 
   return unlikely(id1 == id2) ? TRUE : (memcmp(id1->digest, id2->digest, sizeof(bitcache_id_t)) == 0);
 }
 
 int HOT
 bitcache_id_compare(const bitcache_id_t* id1, const bitcache_id_t* id2) {
-  if (unlikely(id1 == NULL || id2 == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(id1 != NULL && id2 != NULL);
 
   return unlikely(id1 == id2) ? 0 : memcmp(id1->digest, id2->digest, sizeof(bitcache_id_t));
 }
 
 uint32_t HOT
 bitcache_id_hash(const bitcache_id_t* id) {
-  if (unlikely(id == NULL))
-    return errno = EINVAL, 0; // invalid argument
+  validate_with_zero_return(id != NULL);
 
   return *((uint32_t*)id->digest); // the first 4 bytes of the identifier digest
 }

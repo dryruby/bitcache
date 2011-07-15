@@ -10,8 +10,7 @@
 
 int
 bitcache_set_init(bitcache_set_t* set, const GDestroyNotify id_destroy_func) {
-  if (unlikely(set == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(set != NULL);
 
   bzero(set, sizeof(bitcache_set_t));
 
@@ -27,8 +26,7 @@ bitcache_set_init(bitcache_set_t* set, const GDestroyNotify id_destroy_func) {
 
 int
 bitcache_set_reset(bitcache_set_t* set) {
-  if (unlikely(set == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(set != NULL);
 
   bitcache_set_rmlock(set);
   if (likely(set->hash_table != NULL)) {
@@ -41,8 +39,7 @@ bitcache_set_reset(bitcache_set_t* set) {
 
 int
 bitcache_set_clear(bitcache_set_t* set) {
-  if (unlikely(set == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(set != NULL);
 
   bitcache_set_wrlock(set);
   if (likely(set->hash_table != NULL)) {
@@ -55,8 +52,7 @@ bitcache_set_clear(bitcache_set_t* set) {
 
 long
 bitcache_set_count(bitcache_set_t* set) {
-  if (unlikely(set == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(set != NULL);
 
   long count = 0;
 
@@ -71,8 +67,7 @@ bitcache_set_count(bitcache_set_t* set) {
 
 bool
 bitcache_set_lookup(bitcache_set_t* set, const bitcache_id_t* id) {
-  if (unlikely(set == NULL || id == NULL))
-    return errno = EINVAL, FALSE; // invalid argument
+  validate_with_false_return(set != NULL && id != NULL);
 
   bool found = FALSE;
 
@@ -87,8 +82,7 @@ bitcache_set_lookup(bitcache_set_t* set, const bitcache_id_t* id) {
 
 int
 bitcache_set_insert(bitcache_set_t* set, const bitcache_id_t* id) {
-  if (unlikely(set == NULL || id == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(set != NULL && id != NULL);
 
   bitcache_set_wrlock(set);
   if (likely(set->hash_table != NULL)) {
@@ -104,8 +98,7 @@ bitcache_set_insert(bitcache_set_t* set, const bitcache_id_t* id) {
 
 int
 bitcache_set_remove(bitcache_set_t* set, const bitcache_id_t* id) {
-  if (unlikely(set == NULL || id == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(set != NULL && id != NULL);
 
   bitcache_set_wrlock(set);
   if (likely(set->hash_table != NULL)) {
@@ -118,8 +111,7 @@ bitcache_set_remove(bitcache_set_t* set, const bitcache_id_t* id) {
 
 int
 bitcache_set_replace(bitcache_set_t* set, const bitcache_id_t* id1, const bitcache_id_t* id2) {
-  if (unlikely(set == NULL || id1 == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(set != NULL && id1 != NULL);
 
   bitcache_set_wrlock(set);
   if (likely(set->hash_table != NULL)) {
@@ -138,8 +130,7 @@ bitcache_set_replace(bitcache_set_t* set, const bitcache_id_t* id1, const bitcac
 
 int
 bitcache_set_iter_init(bitcache_set_iter_t* iter, bitcache_set_t* set) {
-  if (unlikely(iter == NULL || set == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(iter != NULL && set != NULL);
 
   bzero(iter, sizeof(bitcache_set_iter_t));
   iter->set = set;
@@ -150,8 +141,7 @@ bitcache_set_iter_init(bitcache_set_iter_t* iter, bitcache_set_t* set) {
 
 bool
 bitcache_set_iter_next(bitcache_set_iter_t* iter, bitcache_id_t** id) {
-  if (unlikely(iter == NULL || iter->set == NULL))
-    return errno = EINVAL, FALSE; // invalid argument
+  validate_with_false_return(iter != NULL && iter->set != NULL);
 
   int more = FALSE;
 
@@ -165,8 +155,7 @@ bitcache_set_iter_next(bitcache_set_iter_t* iter, bitcache_id_t** id) {
 
 int
 bitcache_set_iter_remove(bitcache_set_iter_t* iter) {
-  if (unlikely(iter == NULL || iter->set == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(iter != NULL && iter->set != NULL);
 
   g_hash_table_iter_remove(&iter->hash_table_iter);
 
@@ -175,8 +164,7 @@ bitcache_set_iter_remove(bitcache_set_iter_t* iter) {
 
 int
 bitcache_set_iter_done(bitcache_set_iter_t* iter) {
-  if (unlikely(iter == NULL || iter->set == NULL))
-    return -(errno = EINVAL); // invalid argument
+  validate_with_errno_return(iter != NULL && iter->set != NULL);
 
   bzero(iter, sizeof(bitcache_set_iter_t));
 
