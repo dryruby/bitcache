@@ -14,10 +14,6 @@ extern "C" {
 #include <glib.h>
 
 #ifdef HAVE_PTHREAD_H
-#include <pthread.h>
-#endif
-
-#ifdef HAVE_PTHREAD_H
 //#define BITCACHE_TREE_MUTEX  TRUE
 #define BITCACHE_TREE_RWLOCK TRUE
 #endif
@@ -25,9 +21,9 @@ extern "C" {
 typedef struct {
   GTree* g_tree;
 #if defined(BITCACHE_TREE_MUTEX)
-  pthread_mutex_t lock;
+  mutex_t lock;
 #elif defined(BITCACHE_TREE_RWLOCK)
-  pthread_rwlock_t lock;
+  rwlock_t lock;
 #endif
 } bitcache_tree_t;
 
@@ -59,17 +55,17 @@ extern int bitcache_tree_iter_done(bitcache_tree_iter_t* iter);
 #define bitcache_tree_unlock(tree)
 #else
 #if defined(BITCACHE_TREE_MUTEX)
-#define bitcache_tree_crlock(tree) pthread_mutex_init(&(tree)->lock, NULL)
-#define bitcache_tree_rmlock(tree) pthread_mutex_destroy(&(tree)->lock)
-#define bitcache_tree_rdlock(tree) pthread_mutex_lock(&(tree)->lock)
-#define bitcache_tree_wrlock(tree) pthread_mutex_lock(&(tree)->lock)
-#define bitcache_tree_unlock(tree) pthread_mutex_unlock(&(tree)->lock)
+#define bitcache_tree_crlock(tree) mutex_init(&(tree)->lock)
+#define bitcache_tree_rmlock(tree) mutex_dispose(&(tree)->lock)
+#define bitcache_tree_rdlock(tree) mutex_lock(&(tree)->lock)
+#define bitcache_tree_wrlock(tree) mutex_lock(&(tree)->lock)
+#define bitcache_tree_unlock(tree) mutex_unlock(&(tree)->lock)
 #elif defined(BITCACHE_TREE_RWLOCK)
-#define bitcache_tree_crlock(tree) pthread_rwlock_init(&(tree)->lock, NULL)
-#define bitcache_tree_rmlock(tree) pthread_rwlock_destroy(&(tree)->lock)
-#define bitcache_tree_rdlock(tree) pthread_rwlock_rdlock(&(tree)->lock)
-#define bitcache_tree_wrlock(tree) pthread_rwlock_wrlock(&(tree)->lock)
-#define bitcache_tree_unlock(tree) pthread_rwlock_unlock(&(tree)->lock)
+#define bitcache_tree_crlock(tree) rwlock_init(&(tree)->lock)
+#define bitcache_tree_rmlock(tree) rwlock_dispose(&(tree)->lock)
+#define bitcache_tree_rdlock(tree) pthread_rwlock_rdlock(&(tree)->lock.id)
+#define bitcache_tree_wrlock(tree) pthread_rwlock_wrlock(&(tree)->lock.id)
+#define bitcache_tree_unlock(tree) pthread_rwlock_unlock(&(tree)->lock.id)
 #endif
 #endif /* HAVE_PTHREAD_H */
 

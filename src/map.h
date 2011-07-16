@@ -14,10 +14,6 @@ extern "C" {
 #include <glib.h>
 
 #ifdef HAVE_PTHREAD_H
-#include <pthread.h>
-#endif
-
-#ifdef HAVE_PTHREAD_H
 //#define BITCACHE_MAP_MUTEX  TRUE
 #define BITCACHE_MAP_RWLOCK TRUE
 #endif
@@ -25,9 +21,9 @@ extern "C" {
 typedef struct {
   GHashTable* hash_table;
 #if defined(BITCACHE_MAP_MUTEX)
-  pthread_mutex_t lock;
+  mutex_t lock;
 #elif defined(BITCACHE_MAP_RWLOCK)
-  pthread_rwlock_t lock;
+  rwlock_t lock;
 #endif
 } bitcache_map_t;
 
@@ -51,17 +47,17 @@ extern int bitcache_map_iter_remove(bitcache_map_iter_t* iter);
 extern int bitcache_map_iter_done(bitcache_map_iter_t* iter);
 
 #if defined(BITCACHE_MAP_MUTEX)
-#define bitcache_map_crlock(map) pthread_mutex_init(&(map)->lock, NULL)
-#define bitcache_map_rmlock(map) pthread_mutex_destroy(&(map)->lock)
-#define bitcache_map_rdlock(map) pthread_mutex_lock(&(map)->lock)
-#define bitcache_map_wrlock(map) pthread_mutex_lock(&(map)->lock)
-#define bitcache_map_unlock(map) pthread_mutex_unlock(&(map)->lock)
+#define bitcache_map_crlock(map) mutex_init(&(map)->lock)
+#define bitcache_map_rmlock(map) mutex_dispose(&(map)->lock)
+#define bitcache_map_rdlock(map) mutex_lock(&(map)->lock)
+#define bitcache_map_wrlock(map) mutex_lock(&(map)->lock)
+#define bitcache_map_unlock(map) mutex_unlock(&(map)->lock)
 #elif defined(BITCACHE_MAP_RWLOCK)
-#define bitcache_map_crlock(map) pthread_rwlock_init(&(map)->lock, NULL)
-#define bitcache_map_rmlock(map) pthread_rwlock_destroy(&(map)->lock)
-#define bitcache_map_rdlock(map) pthread_rwlock_rdlock(&(map)->lock)
-#define bitcache_map_wrlock(map) pthread_rwlock_wrlock(&(map)->lock)
-#define bitcache_map_unlock(map) pthread_rwlock_unlock(&(map)->lock)
+#define bitcache_map_crlock(map) rwlock_init(&(map)->lock)
+#define bitcache_map_rmlock(map) rwlock_dispose(&(map)->lock)
+#define bitcache_map_rdlock(map) pthread_rwlock_rdlock(&(map)->lock.id)
+#define bitcache_map_wrlock(map) pthread_rwlock_wrlock(&(map)->lock.id)
+#define bitcache_map_unlock(map) pthread_rwlock_unlock(&(map)->lock.id)
 #else
 #define bitcache_map_crlock(map)
 #define bitcache_map_rmlock(map)
