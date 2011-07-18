@@ -3,11 +3,35 @@
 #include "build.h"
 #include <assert.h>
 #include <errno.h>
+#include <stdlib.h> /* for free() */
 #include <string.h>
 #include <strings.h>
 
 //////////////////////////////////////////////////////////////////////////////
 // Identifier API
+
+bitcache_id_t*
+bitcache_id_alloc() {
+  return calloc(1, sizeof(bitcache_id_t));
+}
+
+void
+bitcache_id_free(bitcache_id_t* id) {
+  if (likely(id != NULL)) {
+    free(id);
+  }
+}
+
+bitcache_id_t*
+bitcache_id_clone(const bitcache_id_t* const id) {
+  validate_with_null_return(id != NULL);
+
+  bitcache_id_t* clone = bitcache_id_alloc();
+  if (likely(clone != NULL)) {
+    bcopy(id, clone, sizeof(bitcache_id_t));
+  }
+  return clone;
+}
 
 int
 bitcache_id_init(bitcache_id_t* id, const uint8_t* digest) {

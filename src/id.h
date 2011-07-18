@@ -19,6 +19,21 @@ typedef struct bitcache_id_t {
 } bitcache_id_t;
 
 /**
+ * Allocates heap memory for a new identifier.
+ */
+extern bitcache_id_t* bitcache_id_alloc();
+
+/**
+ * Releases the heap memory used by an identifier.
+ */
+extern void bitcache_id_free(bitcache_id_t* id);
+
+/**
+ * Clones an existing identifier onto the heap.
+ */
+extern bitcache_id_t* bitcache_id_clone(const bitcache_id_t* const id);
+
+/**
  * Initializes an identifier from a given SHA-1 digest.
  */
 extern int bitcache_id_init(bitcache_id_t* id,
