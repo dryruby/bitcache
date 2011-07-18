@@ -33,6 +33,16 @@ typedef struct {
 } bitcache_set_iter_t;
 
 /**
+ * Allocates heap memory for a new set.
+ */
+extern bitcache_set_t* bitcache_set_alloc();
+
+/**
+ * Releases the heap memory used by a set.
+ */
+extern void bitcache_set_free(bitcache_set_t* set);
+
+/**
  * Initializes a set.
  */
 extern int bitcache_set_init(bitcache_set_t* set,

@@ -23,6 +23,21 @@
 //////////////////////////////////////////////////////////////////////////////
 // Set API
 
+bitcache_set_t*
+bitcache_set_alloc() {
+  bitcache_set_t* set = malloc(sizeof(bitcache_set_t));
+  bitcache_set_init(set, free);
+  return set;
+}
+
+void
+bitcache_set_free(bitcache_set_t* set) {
+  if (likely(set != NULL)) {
+    bitcache_set_reset(set);
+    free(set);
+  }
+}
+
 int
 bitcache_set_init(bitcache_set_t* set, const free_func_t id_destroy_func) {
   validate_with_errno_return(set != NULL);

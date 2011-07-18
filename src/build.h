@@ -24,6 +24,9 @@ extern "C" {
 #include "set.h"
 #include "tree.h"
 
+/* standard library headers */
+#include <stdlib.h> /* for calloc(), free(), malloc() */
+
 #ifdef __cplusplus
 }
 #endif
