@@ -1,24 +1,7 @@
 /* This is free and unencumbered software released into the public domain. */
 
 #include "build.h"
-#include <assert.h>
-#include <errno.h>
-#include <strings.h>
-
-#if 1
-#  define BITCACHE_SET_LOCK_INIT   RWLOCK_INIT
-#  define bitcache_set_crlock(set) rwlock_init(&(set)->lock)
-#  define bitcache_set_rmlock(set) rwlock_dispose(&(set)->lock)
-#  define bitcache_set_rdlock(set) rwlock_rdlock(&(set)->lock)
-#  define bitcache_set_wrlock(set) rwlock_wrlock(&(set)->lock)
-#  define bitcache_set_unlock(set) rwlock_unlock(&(set)->lock)
-#else
-#  define bitcache_set_crlock(set)
-#  define bitcache_set_rmlock(set)
-#  define bitcache_set_rdlock(set)
-#  define bitcache_set_wrlock(set)
-#  define bitcache_set_unlock(set)
-#endif /* HAVE_PTHREAD_H */
+#include "set_hash.h"
 
 //////////////////////////////////////////////////////////////////////////////
 // Set API
@@ -26,7 +9,7 @@
 bitcache_set_t*
 bitcache_set_alloc() {
   bitcache_set_t* set = malloc(sizeof(bitcache_set_t));
-  bitcache_set_init(set, free);
+  bitcache_set_init(set, NULL);
   return set;
 }
 
@@ -39,17 +22,17 @@ bitcache_set_free(bitcache_set_t* set) {
 }
 
 int
-bitcache_set_init(bitcache_set_t* set, const free_func_t id_destroy_func) {
+bitcache_set_init(bitcache_set_t* set, const bitcache_set_class_t* restrict class) {
   validate_with_errno_return(set != NULL);
 
   bzero(set, sizeof(bitcache_set_t));
+  set->class = class;
 
-  bitcache_set_crlock(set);
-  set->hash_table = g_hash_table_new_full(
-    (GHashFunc)bitcache_id_hash,
-    (GEqualFunc)bitcache_id_equal,
-    (free_func_t)id_destroy_func,
-    NULL);
+  if (likely(class == NULL)) // static dispatch
+    return bitcache_set_hash_init(set);
+
+  if (likely(class->init != NULL)) // virtual dispatch
+    return class->init(set);
 
   return 0;
 }
@@ -58,101 +41,105 @@ int
 bitcache_set_reset(bitcache_set_t* set) {
   validate_with_errno_return(set != NULL);
 
-  bitcache_set_rmlock(set);
-  if (likely(set->hash_table != NULL)) {
-    g_hash_table_destroy(set->hash_table);
-    set->hash_table = NULL;
-  }
+  const bitcache_set_class_t* const class = set->class;
 
-  return 0;
+  if (likely(class == NULL)) // static dispatch
+    return bitcache_set_hash_reset(set);
+
+  if (likely(class->reset != NULL)) // virtual dispatch
+    return class->reset(set);
+
+  return -(errno = ENOTSUP); // operation not supported
 }
 
 int
 bitcache_set_clear(bitcache_set_t* set) {
   validate_with_errno_return(set != NULL);
 
-  bitcache_set_wrlock(set);
-  if (likely(set->hash_table != NULL)) {
-    g_hash_table_remove_all(set->hash_table);
-  }
-  bitcache_set_unlock(set);
+  const bitcache_set_class_t* const class = set->class;
 
-  return 0;
+  if (likely(class == NULL)) // static dispatch
+    return bitcache_set_hash_clear(set);
+
+  if (likely(class->clear != NULL)) // virtual dispatch
+    return class->clear(set);
+
+  return -(errno = ENOTSUP); // operation not supported
 }
 
 long
 bitcache_set_count(bitcache_set_t* set) {
   validate_with_errno_return(set != NULL);
 
-  long count = 0;
+  const bitcache_set_class_t* const class = set->class;
 
-  bitcache_set_rdlock(set);
-  if (likely(set->hash_table != NULL)) {
-    count += g_hash_table_size(set->hash_table);
-  }
-  bitcache_set_unlock(set);
+  if (likely(class == NULL)) // static dispatch
+    return bitcache_set_hash_count(set);
 
-  return count;
+  if (likely(class->count != NULL)) // virtual dispatch
+    return class->count(set);
+
+  return -(errno = ENOTSUP); // operation not supported
 }
 
 bool
-bitcache_set_lookup(bitcache_set_t* set, const bitcache_id_t* id) {
+bitcache_set_lookup(bitcache_set_t* set, const bitcache_id_t* restrict id) {
   validate_with_false_return(set != NULL && id != NULL);
 
-  bool found = FALSE;
+  const bitcache_set_class_t* const class = set->class;
 
-  bitcache_set_rdlock(set);
-  if (likely(set->hash_table != NULL)) {
-    found = g_hash_table_lookup_extended(set->hash_table, id, NULL, NULL);
-  }
-  bitcache_set_unlock(set);
+  if (likely(class == NULL)) // static dispatch
+    return bitcache_set_hash_lookup(set, id);
 
-  return found;
+  if (likely(class->lookup != NULL)) // virtual dispatch
+    return class->lookup(set, id);
+
+  return (errno = ENOTSUP), FALSE; // operation not supported
 }
 
 int
-bitcache_set_insert(bitcache_set_t* set, const bitcache_id_t* id) {
+bitcache_set_insert(bitcache_set_t* set, const bitcache_id_t* restrict id) {
   validate_with_errno_return(set != NULL && id != NULL);
 
-  bitcache_set_wrlock(set);
-  if (likely(set->hash_table != NULL)) {
-    g_hash_table_insert(set->hash_table, (void*)id, NULL);
-  }
-  else {
-    assert(set->hash_table != NULL);
-  }
-  bitcache_set_unlock(set);
+  const bitcache_set_class_t* const class = set->class;
 
-  return 0;
+  if (likely(class == NULL)) // static dispatch
+    return bitcache_set_hash_insert(set, id);
+
+  if (likely(class->insert != NULL)) // virtual dispatch
+    return class->insert(set, id);
+
+  return -(errno = ENOTSUP); // operation not supported
 }
 
 int
-bitcache_set_remove(bitcache_set_t* set, const bitcache_id_t* id) {
+bitcache_set_remove(bitcache_set_t* set, const bitcache_id_t* restrict id) {
   validate_with_errno_return(set != NULL && id != NULL);
 
-  bitcache_set_wrlock(set);
-  if (likely(set->hash_table != NULL)) {
-    g_hash_table_remove(set->hash_table, (void*)id);
-  }
-  bitcache_set_unlock(set);
+  const bitcache_set_class_t* const class = set->class;
 
-  return 0;
+  if (likely(class == NULL)) // static dispatch
+    return bitcache_set_hash_remove(set, id);
+
+  if (likely(class->remove != NULL)) // virtual dispatch
+    return class->remove(set, id);
+
+  return -(errno = ENOTSUP); // operation not supported
 }
 
 int
-bitcache_set_replace(bitcache_set_t* set, const bitcache_id_t* id1, const bitcache_id_t* id2) {
+bitcache_set_replace(bitcache_set_t* set, const bitcache_id_t* restrict id1, const bitcache_id_t* restrict id2) {
   validate_with_errno_return(set != NULL && id1 != NULL);
 
-  bitcache_set_wrlock(set);
-  if (likely(set->hash_table != NULL)) {
-    g_hash_table_remove(set->hash_table, (void*)id1);
-    if (likely(id2 != NULL)) {
-      g_hash_table_insert(set->hash_table, (void*)id2, NULL);
-    }
-  }
-  bitcache_set_unlock(set);
+  const bitcache_set_class_t* const class = set->class;
 
-  return 0;
+  if (likely(class == NULL)) // static dispatch
+    return bitcache_set_hash_replace(set, id1, id2);
+
+  if (likely(class->replace != NULL)) // virtual dispatch
+    return class->replace(set, id1, id2);
+
+  return -(errno = ENOTSUP); // operation not supported
 }
 
 //////////////////////////////////////////////////////////////////////////////

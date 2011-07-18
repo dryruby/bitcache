@@ -16,8 +16,8 @@ extern "C" {
  * Represents a Bitcache set.
  */
 typedef struct {
+  const struct bitcache_set_class_t* class;
   GHashTable* hash_table;
-  /* bitcache_filter_t filter; // TODO */
 #if 1
   rwlock_t lock;
 #endif
@@ -33,6 +33,28 @@ typedef struct {
 } bitcache_set_iter_t;
 
 /**
+ * Represents a Bitcache set's virtual dispatch table.
+ */
+typedef struct bitcache_set_class_t {
+  struct bitcache_set_class_t* super;
+  void (*free)(bitcache_set_t* set);
+  int (*init)(bitcache_set_t* set);
+  int (*reset)(bitcache_set_t* set);
+  int (*clear)(bitcache_set_t* set);
+  long (*count)(bitcache_set_t* set);
+  bool (*lookup)(bitcache_set_t* set, const bitcache_id_t* id);
+  int (*insert)(bitcache_set_t* set, const bitcache_id_t* id);
+  int (*remove)(bitcache_set_t* set, const bitcache_id_t* id);
+  int (*replace)(bitcache_set_t* set, const bitcache_id_t* id1,
+                                      const bitcache_id_t* id2);
+} bitcache_set_class_t;
+
+/**
+ * The default virtual dispatch table for Bitcache sets.
+ */
+extern const bitcache_set_class_t bitcache_set_hash;
+
+/**
  * Allocates heap memory for a new set.
  */
 extern bitcache_set_t* bitcache_set_alloc();
@@ -46,7 +68,7 @@ extern void bitcache_set_free(bitcache_set_t* set);
  * Initializes a set.
  */
 extern int bitcache_set_init(bitcache_set_t* set,
-  const free_func_t id_destroy_func);
+  const bitcache_set_class_t* restrict class);
 
 /**
  * Resets a set back to an uninitialized state.
@@ -67,26 +89,26 @@ extern long bitcache_set_count(bitcache_set_t* set);
  * Checks whether a set contains a given identifier.
  */
 extern bool bitcache_set_lookup(bitcache_set_t* set,
-  const bitcache_id_t* id);
+  const bitcache_id_t* restrict id);
 
 /**
  * Inserts a given identifier into a set.
  */
 extern int bitcache_set_insert(bitcache_set_t* set,
-  const bitcache_id_t* id);
+  const bitcache_id_t* restrict id);
 
 /**
  * Removes a given identifier from a set.
  */
 extern int bitcache_set_remove(bitcache_set_t* set,
-  const bitcache_id_t* id);
+  const bitcache_id_t* restrict id);
 
 /**
  * Replaces a given identifier in a set with another identifier.
  */
 extern int bitcache_set_replace(bitcache_set_t* set,
-  const bitcache_id_t* id1,
-  const bitcache_id_t* id2);
+  const bitcache_id_t* restrict id1,
+  const bitcache_id_t* restrict id2);
 
 /**
  * Initializes a set iterator for a given set.
