@@ -7,6 +7,11 @@
 extern "C" {
 #endif
 
+#define BITCACHE_VERSION_STRING "@PACKAGE_VERSION@"
+#define BITCACHE_VERSION_MAJOR  @PACKAGE_VERSION_MAJOR@
+#define BITCACHE_VERSION_MINOR  @PACKAGE_VERSION_MINOR@
+#define BITCACHE_VERSION_PATCH  @PACKAGE_VERSION_PATCH@
+
 #include <bitcache/id.h>
 #include <bitcache/filter.h>
 #include <bitcache/map.h>
