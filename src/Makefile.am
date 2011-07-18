@@ -1,4 +1,4 @@
-AM_CFLAGS       = -std=gnu99 -pedantic -fPIC -DPIC -pipe
+AM_CFLAGS       = -pedantic -fPIC -DPIC -pipe
 AM_CPPFLAGS     = -D_GNU_SOURCE -D_REENTRANT $(GLIB_CFLAGS) -DG_DISABLE_DEPRECATED=1
 AM_LDFLAGS      = -rdynamic
 LDADD           = libbitcache.la
