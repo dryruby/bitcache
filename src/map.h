@@ -9,8 +9,8 @@ extern "C" {
 
 #include <stdbool.h> /* for bool */
 
-#include <cprime.h>  /* for rwlock_t */
-#include <glib.h>    /* for GHashTable, GHashTableIter, GDestroyNotify */
+#include <cprime.h>  /* for rwlock_t, free_func_t */
+#include <glib.h>    /* for GHashTable, GHashTableIter */
 
 /**
  * Represents a Bitcache map.
@@ -35,8 +35,8 @@ typedef struct {
  * Initializes a map.
  */
 extern int bitcache_map_init(bitcache_map_t* map,
-  const GDestroyNotify key_destroy_func,
-  const GDestroyNotify value_destroy_func);
+  const free_func_t key_destroy_func,
+  const free_func_t value_destroy_func);
 
 /**
  * Resets a map back to an uninitialized state.

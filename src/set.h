@@ -9,8 +9,8 @@ extern "C" {
 
 #include <stdbool.h> /* for bool */
 
-#include <cprime.h>  /* for rwlock_t */
-#include <glib.h>    /* for GHashTable, GHashTableIter, GDestroyNotify */
+#include <cprime.h>  /* for rwlock_t, free_func_t */
+#include <glib.h>    /* for GHashTable, GHashTableIter */
 
 /**
  * Represents a Bitcache set.
@@ -36,7 +36,7 @@ typedef struct {
  * Initializes a set.
  */
 extern int bitcache_set_init(bitcache_set_t* set,
-  const GDestroyNotify id_destroy_func);
+  const free_func_t id_destroy_func);
 
 /**
  * Resets a set back to an uninitialized state.

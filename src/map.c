@@ -25,7 +25,7 @@
 // Map API
 
 int
-bitcache_map_init(bitcache_map_t* map, const GDestroyNotify key_destroy_func, const GDestroyNotify value_destroy_func) {
+bitcache_map_init(bitcache_map_t* map, const free_func_t key_destroy_func, const free_func_t value_destroy_func) {
   validate_with_errno_return(map != NULL);
 
   bzero(map, sizeof(bitcache_map_t));

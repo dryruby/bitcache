@@ -30,7 +30,7 @@ bitcache_tree_id_compare(const bitcache_id_t* id1, const bitcache_id_t* id2, con
 }
 
 int
-bitcache_tree_init(bitcache_tree_t* tree, const GDestroyNotify key_destroy_func, const GDestroyNotify value_destroy_func) {
+bitcache_tree_init(bitcache_tree_t* tree, const free_func_t key_destroy_func, const free_func_t value_destroy_func) {
   validate_with_errno_return(tree != NULL);
 
   bzero(tree, sizeof(bitcache_tree_t));

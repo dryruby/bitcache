@@ -9,8 +9,8 @@ extern "C" {
 
 #include <stdbool.h> /* for bool */
 
-#include <cprime.h>  /* for rwlock_t */
-#include <glib.h>    /* for GTree, GDestroyNotify */
+#include <cprime.h>  /* for rwlock_t, free_func_t */
+#include <glib.h>    /* for GTree */
 
 /**
  * Represents a Bitcache tree.
@@ -34,8 +34,8 @@ typedef struct {
  * Initializes a tree.
  */
 extern int bitcache_tree_init(bitcache_tree_t* tree,
-  const GDestroyNotify key_destroy_func,
-  const GDestroyNotify value_destroy_func);
+  const free_func_t key_destroy_func,
+  const free_func_t value_destroy_func);
 
 /**
  * Resets a tree back to an uninitialized state.

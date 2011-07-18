@@ -378,7 +378,7 @@ TODO
 @section Using Sets
 @findex bitcache_set_t
 
-@deftypefn {Function} int bitcache_set_init (bitcache_set_t* @var{set}, GDestroyNotify @var{id_destroy_func})
+@deftypefn {Function} int bitcache_set_init (bitcache_set_t* @var{set}, free_func_t @var{id_destroy_func})
 @end deftypefn
 
 @deftypefn {Function} int bitcache_set_reset (bitcache_set_t* @var{set})

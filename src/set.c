@@ -24,7 +24,7 @@
 // Set API
 
 int
-bitcache_set_init(bitcache_set_t* set, const GDestroyNotify id_destroy_func) {
+bitcache_set_init(bitcache_set_t* set, const free_func_t id_destroy_func) {
   validate_with_errno_return(set != NULL);
 
   bzero(set, sizeof(bitcache_set_t));
@@ -33,7 +33,7 @@ bitcache_set_init(bitcache_set_t* set, const GDestroyNotify id_destroy_func) {
   set->hash_table = g_hash_table_new_full(
     (GHashFunc)bitcache_id_hash,
     (GEqualFunc)bitcache_id_equal,
-    (GDestroyNotify)id_destroy_func,
+    (free_func_t)id_destroy_func,
     NULL);
 
   return 0;
