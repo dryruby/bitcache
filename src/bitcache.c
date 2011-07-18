@@ -16,3 +16,14 @@ const char* const bitcache_feature_names[] = {
 
 const unsigned int bitcache_feature_count =
   sizeof(bitcache_feature_names) / sizeof(bitcache_feature_names[0]);
+
+const char* const bitcache_module_names[] = {
+  "filter",
+  "id",
+  "map",
+  "set",
+  "tree",
+};
+
+const unsigned int bitcache_module_count =
+  sizeof(bitcache_module_names) / sizeof(bitcache_module_names[0]);

@@ -21,6 +21,8 @@ extern "C" {
 extern const char* const bitcache_version_string;
 extern const char* const bitcache_feature_names[];
 extern const unsigned int bitcache_feature_count;
+extern const char* const bitcache_module_names[];
+extern const unsigned int bitcache_module_count;
 
 #ifdef __cplusplus
 }
