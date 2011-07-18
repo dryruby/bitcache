@@ -3,6 +3,8 @@
 #include "build.h"
 #include <assert.h>
 #include <errno.h>
+#include <stdlib.h>
+#include <string.h>
 #include <strings.h>
 #include <sys/mman.h> /* for mmap() */
 #include <sys/stat.h> /* for fstat() */
@@ -48,7 +50,7 @@ bitcache_filter_clear(bitcache_filter_t* filter) {
   return 0;
 }
 
-ssize_t PURE
+long PURE
 bitcache_filter_size(const bitcache_filter_t* filter) {
   validate_with_errno_return(filter != NULL);
 

@@ -5,6 +5,22 @@
 #include <errno.h>
 #include <strings.h>
 
+#if 1
+#  define BITCACHE_TREE_LOCK_INIT    RWLOCK_INIT
+#  define bitcache_tree_crlock(tree) rwlock_init(&(tree)->lock)
+#  define bitcache_tree_rmlock(tree) rwlock_dispose(&(tree)->lock)
+#  define bitcache_tree_rdlock(tree) rwlock_rdlock(&(tree)->lock)
+#  define bitcache_tree_wrlock(tree) rwlock_wrlock(&(tree)->lock)
+#  define bitcache_tree_unlock(tree) rwlock_unlock(&(tree)->lock)
+#else
+#  define BITCACHE_TREE_LOCK_INIT    NULL
+#  define bitcache_tree_crlock(tree)
+#  define bitcache_tree_rmlock(tree)
+#  define bitcache_tree_rdlock(tree)
+#  define bitcache_tree_wrlock(tree)
+#  define bitcache_tree_unlock(tree)
+#endif /* HAVE_PTHREAD_H */
+
 //////////////////////////////////////////////////////////////////////////////
 // Tree API
 
@@ -50,11 +66,11 @@ bitcache_tree_clear(bitcache_tree_t* tree) {
   return 0;
 }
 
-ssize_t
+long
 bitcache_tree_size(bitcache_tree_t* tree) {
   validate_with_errno_return(tree != NULL);
 
-  ssize_t size = 0;
+  long size = 0;
 
   bitcache_tree_rdlock(tree);
   if (likely(tree->g_tree != NULL)) {
@@ -66,11 +82,11 @@ bitcache_tree_size(bitcache_tree_t* tree) {
   return size;
 }
 
-ssize_t
+long
 bitcache_tree_count(bitcache_tree_t* tree) {
   validate_with_errno_return(tree != NULL);
 
-  ssize_t count = 0;
+  long count = 0;
 
   bitcache_tree_rdlock(tree);
   if (likely(tree->g_tree != NULL)) {

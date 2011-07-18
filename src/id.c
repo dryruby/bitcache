@@ -22,7 +22,7 @@ bitcache_id_init(bitcache_id_t* id, const uint8_t* digest) {
 
 static inline int8_t bitcache_hex_parse(const char c) PURE;
 
-ssize_t
+long
 bitcache_id_parse(bitcache_id_t* id, const char* hexstring) {
   validate_with_errno_return(id != NULL && hexstring != NULL);
 
@@ -36,7 +36,7 @@ bitcache_id_parse(bitcache_id_t* id, const char* hexstring) {
   return s - hexstring;
 }
 
-ssize_t
+long
 bitcache_id_serialize(const bitcache_id_t* id, char* buffer, size_t buffer_size) {
   validate_with_errno_return(id != NULL && buffer != NULL);
   if (unlikely(buffer_size < sizeof(bitcache_id_t) * 2 + 1))

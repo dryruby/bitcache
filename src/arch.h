@@ -8,7 +8,7 @@ extern "C" {
 #endif
 
 /* GCC-specific optimizations */
-// @see http://gcc.gnu.org/onlinedocs/gcc/Function-Attributes.html
+/* @see http://gcc.gnu.org/onlinedocs/gcc/Function-Attributes.html */
 #ifdef __GNUC__
 # define NONNULL __attribute__((__nonnull__)) /* the function requires non-NULL arguments */
 # define FLATTEN __attribute__((__flatten__)  /* inline every call inside the function, if possible */

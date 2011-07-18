@@ -9,11 +9,13 @@ extern "C" {
 
 /* private headers for the build process only */
 #include "config.h"
-#include "arch.h"
 
 /* libcprime headers */
 #include <cprime.h>
 #include <cprime/memory.h>
+
+/* private headers for the build process only */
+#include "arch.h"
 
 /* public headers included from <bitcache.h> */
 #include "id.h"

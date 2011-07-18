@@ -5,6 +5,21 @@
 #include <errno.h>
 #include <strings.h>
 
+#if 1
+#  define BITCACHE_SET_LOCK_INIT   RWLOCK_INIT
+#  define bitcache_set_crlock(set) rwlock_init(&(set)->lock)
+#  define bitcache_set_rmlock(set) rwlock_dispose(&(set)->lock)
+#  define bitcache_set_rdlock(set) rwlock_rdlock(&(set)->lock)
+#  define bitcache_set_wrlock(set) rwlock_wrlock(&(set)->lock)
+#  define bitcache_set_unlock(set) rwlock_unlock(&(set)->lock)
+#else
+#  define bitcache_set_crlock(set)
+#  define bitcache_set_rmlock(set)
+#  define bitcache_set_rdlock(set)
+#  define bitcache_set_wrlock(set)
+#  define bitcache_set_unlock(set)
+#endif /* HAVE_PTHREAD_H */
+
 //////////////////////////////////////////////////////////////////////////////
 // Set API
 

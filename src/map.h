@@ -7,67 +7,94 @@
 extern "C" {
 #endif
 
-#include <stdbool.h>
-#include <stdlib.h>
-#include <string.h>
+#include <stdbool.h> /* for bool */
 
-#include <glib.h>
+#include <cprime.h>  /* for rwlock_t */
+#include <glib.h>    /* for GHashTable, GHashTableIter, GDestroyNotify */
 
-#ifdef HAVE_PTHREAD_H
-//#define BITCACHE_MAP_MUTEX  TRUE
-#define BITCACHE_MAP_RWLOCK TRUE
-#endif
-
+/**
+ * Represents a Bitcache map.
+ */
 typedef struct {
   GHashTable* hash_table;
-#if defined(BITCACHE_MAP_MUTEX)
-  mutex_t lock;
-#elif defined(BITCACHE_MAP_RWLOCK)
+#if 1
   rwlock_t lock;
 #endif
 } bitcache_map_t;
 
+/**
+ * Represents a Bitcache map iterator.
+ */
 typedef struct {
-  int position;
+  long position;
   bitcache_map_t* map;
   GHashTableIter hash_table_iter;
 } bitcache_map_iter_t;
 
-extern int bitcache_map_init(bitcache_map_t* map, const GDestroyNotify key_destroy_func, const GDestroyNotify value_destroy_func);
+/**
+ * Initializes a map.
+ */
+extern int bitcache_map_init(bitcache_map_t* map,
+  const GDestroyNotify key_destroy_func,
+  const GDestroyNotify value_destroy_func);
+
+/**
+ * Resets a map back to an uninitialized state.
+ */
 extern int bitcache_map_reset(bitcache_map_t* map);
+
+/**
+ * Removes all mappings from a map.
+ */
 extern int bitcache_map_clear(bitcache_map_t* map);
-extern ssize_t bitcache_map_count(bitcache_map_t* map);
-extern bool bitcache_map_lookup(bitcache_map_t* map, const bitcache_id_t* key, void** value);
-extern int bitcache_map_insert(bitcache_map_t* map, const bitcache_id_t* key, const void* value);
-extern int bitcache_map_remove(bitcache_map_t* map, const bitcache_id_t* key);
 
-extern int bitcache_map_iter_init(bitcache_map_iter_t* iter, bitcache_map_t* map);
-extern bool bitcache_map_iter_next(bitcache_map_iter_t* iter, bitcache_id_t** key, void** value);
+/**
+ * Returns the number of mappings in a map.
+ */
+extern long bitcache_map_count(bitcache_map_t* map);
+
+/**
+ * Checks whether a map contains a mapping for a given identifier.
+ */
+extern bool bitcache_map_lookup(bitcache_map_t* map,
+  const bitcache_id_t* key,
+  void** value);
+
+/**
+ * Inserts a given identifier-to-value mapping into a map.
+ */
+extern int bitcache_map_insert(bitcache_map_t* map,
+  const bitcache_id_t* key,
+  const void* value);
+
+/**
+ * Removes a given identifier-to-value mapping from a map.
+ */
+extern int bitcache_map_remove(bitcache_map_t* map,
+  const bitcache_id_t* key);
+
+/**
+ * Initializes a map iterator for a given map.
+ */
+extern int bitcache_map_iter_init(bitcache_map_iter_t* iter,
+  bitcache_map_t* map);
+
+/**
+ * Advances a map iterator to the next mapping in the map.
+ */
+extern bool bitcache_map_iter_next(bitcache_map_iter_t* iter,
+  bitcache_id_t** key,
+  void** value);
+
+/**
+ * Removes the current mapping pointed to by a map iterator.
+ */
 extern int bitcache_map_iter_remove(bitcache_map_iter_t* iter);
-extern int bitcache_map_iter_done(bitcache_map_iter_t* iter);
 
-#if defined(BITCACHE_MAP_MUTEX)
-#define BITCACHE_MAP_LOCK_INIT   MUTEX_INIT
-#define bitcache_map_crlock(map) mutex_init(&(map)->lock)
-#define bitcache_map_rmlock(map) mutex_dispose(&(map)->lock)
-#define bitcache_map_rdlock(map) mutex_lock(&(map)->lock)
-#define bitcache_map_wrlock(map) mutex_lock(&(map)->lock)
-#define bitcache_map_unlock(map) mutex_unlock(&(map)->lock)
-#elif defined(BITCACHE_MAP_RWLOCK)
-#define BITCACHE_MAP_LOCK_INIT   RWLOCK_INIT
-#define bitcache_map_crlock(map) rwlock_init(&(map)->lock)
-#define bitcache_map_rmlock(map) rwlock_dispose(&(map)->lock)
-#define bitcache_map_rdlock(map) rwlock_rdlock(&(map)->lock)
-#define bitcache_map_wrlock(map) rwlock_wrlock(&(map)->lock)
-#define bitcache_map_unlock(map) rwlock_unlock(&(map)->lock)
-#else
-#define BITCACHE_MAP_LOCK_INIT   NULL
-#define bitcache_map_crlock(map)
-#define bitcache_map_rmlock(map)
-#define bitcache_map_rdlock(map)
-#define bitcache_map_wrlock(map)
-#define bitcache_map_unlock(map)
-#endif /* HAVE_PTHREAD_H */
+/**
+ * Disposes of a map iterator, freeing any resources it used.
+ */
+extern int bitcache_map_iter_done(bitcache_map_iter_t* iter);
 
 #ifdef __cplusplus
 }

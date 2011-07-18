@@ -5,6 +5,22 @@
 #include <errno.h>
 #include <strings.h>
 
+#if 1
+#  define BITCACHE_MAP_LOCK_INIT   MUTEX_INIT
+#  define bitcache_map_crlock(map) rwlock_init(&(map)->lock)
+#  define bitcache_map_rmlock(map) rwlock_dispose(&(map)->lock)
+#  define bitcache_map_rdlock(map) rwlock_rdlock(&(map)->lock)
+#  define bitcache_map_wrlock(map) rwlock_wrlock(&(map)->lock)
+#  define bitcache_map_unlock(map) rwlock_unlock(&(map)->lock)
+#else
+#  define BITCACHE_MAP_LOCK_INIT   NULL
+#  define bitcache_map_crlock(map)
+#  define bitcache_map_rmlock(map)
+#  define bitcache_map_rdlock(map)
+#  define bitcache_map_wrlock(map)
+#  define bitcache_map_unlock(map)
+#endif /* HAVE_PTHREAD_H */
+
 //////////////////////////////////////////////////////////////////////////////
 // Map API
 
@@ -49,11 +65,11 @@ bitcache_map_clear(bitcache_map_t* map) {
   return 0;
 }
 
-ssize_t
+long
 bitcache_map_count(bitcache_map_t* map) {
   validate_with_errno_return(map != NULL);
 
-  ssize_t count = 0;
+  long count = 0;
 
   bitcache_map_rdlock(map);
   if (likely(map->hash_table != NULL)) {

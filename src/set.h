@@ -7,54 +7,98 @@
 extern "C" {
 #endif
 
-#include <stdbool.h>
-#include <stdlib.h>
-#include <string.h>
+#include <stdbool.h> /* for bool */
 
-#include <glib.h>
+#include <cprime.h>  /* for rwlock_t */
+#include <glib.h>    /* for GHashTable, GHashTableIter, GDestroyNotify */
 
+/**
+ * Represents a Bitcache set.
+ */
 typedef struct {
   GHashTable* hash_table;
-  //bitcache_filter_t filter; // TODO
-#ifdef HAVE_PTHREAD_H
+  /* bitcache_filter_t filter; // TODO */
+#if 1
   rwlock_t lock;
 #endif
 } bitcache_set_t;
 
+/**
+ * Represents a Bitcache set iterator.
+ */
 typedef struct {
   long position;
   bitcache_set_t* set;
   GHashTableIter hash_table_iter;
 } bitcache_set_iter_t;
 
-extern int bitcache_set_init(bitcache_set_t* set, const GDestroyNotify id_destroy_func);
+/**
+ * Initializes a set.
+ */
+extern int bitcache_set_init(bitcache_set_t* set,
+  const GDestroyNotify id_destroy_func);
+
+/**
+ * Resets a set back to an uninitialized state.
+ */
 extern int bitcache_set_reset(bitcache_set_t* set);
+
+/**
+ * Removes all identifiers from a set.
+ */
 extern int bitcache_set_clear(bitcache_set_t* set);
+
+/**
+ * Returns the cardinality of a set.
+ */
 extern long bitcache_set_count(bitcache_set_t* set);
-extern bool bitcache_set_lookup(bitcache_set_t* set, const bitcache_id_t* id);
-extern int bitcache_set_insert(bitcache_set_t* set, const bitcache_id_t* id);
-extern int bitcache_set_remove(bitcache_set_t* set, const bitcache_id_t* id);
-extern int bitcache_set_replace(bitcache_set_t* set, const bitcache_id_t* id1, const bitcache_id_t* id2);
 
-extern int bitcache_set_iter_init(bitcache_set_iter_t* iter, bitcache_set_t* set);
-extern bool bitcache_set_iter_next(bitcache_set_iter_t* iter, bitcache_id_t** id);
+/**
+ * Checks whether a set contains a given identifier.
+ */
+extern bool bitcache_set_lookup(bitcache_set_t* set,
+  const bitcache_id_t* id);
+
+/**
+ * Inserts a given identifier into a set.
+ */
+extern int bitcache_set_insert(bitcache_set_t* set,
+  const bitcache_id_t* id);
+
+/**
+ * Removes a given identifier from a set.
+ */
+extern int bitcache_set_remove(bitcache_set_t* set,
+  const bitcache_id_t* id);
+
+/**
+ * Replaces a given identifier in a set with another identifier.
+ */
+extern int bitcache_set_replace(bitcache_set_t* set,
+  const bitcache_id_t* id1,
+  const bitcache_id_t* id2);
+
+/**
+ * Initializes a set iterator for a given set.
+ */
+extern int bitcache_set_iter_init(bitcache_set_iter_t* iter,
+  bitcache_set_t* set);
+
+/**
+ * Advances a set iterator to the next identifier in the set.
+ */
+extern bool bitcache_set_iter_next(bitcache_set_iter_t* iter,
+  bitcache_id_t** id);
+
+/**
+ * Removes the current identifier pointed to by a set iterator.
+ */
 extern int bitcache_set_iter_remove(bitcache_set_iter_t* iter);
-extern int bitcache_set_iter_done(bitcache_set_iter_t* iter);
 
-#ifdef HAVE_PTHREAD_H
-#define BITCACHE_SET_LOCK_INIT   RWLOCK_INIT
-#define bitcache_set_crlock(set) rwlock_init(&(set)->lock)
-#define bitcache_set_rmlock(set) rwlock_dispose(&(set)->lock)
-#define bitcache_set_rdlock(set) rwlock_rdlock(&(set)->lock)
-#define bitcache_set_wrlock(set) rwlock_wrlock(&(set)->lock)
-#define bitcache_set_unlock(set) rwlock_unlock(&(set)->lock)
-#else
-#define bitcache_set_crlock(set)
-#define bitcache_set_rmlock(set)
-#define bitcache_set_rdlock(set)
-#define bitcache_set_wrlock(set)
-#define bitcache_set_unlock(set)
-#endif /* HAVE_PTHREAD_H */
+/**
+ * Disposes of a set iterator, freeing any resources it used.
+ */
+extern int bitcache_set_iter_done(bitcache_set_iter_t* iter);
 
 #ifdef __cplusplus
 }

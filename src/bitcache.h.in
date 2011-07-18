@@ -7,21 +7,32 @@
 extern "C" {
 #endif
 
+/* Bitcache version information */
 #define BITCACHE_VERSION_STRING "@PACKAGE_VERSION@"
 #define BITCACHE_VERSION_MAJOR  @PACKAGE_VERSION_MAJOR@
 #define BITCACHE_VERSION_MINOR  @PACKAGE_VERSION_MINOR@
 #define BITCACHE_VERSION_PATCH  @PACKAGE_VERSION_PATCH@
 
+/* Bitcache identifier API */
 #include <bitcache/id.h>
+
+/* Bitcache filter API */
 #include <bitcache/filter.h>
+
+/* Bitcache map API */
 #include <bitcache/map.h>
+
+/* Bitcache set API */
 #include <bitcache/set.h>
+
+/* Bitcache tree API  */
 #include <bitcache/tree.h>
 
-extern const char* const bitcache_version_string;
-extern const char* const bitcache_feature_names[];
+/* Bitcache global variables */
+extern const char* const  bitcache_version_string;
+extern const char* const  bitcache_feature_names[];
 extern const unsigned int bitcache_feature_count;
-extern const char* const bitcache_module_names[];
+extern const char* const  bitcache_module_names[];
 extern const unsigned int bitcache_module_count;
 
 #ifdef __cplusplus
