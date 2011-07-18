@@ -47,18 +47,21 @@ extern int bitcache_map_iter_remove(bitcache_map_iter_t* iter);
 extern int bitcache_map_iter_done(bitcache_map_iter_t* iter);
 
 #if defined(BITCACHE_MAP_MUTEX)
+#define BITCACHE_MAP_LOCK_INIT   MUTEX_INIT
 #define bitcache_map_crlock(map) mutex_init(&(map)->lock)
 #define bitcache_map_rmlock(map) mutex_dispose(&(map)->lock)
 #define bitcache_map_rdlock(map) mutex_lock(&(map)->lock)
 #define bitcache_map_wrlock(map) mutex_lock(&(map)->lock)
 #define bitcache_map_unlock(map) mutex_unlock(&(map)->lock)
 #elif defined(BITCACHE_MAP_RWLOCK)
+#define BITCACHE_MAP_LOCK_INIT   RWLOCK_INIT
 #define bitcache_map_crlock(map) rwlock_init(&(map)->lock)
 #define bitcache_map_rmlock(map) rwlock_dispose(&(map)->lock)
-#define bitcache_map_rdlock(map) pthread_rwlock_rdlock(&(map)->lock.id)
-#define bitcache_map_wrlock(map) pthread_rwlock_wrlock(&(map)->lock.id)
-#define bitcache_map_unlock(map) pthread_rwlock_unlock(&(map)->lock.id)
+#define bitcache_map_rdlock(map) rwlock_rdlock(&(map)->lock)
+#define bitcache_map_wrlock(map) rwlock_wrlock(&(map)->lock)
+#define bitcache_map_unlock(map) rwlock_unlock(&(map)->lock)
 #else
+#define BITCACHE_MAP_LOCK_INIT   NULL
 #define bitcache_map_crlock(map)
 #define bitcache_map_rmlock(map)
 #define bitcache_map_rdlock(map)

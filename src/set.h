@@ -42,12 +42,12 @@ extern int bitcache_set_iter_remove(bitcache_set_iter_t* iter);
 extern int bitcache_set_iter_done(bitcache_set_iter_t* iter);
 
 #ifdef HAVE_PTHREAD_H
-#define BITCACHE_SET_LOCK_INITIALIZER RWLOCK_INIT
-#define bitcache_set_crlock(set)      rwlock_init(&(set)->lock)
-#define bitcache_set_rmlock(set)      rwlock_dispose(&(set)->lock)
-#define bitcache_set_rdlock(set)      pthread_rwlock_rdlock(&(set)->lock.id)
-#define bitcache_set_wrlock(set)      pthread_rwlock_wrlock(&(set)->lock.id)
-#define bitcache_set_unlock(set)      pthread_rwlock_unlock(&(set)->lock.id)
+#define BITCACHE_SET_LOCK_INIT   RWLOCK_INIT
+#define bitcache_set_crlock(set) rwlock_init(&(set)->lock)
+#define bitcache_set_rmlock(set) rwlock_dispose(&(set)->lock)
+#define bitcache_set_rdlock(set) rwlock_rdlock(&(set)->lock)
+#define bitcache_set_wrlock(set) rwlock_wrlock(&(set)->lock)
+#define bitcache_set_unlock(set) rwlock_unlock(&(set)->lock)
 #else
 #define bitcache_set_crlock(set)
 #define bitcache_set_rmlock(set)

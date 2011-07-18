@@ -48,6 +48,7 @@ extern int bitcache_tree_iter_remove(bitcache_tree_iter_t* iter);
 extern int bitcache_tree_iter_done(bitcache_tree_iter_t* iter);
 
 #ifndef HAVE_PTHREAD_H
+#define BITCACHE_TREE_LOCK_INIT    NULL
 #define bitcache_tree_crlock(tree)
 #define bitcache_tree_rmlock(tree)
 #define bitcache_tree_rdlock(tree)
@@ -55,17 +56,19 @@ extern int bitcache_tree_iter_done(bitcache_tree_iter_t* iter);
 #define bitcache_tree_unlock(tree)
 #else
 #if defined(BITCACHE_TREE_MUTEX)
+#define BITCACHE_TREE_LOCK_INIT    MUTEX_INIT
 #define bitcache_tree_crlock(tree) mutex_init(&(tree)->lock)
 #define bitcache_tree_rmlock(tree) mutex_dispose(&(tree)->lock)
 #define bitcache_tree_rdlock(tree) mutex_lock(&(tree)->lock)
 #define bitcache_tree_wrlock(tree) mutex_lock(&(tree)->lock)
 #define bitcache_tree_unlock(tree) mutex_unlock(&(tree)->lock)
 #elif defined(BITCACHE_TREE_RWLOCK)
+#define BITCACHE_TREE_LOCK_INIT    RWLOCK_INIT
 #define bitcache_tree_crlock(tree) rwlock_init(&(tree)->lock)
 #define bitcache_tree_rmlock(tree) rwlock_dispose(&(tree)->lock)
-#define bitcache_tree_rdlock(tree) pthread_rwlock_rdlock(&(tree)->lock.id)
-#define bitcache_tree_wrlock(tree) pthread_rwlock_wrlock(&(tree)->lock.id)
-#define bitcache_tree_unlock(tree) pthread_rwlock_unlock(&(tree)->lock.id)
+#define bitcache_tree_rdlock(tree) rwlock_rdlock(&(tree)->lock)
+#define bitcache_tree_wrlock(tree) rwlock_wrlock(&(tree)->lock)
+#define bitcache_tree_unlock(tree) rwlock_unlock(&(tree)->lock)
 #endif
 #endif /* HAVE_PTHREAD_H */
 
