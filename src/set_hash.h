@@ -132,3 +132,46 @@ const bitcache_set_class_t bitcache_set_hash = {
   .remove  = bitcache_set_hash_remove,
   .replace = bitcache_set_hash_replace,
 };
+
+//////////////////////////////////////////////////////////////////////////////
+// Set Iterator API (hash table implementation)
+
+static int
+bitcache_set_iter_hash_init(bitcache_set_iter_t* iter, bitcache_set_t* restrict set) {
+  g_hash_table_iter_init(&iter->hash_table_iter, set->hash_table);
+  return 0;
+}
+
+static int
+bitcache_set_iter_hash_reset(bitcache_set_iter_t* iter) {
+#ifndef NDEBUG
+  bzero(iter, sizeof(bitcache_set_iter_t));
+#endif
+  return 0;
+}
+
+static bool
+bitcache_set_iter_hash_next(bitcache_set_iter_t* iter) {
+  bool more = FALSE;
+
+  if (likely(g_hash_table_iter_next(&iter->hash_table_iter, (void**)&iter->id, NULL) != FALSE)) {
+    iter->position++;
+    more = TRUE;
+  }
+
+  return more;
+}
+
+static int
+bitcache_set_iter_hash_remove(bitcache_set_iter_t* iter) {
+  g_hash_table_iter_remove(&iter->hash_table_iter);
+  return 0;
+}
+
+const bitcache_set_iter_class_t bitcache_set_iter_hash = {
+  .super   = NULL,
+  .init    = bitcache_set_iter_hash_init,
+  .reset   = bitcache_set_iter_hash_reset,
+  .next    = bitcache_set_iter_hash_next,
+  .remove  = bitcache_set_iter_hash_remove,
+};

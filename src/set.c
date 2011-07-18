@@ -146,44 +146,63 @@ bitcache_set_replace(bitcache_set_t* set, const bitcache_id_t* restrict id1, con
 // Set Iterator API
 
 int
-bitcache_set_iter_init(bitcache_set_iter_t* iter, bitcache_set_t* set) {
+bitcache_set_iter_init(bitcache_set_iter_t* iter, const bitcache_set_iter_class_t* restrict class, bitcache_set_t* set) {
   validate_with_errno_return(iter != NULL && set != NULL);
 
   bzero(iter, sizeof(bitcache_set_iter_t));
-  iter->set = set;
-  g_hash_table_iter_init(&iter->hash_table_iter, set->hash_table);
+  iter->class = class;
+  iter->set   = set;
+
+  if (likely(class == NULL)) // static dispatch
+    return bitcache_set_iter_hash_init(iter, set);
+
+  if (likely(class->init != NULL)) // virtual dispatch
+    return class->init(iter, set);
 
   return 0;
 }
 
+int
+bitcache_set_iter_reset(bitcache_set_iter_t* iter) {
+  validate_with_errno_return(iter != NULL && iter->set != NULL);
+
+  const bitcache_set_iter_class_t* const class = iter->class;
+
+  if (likely(class == NULL)) // static dispatch
+    return bitcache_set_iter_hash_reset(iter);
+
+  if (likely(class->reset != NULL)) // virtual dispatch
+    return class->reset(iter);
+
+  return -(errno = ENOTSUP); // operation not supported
+}
+
 bool
-bitcache_set_iter_next(bitcache_set_iter_t* iter, bitcache_id_t** id) {
+bitcache_set_iter_next(bitcache_set_iter_t* iter) {
   validate_with_false_return(iter != NULL && iter->set != NULL);
 
-  int more = FALSE;
+  const bitcache_set_iter_class_t* const class = iter->class;
 
-  if (likely(g_hash_table_iter_next(&iter->hash_table_iter, (void**)id, NULL) != FALSE)) {
-    iter->position++;
-    more = TRUE;
-  }
+  if (likely(class == NULL)) // static dispatch
+    return bitcache_set_iter_hash_next(iter);
 
-  return more;
+  if (likely(class->next != NULL)) // virtual dispatch
+    return class->next(iter);
+
+  return (errno = ENOTSUP), FALSE; // operation not supported
 }
 
 int
 bitcache_set_iter_remove(bitcache_set_iter_t* iter) {
   validate_with_errno_return(iter != NULL && iter->set != NULL);
 
-  g_hash_table_iter_remove(&iter->hash_table_iter);
+  const bitcache_set_iter_class_t* const class = iter->class;
 
-  return 0;
-}
+  if (likely(class == NULL)) // static dispatch
+    return bitcache_set_iter_hash_remove(iter);
 
-int
-bitcache_set_iter_done(bitcache_set_iter_t* iter) {
-  validate_with_errno_return(iter != NULL && iter->set != NULL);
+  if (likely(class->remove != NULL)) // virtual dispatch
+    return class->remove(iter);
 
-  bzero(iter, sizeof(bitcache_set_iter_t));
-
-  return 0;
+  return -(errno = ENOTSUP); // operation not supported
 }
