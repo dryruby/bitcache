@@ -8,10 +8,9 @@ extern "C" {
 #endif
 
 #include <stdbool.h>
+#include <stdint.h>  /* for uint8_t */
 #include <stdlib.h>
 #include <string.h>
-
-#include <glib.h>
 
 #define BITCACHE_FILTER_K_MAX (sizeof(bitcache_id_t) / sizeof(uint32_t)) /* k=5 for SHA-1 */
 
@@ -35,7 +34,8 @@ extern long bitcache_filter_count(const bitcache_filter_t* filter, const bitcach
 extern bool bitcache_filter_lookup(const bitcache_filter_t* filter, const bitcache_id_t* id);
 extern int bitcache_filter_insert(bitcache_filter_t* filter, const bitcache_id_t* id);
 extern int bitcache_filter_compare(const bitcache_filter_t* filter1, const bitcache_filter_t* filter2);
-extern int bitcache_filter_merge(bitcache_filter_t* filter0, const bitcache_filter_op_t op, const bitcache_filter_t* filter1, const bitcache_filter_t* filter2);
+extern int bitcache_filter_merge(bitcache_filter_t* filter0, const bitcache_filter_op_t op,
+                                 const bitcache_filter_t* filter1, const bitcache_filter_t* filter2);
 extern int bitcache_filter_load(bitcache_filter_t* filter, const int fd);
 extern int bitcache_filter_dump(const bitcache_filter_t* filter, const int fd);
 

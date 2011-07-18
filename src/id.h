@@ -7,11 +7,9 @@
 extern "C" {
 #endif
 
-#include <stdbool.h>
-#include <stdint.h>
+#include <stdbool.h> /* for bool */
+#include <stdint.h>  /* for uint8_t, uint32_t */
 #include <unistd.h>  /* for ssize_t */
-
-#include <glib.h>
 
 typedef struct {
   uint8_t digest[20];
