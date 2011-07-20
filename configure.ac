@@ -42,13 +42,13 @@ dnl Check for libraries:
 # libcprime (https://github.com/bendiken/libcprime)
 AC_CHECK_HEADERS([cprime.h],
   AC_SEARCH_LIBS([string_alloc], [cprime], [],
-    AC_MSG_ERROR([*** C′ library libpthread not found; install libcprime ***])),
-  AC_MSG_ERROR([*** C′ header file cprime.h not found; install libcprime ***]))
+    AC_MSG_ERROR([*** C′ library libcprime not found; install https://github.com/bendiken/libcprime ***])),
+  AC_MSG_ERROR([*** C′ header file <cprime.h> not found; install https://github.com/bendiken/libcprime ***]))
 # libcrypto (libssl-dev on Ubuntu, openssl on Mac OS X + MacPorts)
 AC_CHECK_HEADERS([openssl/sha.h],
   AC_SEARCH_LIBS([SHA1], [crypto], [],
     AC_MSG_ERROR([*** OpenSSL library libcrypto not found; install the libssl-dev package ***])),
-  AC_MSG_ERROR([*** OpenSSL header file openssl/sha.h not found; install the libssl-dev package ***]))
+  AC_MSG_ERROR([*** OpenSSL header file <openssl/sha.h> not found; install the libssl-dev package ***]))
 # glib (libglib2.0-dev on Ubuntu, glib2 on Mac OS X + MacPorts)
 AM_PATH_GLIB_2_0([2.24.0], [], [], [gthread])
 
