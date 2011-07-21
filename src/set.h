@@ -9,18 +9,14 @@ extern "C" {
 
 #include <stdbool.h> /* for bool */
 
-#include <cprime.h>  /* for rwlock_t, free_func_t */
-#include <glib.h>    /* for GHashTable, GHashTableIter */
+#include <cprime.h>  /* for free_func_t */
 
 /**
  * Represents a Bitcache set.
  */
 typedef struct {
   const struct bitcache_set_class_t* class;
-  GHashTable* hash_table; // FIXME
-#if 1
-  rwlock_t lock;
-#endif
+  void* instance;
 } bitcache_set_t;
 
 /**
@@ -28,10 +24,10 @@ typedef struct {
  */
 typedef struct {
   const struct bitcache_set_iter_class_t* class;
+  void* instance;
   long position;
   bitcache_set_t* set;
   bitcache_id_t* id;
-  GHashTableIter hash_table_iter; // FIXME
 } bitcache_set_iter_t;
 
 /**
