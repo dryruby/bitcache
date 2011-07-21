@@ -39,11 +39,13 @@ bitcache_id_init(bitcache_id_t* id, const uint8_t* digest) {
   bzero(id, sizeof(bitcache_id_t));
 
   if (unlikely(digest != NULL)) {
-    bcopy(digest, id->digest, sizeof(bitcache_id_t));
+    bcopy(digest, id->digest.data, sizeof(bitcache_id_t));
   }
+
+  return 0;
 }
 
-static inline int8_t bitcache_hex_parse(const char c) PURE;
+static inline int8_t bitcache_hex_parse(const uint8_t c) PURE;
 
 long
 bitcache_id_parse(bitcache_id_t* id, const char* hexstring) {
@@ -54,7 +56,7 @@ bitcache_id_parse(bitcache_id_t* id, const char* hexstring) {
     int c = (bitcache_hex_parse(s[0]) << 4) | bitcache_hex_parse(s[1]);
     if (unlikely(c & ~0xff))
       return -(errno = EINVAL); // invalid argument
-    id->digest[i] = c, s += 2;
+    id->digest.data[i] = c, s += 2;
   }
   return s - hexstring;
 }
@@ -69,7 +71,7 @@ bitcache_id_serialize(const bitcache_id_t* id, char* buffer, size_t buffer_size)
 
   char* s = buffer;
   for (int i = 0; i< sizeof(bitcache_id_t); i++) {
-    uint8_t c = id->digest[i];
+    uint8_t c = id->digest.data[i];
     *s++ = hex[c >> 4];
     *s++ = hex[c & 0x0f];
   }
@@ -82,34 +84,40 @@ bitcache_id_clear(bitcache_id_t* id) {
   validate_with_errno_return(id != NULL);
 
   bzero(id, sizeof(bitcache_id_t));
+
+  return 0;
 }
 
 int
 bitcache_id_fill(bitcache_id_t* id, const uint8_t value) {
   validate_with_errno_return(id != NULL);
 
-  memset(id->digest, value, sizeof(bitcache_id_t));
+  memset(id->digest.data, value, sizeof(bitcache_id_t));
+
+  return 0;
 }
 
 bool HOT
 bitcache_id_equal(const bitcache_id_t* id1, const bitcache_id_t* id2) {
   validate_with_false_return(id1 != NULL && id2 != NULL);
 
-  return unlikely(id1 == id2) ? TRUE : (memcmp(id1->digest, id2->digest, sizeof(bitcache_id_t)) == 0);
+  return unlikely(id1 == id2) ? TRUE :
+    (memcmp(id1->digest.data, id2->digest.data, sizeof(bitcache_id_t)) == 0);
 }
 
 int HOT
 bitcache_id_compare(const bitcache_id_t* id1, const bitcache_id_t* id2) {
   validate_with_errno_return(id1 != NULL && id2 != NULL);
 
-  return unlikely(id1 == id2) ? 0 : memcmp(id1->digest, id2->digest, sizeof(bitcache_id_t));
+  return unlikely(id1 == id2) ? 0 :
+    memcmp(id1->digest.data, id2->digest.data, sizeof(bitcache_id_t));
 }
 
 uint32_t HOT
 bitcache_id_hash(const bitcache_id_t* id) {
   validate_with_zero_return(id != NULL);
 
-  return *((uint32_t*)id->digest); // the first 4 bytes of the identifier digest
+  return id->digest.hash; // the first 4 bytes of the identifier digest
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -127,6 +135,6 @@ static const int8_t bitcache_hex_table[] = {
 };
 
 int8_t
-bitcache_hex_parse(const char c) {
+bitcache_hex_parse(const uint8_t c) {
   return likely(c >= 0) ? bitcache_hex_table[c] : -1;
 }

@@ -15,7 +15,10 @@ extern "C" {
  * Represents a Bitcache identifier (a 20-byte SHA-1 digest).
  */
 typedef struct bitcache_id_t {
-  uint8_t digest[20];
+  union {
+    uint8_t  data[20];
+    uint32_t hash;
+  } digest;
 } bitcache_id_t;
 
 /**
