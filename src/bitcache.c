@@ -12,10 +12,11 @@ const char* const bitcache_feature_names[] = {
 #ifndef DISABLE_THREADS
   "threads",
 #endif
+  NULL
 };
 
 const unsigned int bitcache_feature_count =
-  sizeof(bitcache_feature_names) / sizeof(bitcache_feature_names[0]);
+  (sizeof(bitcache_feature_names) / sizeof(bitcache_feature_names[0])) - 1;
 
 const char* const bitcache_module_names[] = {
   "filter",
@@ -23,7 +24,8 @@ const char* const bitcache_module_names[] = {
   "map",
   "set",
   "tree",
+  NULL
 };
 
 const unsigned int bitcache_module_count =
-  sizeof(bitcache_module_names) / sizeof(bitcache_module_names[0]);
+  (sizeof(bitcache_module_names) / sizeof(bitcache_module_names[0])) - 1;
