@@ -6,6 +6,8 @@
 #include <string.h>
 #include <strings.h>
 
+#include <glib.h> /* for bitcache_id_equal_g() */
+
 //////////////////////////////////////////////////////////////////////////////
 // Identifier API
 
@@ -95,6 +97,15 @@ bitcache_id_fill(bitcache_id_t* id, const uint8_t value) {
   memset(id->digest.data, value, sizeof(bitcache_id_t));
 
   return 0;
+}
+
+gboolean HOT
+bitcache_id_equal_g(const bitcache_id_t* id1, const bitcache_id_t* id2) {
+  // This function is needed because sizeof(gboolean) != sizeof(bool);
+  // without this wrapper, a compiler optimization level of -O2 or higher
+  // will result in GHashTable applying bogus interpretations to the return
+  // value of bitcache_id_equal(), and bad consequences follow.
+  return bitcache_id_equal(id1, id2);
 }
 
 bool HOT

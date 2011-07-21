@@ -32,6 +32,8 @@ typedef struct {
 #endif
 } bitcache_set_hash_t;
 
+gboolean bitcache_id_equal_g(const bitcache_id_t* id1, const bitcache_id_t* id2);
+
 static int
 bitcache_set_hash_init(bitcache_set_t* set) {
   bitcache_set_hash_t* hash_table = calloc(1, sizeof(bitcache_set_hash_t));
@@ -40,7 +42,7 @@ bitcache_set_hash_init(bitcache_set_t* set) {
   bitcache_set_crlock(hash_table);
   hash_table->data = g_hash_table_new_full(
     (GHashFunc)bitcache_id_hash,
-    (GEqualFunc)bitcache_id_equal,
+    (GEqualFunc)bitcache_id_equal_g,
     (free_func_t)free, // FIXME
     (free_func_t)NULL);
 

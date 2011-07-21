@@ -24,6 +24,8 @@
 //////////////////////////////////////////////////////////////////////////////
 // Map API
 
+gboolean bitcache_id_equal_g(const bitcache_id_t* id1, const bitcache_id_t* id2);
+
 int
 bitcache_map_init(bitcache_map_t* map, const free_func_t key_destroy_func, const free_func_t value_destroy_func) {
   validate_with_errno_return(map != NULL);
@@ -33,7 +35,7 @@ bitcache_map_init(bitcache_map_t* map, const free_func_t key_destroy_func, const
   bitcache_map_crlock(map);
   map->hash_table = g_hash_table_new_full(
     (GHashFunc)bitcache_id_hash,
-    (GEqualFunc)bitcache_id_equal,
+    (GEqualFunc)bitcache_id_equal_g,
     key_destroy_func, value_destroy_func);
 
   return 0;
