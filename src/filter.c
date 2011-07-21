@@ -72,7 +72,7 @@ bitcache_filter_lookup(const bitcache_filter_t* filter, const bitcache_id_t* id)
   bool found = TRUE; // false positives are possible
 
   const uint32_t m = filter->size * 8;
-  for (int k = 0; k < BITCACHE_FILTER_K_MAX; k++) {
+  for (size_t k = 0; k < BITCACHE_FILTER_K_MAX; k++) {
     const uint32_t i = ((uint32_t*)id)[k] % m;
     const uint8_t* p = filter->bitmap + (i >> 3);
     const uint8_t  b = 1 << (i & 7);
@@ -91,7 +91,7 @@ bitcache_filter_insert(bitcache_filter_t* filter, const bitcache_id_t* id) {
   validate_with_errno_return(filter != NULL && filter->bitmap != NULL && id != NULL);
 
   const uint32_t m = filter->size * 8;
-  for (int k = 0; k < BITCACHE_FILTER_K_MAX; k++) {
+  for (size_t k = 0; k < BITCACHE_FILTER_K_MAX; k++) {
     const uint32_t i = ((uint32_t*)id)[k] % m;
     uint8_t* const p = filter->bitmap + (i >> 3);
     const uint8_t  b = 1 << (i & 7);
@@ -123,15 +123,15 @@ bitcache_filter_merge(bitcache_filter_t* filter0, const bitcache_filter_op_t op,
       // do nothing
       break;
     case BITCACHE_FILTER_OR:
-      for (int i = 0; i < filter0->size; i++)
+      for (size_t i = 0; i < filter0->size; i++)
         filter0->bitmap[i] = filter1->bitmap[i] | filter2->bitmap[i];
       break;
     case BITCACHE_FILTER_AND:
-      for (int i = 0; i < filter0->size; i++)
+      for (size_t i = 0; i < filter0->size; i++)
         filter0->bitmap[i] = filter1->bitmap[i] & filter2->bitmap[i];
       break;
     case BITCACHE_FILTER_XOR:
-      for (int i = 0; i < filter0->size; i++)
+      for (size_t i = 0; i < filter0->size; i++)
         filter0->bitmap[i] = filter1->bitmap[i] ^ filter2->bitmap[i];
       break;
     default:
@@ -162,7 +162,8 @@ bitcache_filter_load_from_file(bitcache_filter_t* filter, const int fd, const of
 
 static inline NONNULL int
 bitcache_filter_load_from_pipe(bitcache_filter_t* filter, const int fd) {
-  return -(errno = ESPIPE); // TODO
+  (void)filter, (void)fd; // silence unused parameter warnings
+  return -(errno = ENOTSUP); // not supported
 }
 
 int COLD
@@ -190,8 +191,8 @@ bitcache_filter_dump(const bitcache_filter_t* filter, const int fd) {
   validate_with_errno_return(filter != NULL && filter->bitmap != NULL && fd >= 0);
 
   uint8_t* buffer = filter->bitmap;
-  size_t buffer_size = filter->size;
-  size_t bytes_written = 0;
+  ssize_t buffer_size = filter->size;
+  ssize_t bytes_written = 0;
 
   while (bytes_written < buffer_size) {
     bytes_written = write(fd, buffer, buffer_size);

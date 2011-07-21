@@ -26,6 +26,7 @@
 
 static int
 bitcache_tree_id_compare(const bitcache_id_t* id1, const bitcache_id_t* id2, const void* user_data) {
+  (void)user_data; // silence unused parameter warning
   return bitcache_id_compare(id1, id2);
 }
 
@@ -175,6 +176,7 @@ bitcache_tree_iter_next(bitcache_tree_iter_t* iter, bitcache_id_t** key, void** 
   int result = 0;
 
   // TODO: use g_tree_foreach() together with setjmp()/longjmp() ?
+  (void)key, (void)value; // silence unused parameter warnings
 
   return result;
 }

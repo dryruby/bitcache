@@ -52,8 +52,8 @@ bitcache_id_parse(bitcache_id_t* id, const char* hexstring) {
   validate_with_errno_return(id != NULL && hexstring != NULL);
 
   char* s = (char*)hexstring;
-  for (int i = 0; i< sizeof(bitcache_id_t); i++) {
-    int c = (bitcache_hex_parse(s[0]) << 4) | bitcache_hex_parse(s[1]);
+  for (size_t i = 0; i< sizeof(bitcache_id_t); i++) {
+    const int c = (bitcache_hex_parse(s[0]) << 4) | bitcache_hex_parse(s[1]);
     if (unlikely(c & ~0xff))
       return -(errno = EINVAL); // invalid argument
     id->digest.data[i] = c, s += 2;
@@ -70,8 +70,8 @@ bitcache_id_serialize(const bitcache_id_t* id, char* buffer, size_t buffer_size)
   static const char hex[] = "0123456789abcdef";
 
   char* s = buffer;
-  for (int i = 0; i< sizeof(bitcache_id_t); i++) {
-    uint8_t c = id->digest.data[i];
+  for (size_t i = 0; i< sizeof(bitcache_id_t); i++) {
+    const uint8_t c = id->digest.data[i];
     *s++ = hex[c >> 4];
     *s++ = hex[c & 0x0f];
   }
@@ -136,5 +136,5 @@ static const int8_t bitcache_hex_table[] = {
 
 int8_t
 bitcache_hex_parse(const uint8_t c) {
-  return likely(c >= 0) ? bitcache_hex_table[c] : -1;
+  return likely(c < 0x80) ? bitcache_hex_table[c] : -1;
 }
