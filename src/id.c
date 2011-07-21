@@ -25,7 +25,7 @@ bitcache_id_t*
 bitcache_id_clone(const bitcache_id_t* const id) {
   validate_with_null_return(id != NULL);
 
-  bitcache_id_t* clone = bitcache_id_alloc();
+  bitcache_id_t* clone = malloc(sizeof(bitcache_id_t));
   if (likely(clone != NULL)) {
     bcopy(id, clone, sizeof(bitcache_id_t));
   }
