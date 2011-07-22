@@ -165,6 +165,8 @@ bitcache_set_hash_replace(bitcache_set_t* set, const bitcache_id_t* restrict id1
 
 const bitcache_set_class_t bitcache_set_hash = {
   .super   = NULL,
+  .name    = "bitcache_set_hash",
+  .options = 0,
   .free    = bitcache_set_free,
   .init    = bitcache_set_hash_init,
   .reset   = bitcache_set_hash_reset,
@@ -235,6 +237,8 @@ bitcache_set_iter_hash_remove(bitcache_set_iter_t* iter) {
 
 const bitcache_set_iter_class_t bitcache_set_iter_hash = {
   .super   = NULL,
+  .name    = "bitcache_set_iter_hash",
+  .options = 0,
   .init    = bitcache_set_iter_hash_init,
   .reset   = bitcache_set_iter_hash_reset,
   .next    = bitcache_set_iter_hash_next,

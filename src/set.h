@@ -35,6 +35,8 @@ typedef struct {
  */
 typedef struct bitcache_set_class_t {
   struct bitcache_set_class_t* super;
+  const char* name;
+  const unsigned int options;
   void (*free)(bitcache_set_t* set);
   int (*init)(bitcache_set_t* set);
   int (*reset)(bitcache_set_t* set);
@@ -52,6 +54,8 @@ typedef struct bitcache_set_class_t {
  */
 typedef struct bitcache_set_iter_class_t {
   struct bitcache_set_iter_class_t* super;
+  const char* name;
+  const unsigned int options;
   void (*free)(bitcache_set_iter_t* iter);
   int (*init)(bitcache_set_iter_t* iter, bitcache_set_t* set);
   int (*reset)(bitcache_set_iter_t* iter);
