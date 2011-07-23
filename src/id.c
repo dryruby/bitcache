@@ -81,6 +81,17 @@ bitcache_id_serialize(const bitcache_id_t* id, char* buffer, size_t buffer_size)
   return s - buffer - 1;
 }
 
+long
+bitcache_id_print(const bitcache_id_t* id, FILE* restrict stream) {
+  validate_with_errno_return(id != NULL);
+
+  char buffer[sizeof(bitcache_id_t) * 2 + 1];
+  bitcache_id_serialize(id, buffer, sizeof(buffer));
+  fputs(buffer, stream);
+
+  return sizeof(buffer) - 1;
+}
+
 int
 bitcache_id_clear(bitcache_id_t* id) {
   validate_with_errno_return(id != NULL);

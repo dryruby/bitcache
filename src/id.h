@@ -10,6 +10,7 @@ extern "C" {
 #include <stdbool.h> /* for bool */
 #include <stddef.h>  /* for size_t */
 #include <stdint.h>  /* for uint8_t, uint32_t */
+#include <stdio.h>   /* for FILE */
 
 /**
  * Represents a Bitcache identifier (a 20-byte SHA-1 digest).
@@ -54,6 +55,12 @@ extern long bitcache_id_parse(bitcache_id_t* id,
 extern long bitcache_id_serialize(const bitcache_id_t* id,
   char* buffer,
   size_t buffer_size);
+
+/**
+ * Prints out an identifier's hexadecimal string representation.
+ */
+extern long bitcache_id_print(const bitcache_id_t* id,
+  FILE* restrict stream);
 
 /**
  * Zeroes out every byte of an identifier.
