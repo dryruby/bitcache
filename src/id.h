@@ -17,7 +17,8 @@ extern "C" {
  */
 typedef struct bitcache_id_t {
   union {
-    uint8_t  data[20];
+    bitcache_sha1_t sha1;
+    uint8_t data[20];
     uint32_t hash;
   } digest;
 } bitcache_id_t;

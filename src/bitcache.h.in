@@ -13,6 +13,9 @@ extern "C" {
 #define BITCACHE_VERSION_MINOR  @PACKAGE_VERSION_MINOR@
 #define BITCACHE_VERSION_PATCH  @PACKAGE_VERSION_PATCH@
 
+/* Bitcache digest API */
+#include <bitcache/sha1.h>
+
 /* Bitcache identifier API */
 #include <bitcache/id.h>
 
@@ -25,7 +28,7 @@ extern "C" {
 /* Bitcache set API */
 #include <bitcache/set.h>
 
-/* Bitcache tree API  */
+/* Bitcache tree API */
 #include <bitcache/tree.h>
 
 /* Bitcache global variables */
