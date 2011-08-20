@@ -9,6 +9,7 @@ libbitcache_la_SOURCES = bitcache.c \
   filter.c \
   id.c \
   map.c \
+  md5.c \
   set.c \
   sha1.c \
   tree.c
@@ -20,6 +21,7 @@ pkginclude_HEADERS = \
   filter.h \
   id.h \
   map.h \
+  md5.h \
   set.h \
   sha1.h \
   tree.h

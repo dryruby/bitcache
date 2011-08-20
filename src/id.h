@@ -13,10 +13,11 @@ extern "C" {
 #include <stdio.h>   /* for FILE */
 
 /**
- * Represents a Bitcache identifier (a 20-byte SHA-1 digest).
+ * Represents a Bitcache identifier.
  */
 typedef struct bitcache_id_t {
   union {
+    bitcache_md5_t md5;
     bitcache_sha1_t sha1;
     uint8_t data[20];
     uint32_t hash;

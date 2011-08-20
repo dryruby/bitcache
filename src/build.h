@@ -18,6 +18,7 @@ extern "C" {
 #include "arch.h"
 
 /* public headers included from <bitcache.h> */
+#include "md5.h"
 #include "sha1.h"
 #include "id.h"
 #include "filter.h"
