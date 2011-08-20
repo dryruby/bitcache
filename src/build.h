@@ -8,7 +8,9 @@ extern "C" {
 #endif
 
 /* private headers for the build process only */
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
 
 /* libcprime headers */
 #include <cprime.h>
@@ -18,8 +20,12 @@ extern "C" {
 #include "arch.h"
 
 /* public headers included from <bitcache.h> */
+#ifndef DISABLE_MD5
 #include "md5.h"
+#endif
+#ifndef DISABLE_SHA1
 #include "sha1.h"
+#endif
 #include "id.h"
 #include "filter.h"
 #include "map.h"

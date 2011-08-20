@@ -12,6 +12,12 @@ const char* const bitcache_feature_names[] = {
 #ifndef DISABLE_THREADS
   "threads",
 #endif
+#ifndef DISABLE_MD5
+  "md5",
+#endif
+#ifndef DISABLE_SHA1
+  "sha1",
+#endif
   NULL
 };
 

@@ -38,6 +38,18 @@ AC_ARG_ENABLE([threads],
 AS_IF([test "x$enable_threads" == "xno"], [
   AC_DEFINE([DISABLE_THREADS], 1, [Define to disable thread-safety features.])
 ])
+AC_ARG_ENABLE([md5],
+  [AS_HELP_STRING([--disable-md5], [omit support for the MD5 algorithm])])
+AS_IF([test "x$enable_md5" == "xno"], [
+  AC_DEFINE([DISABLE_MD5], 1, [Define to disable the MD5 algorithm.])
+])
+AM_CONDITIONAL([ENABLE_MD5], [test "x$enable_md5" != "xno"])
+AC_ARG_ENABLE([sha1],
+  [AS_HELP_STRING([--disable-sha1], [omit support for the SHA-1 algorithm])])
+AS_IF([test "x$enable_sha1" == "xno"], [
+  AC_DEFINE([DISABLE_SHA1], 1, [Define to disable the SHA-1 algorithm.])
+])
+AM_CONDITIONAL([ENABLE_SHA1], [test "x$enable_sha1" != "xno"])
 
 dnl Check for libraries:
 # libcprime (https://github.com/bendiken/libcprime)
