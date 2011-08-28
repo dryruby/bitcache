@@ -39,6 +39,9 @@ extern const unsigned int bitcache_feature_count;
 extern const char* const  bitcache_module_names[];
 extern const unsigned int bitcache_module_count;
 
+extern bool bitcache_has_feature(const char* name);
+extern bool bitcache_has_module(const char* name);
+
 #ifdef __cplusplus
 }
 #endif
