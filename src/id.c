@@ -6,7 +6,8 @@
 #include <string.h>
 #include <strings.h>
 
-#include <glib.h> /* for bitcache_id_equal_g() */
+#include <cprime/ascii.h> /* for ascii_xdigit_table */
+#include <glib.h>         /* for bitcache_id_equal_g() */
 
 //////////////////////////////////////////////////////////////////////////////
 // Identifier API
@@ -47,7 +48,10 @@ bitcache_id_init(bitcache_id_t* id, const uint8_t* digest) {
   return 0;
 }
 
-static inline int8_t bitcache_hex_parse(const uint8_t c) PURE;
+static inline int8_t
+bitcache_hex_parse(const uint8_t c) {
+  return CHAR_IS_ASCII(c) ? ascii_xdigit_table[c] : -1;
+}
 
 long
 bitcache_id_parse(bitcache_id_t* id, const char* hexstring) {
@@ -140,23 +144,4 @@ bitcache_id_hash(const bitcache_id_t* id) {
   validate_with_zero_return(id != NULL);
 
   return id->digest.hash; // the first 4 bytes of the identifier digest
-}
-
-//////////////////////////////////////////////////////////////////////////////
-// Identifier API: Internals
-
-static const int8_t bitcache_hex_table[] = {
-  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, // 0x00..0x0f
-  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, // 0x10..0x1f
-  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, // 0x20..0x2f
-   0,  1,  2,  3,  4,  5,  6,  7,  8,  9, -1, -1, -1, -1, -1, -1, // 0x30..0x3f
-  -1, 10, 11, 12, 13, 14, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1, // 0x40..0x4f
-  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, // 0x50..0x5f
-  -1, 10, 11, 12, 13, 14, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1, // 0x60..0x6f
-  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, // 0x70..0x7f
-};
-
-int8_t
-bitcache_hex_parse(const uint8_t c) {
-  return likely(c < 0x80) ? bitcache_hex_table[c] : -1;
 }
